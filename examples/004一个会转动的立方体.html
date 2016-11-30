@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>空的框架</title>
+	</head>
+	<body>
+		<script src="../lib/three.min.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script>
+			var [scene,render,camera] = $$.init();
+			
+			//创建一个立方体，所有创建物体的代码不在库里进行封装
+			var geometry = new THREE.BoxGeometry( 3, 3, 3 );
+   			var material = new THREE.MeshBasicMaterial( { color: 0xff0000} );//这边采用basic材质
+    		var mesh = new THREE.Mesh( geometry, material );
+    		scene.add( mesh );
+    		
+    		//可以设置相机的位置
+    		camera.position.x=10;
+    		camera.position.y=10;
+    		camera.position.z=10;
+    		camera.lookAt(mesh.position);
+			
+			$$.worldActions=function(){
+				mesh.rotation.x += 0.01;
+    			mesh.rotation.y += 0.02;
+			};
+			
+			$$.animate();
+		</script>
+	</body>
+</html>

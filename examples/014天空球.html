@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	</head>
+
+	<body>
+
+		<script src="../lib/three.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../lib/OrbitControls.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.extend.js"></script>
+
+		<script>
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 3000000,
+				fov:50
+			});
+			var controls = $$.extend.createOrbitControls();
+			scene.add(new THREE.AmbientLight(0xffffff));
+			$$.loadTexture(["../textures/patterns/skydome.jpg"]);
+			$$.onLoadComplete = function() {
+				$$.createSkydome("../textures/patterns/skydome.jpg");
+			}
+			$$.animate();
+
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>three.js - pointerlock controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+			
+			body {
+				background-color: #ffffff;
+				margin: 0;
+				overflow: hidden;
+				font-family: arial;
+			}
+			
+			#blocker {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.5);
+			}
+			
+			#instructions {
+				width: 100%;
+				height: 100%;
+				display: -webkit-box;
+				display: -moz-box;
+				display: box;
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				box-orient: horizontal;
+				-webkit-box-pack: center;
+				-moz-box-pack: center;
+				box-pack: center;
+				-webkit-box-align: center;
+				-moz-box-align: center;
+				box-align: center;
+				color: #ffffff;
+				text-align: center;
+				cursor: pointer;
+			}
+			
+			#crosshair {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 3%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../lib/three.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../lib/PointerLockControls.js"></script>
+		<script src="../lib/plugins/Mirror.js"></script>
+		<script src="../lib/plugins/WaterShader.js"></script>
+		<script src="../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<img src="../demo/svg/crosshair.svg" id="crosshair" />
+		<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br /> (W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>
+
+		<script>
+			var blocker = document.getElementById('blocker');
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 100000,
+				fov: 50
+			});
+
+			var water;
+			var controls = $$.extend.createFirstCharacterControls({
+				keymove: true
+			}, blocker);
+
+			scene.add(new THREE.AmbientLight(0x444444));
+			$$.loadTexture(["../textures/patterns/skybox.png"]);
+			$$.onLoadComplete = function() {
+				$$.createSkybox("../textures/patterns/skybox.png",50000);
+				water = $$.createSea({
+					texture: "../textures/patterns/waternormals.jpg",
+					color: 0x999999,
+					width: 50000,
+					height:50000
+				});
+			}
+
+			document.addEventListener("click", function() {
+
+				var geometry = new THREE.BoxGeometry(1, 1, 10);
+				var material = new THREE.MeshLambertMaterial({
+					color: 0xdddddd
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				
+				$$.extend.createBullet(mesh,{speed:5});
+			})
+
+			$$.animate();
+		</script>
+	</body>
+
+</html>

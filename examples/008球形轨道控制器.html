@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src="../lib/three.min.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../lib/trackBallControls.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.extend.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			camera.position.z = 500;
+			var controls = $$.extend.createTrackBallControls();
+			createSomethingInScene();
+
+			function createSomethingInScene() {
+				var geometry = new THREE.CylinderGeometry(0, 10, 30, 4, 1);
+				var material = new THREE.MeshPhongMaterial({
+					color: 0xffffff,
+					shading: THREE.FlatShading
+				});
+
+				for(var i = 0; i < 500; i++) {
+					var mesh = new THREE.Mesh(geometry, material);
+					mesh.position.x = (Math.random() - 0.5) * 1000;
+					mesh.position.y = (Math.random() - 0.5) * 1000;
+					mesh.position.z = (Math.random() - 0.5) * 1000;
+					mesh.updateMatrix();
+					mesh.matrixAutoUpdate = false;
+					scene.add(mesh);
+				}
+				light = new THREE.DirectionalLight(0xffffff);
+				light.position.set(1, 1, 1);
+				scene.add(light);
+				light = new THREE.DirectionalLight(0x002288);
+				light.position.set(-1, -1, -1);
+				scene.add(light);
+				light = new THREE.AmbientLight(0x222222);
+				scene.add(light);
+			}
+
+			$$.animate();
+		</script>
+
+	</body>
+
+</html>

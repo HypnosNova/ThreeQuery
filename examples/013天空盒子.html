@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	</head>
+
+	<body>
+
+		<script src="../lib/three.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../lib/OrbitControls.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.extend.js"></script>
+
+		<script>
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 3000000
+			});
+			$$.extend.createOrbitControls().update();
+			scene.add(new THREE.AmbientLight(0x444444));
+			var light = new THREE.DirectionalLight(0xffffbb, 1);
+			light.position.set(-1, 1, -1);
+			scene.add(light);
+			$$.createSkybox("../textures/patterns/skybox.png");
+			$$.animate();
+		</script>
+	</body>
+
+</html>

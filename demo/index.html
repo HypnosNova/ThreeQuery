@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="css/animate.css.css" />
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+	</head>
+
+	<body>
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+		<script src="../lib/tween.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../lib/three.min.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../lib/trackBallControls.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.extend.js"></script>
+		<script src="../lib/TTFLoader.js"></script>
+		<script src="../lib/opentype.min.js" ></script>
+		<script src="../lib/plugins/Mirror.js"></script>
+		<script src="../lib/plugins/WaterShader.js"></script>
+		<script src="index.js"></script>
+		<script>
+			//Sitka Text
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 3000000,
+				fov: 50
+			});
+			var water, pointLight;
+			camera.position.z = 1000;
+			camera.position.y = 1000;
+			camera.position.x = 1000;
+
+			controls = $$.extend.createTrackBallControls();
+
+			$$.loadFont(["../fonts/gentilis_regular.typeface.json"]);
+			$$.loadTexture(["../textures/patterns/skybox.png", "../textures/patterns/waternormals.jpg",
+				"img/a.jpg", "img/b.jpg", "img/c.jpg", "img/d.jpg", "img/e.jpg", "img/f.jpg", "img/g.jpg",
+				"img/h.jpg", "img/i.jpg", "img/j.jpg", "img/k.jpg", "img/l.jpg", "img/m.jpg", "img/n.jpg",
+				"img/o.jpg", "img/p.jpg", "img/q.jpg", "img/r.jpg", "img/s.jpg", "img/t.jpg",
+				"img/u.jpg", "img/v.jpg", "img/w.jpg", "img/x.jpg", "img/y.jpg", "img/z.jpg"
+			]);
+
+			$$.onLoadComplete = function() {
+				var directionalLight = new THREE.DirectionalLight(0x666666, 0.9);
+				directionalLight.position.set(-1, 1, -1);
+				scene.add(directionalLight);
+				pointLight = new THREE.PointLight(0x999999, 1);
+				scene.add(pointLight);
+				scene.add(new THREE.AmbientLight(0x444444));
+				$$.createSkybox("../textures/patterns/skybox.png", 2000000)
+				water = $$.createSea({
+					texture: "../textures/patterns/waternormals.jpg",
+					color: 0x999999,
+					width: 2000000,
+					height: 2000000
+				});
+
+				createLetters();
+				createShape();
+				transform(targets.sphere, 3000);
+
+				setTimeout(function() {
+					var ri = rndInt(picArr.length);
+					oneQuestion(picArr[ri]);
+					picArr.splice(ri, 1);
+				}, 3000);
+
+			}
+
+			$$.animate();
+			$$.worldActions = function() {
+				TWEEN.update();
+				if(water) {
+					water.waterMesh.position.y = -1000;
+					pointLight.position.set(camera.position.x, camera.position.y, camera.position.z);
+				}
+				if(wordQ && wordInput) {
+					if(wordQ.indexOf(wordInput) == 0) {
+						if(wordQ.length == wordInput.length) {
+							wordQ = "";
+							wordInput = "";
+							$(".resultArea img").attr("src", "svg/correct.svg");
+							$(".resultArea").show();
+							$(".resultArea").animateCss("bounceInDown", function() {
+								$(".resultArea").animateCss("bounceOutUp", function() {
+									$(".resultArea").hide();
+								});
+							});
+							setTimeout(function() {
+								var ri = rndInt(picArr.length);
+								oneQuestion(picArr[ri]);
+								picArr.splice(ri, 1);
+							}, 1500);
+						}
+					} else {
+						wordQ = "";
+						wordInput = "";
+						$(".resultArea img").attr("src", "svg/cross.svg");
+						$(".resultArea").show();
+						$(".resultArea").animateCss("bounceInDown", function() {
+							$(".resultArea").animateCss("bounceOutUp", function() {
+								$(".resultArea").hide();
+							});
+						});
+						setTimeout(function() {
+							var ri = rndInt(picArr.length);
+							oneQuestion(picArr[ri]);
+							picArr.splice(ri, 1);
+						}, 1500);
+					}
+				}
+			}
+		</script>
+		<div class="picContainer"><img/></div>
+		<div class="typingArea"></div>
+		<div class="resultArea"><img/></div>
+	</body>
+
+</html>
