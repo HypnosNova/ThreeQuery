@@ -41,4 +41,6 @@
 ## https://hypnosnova.github.io/ThreeQuery/examples/018%E7%AC%AC%E4%B8%80%E4%BA%BA%E7%A7%B0%E8%A7%86%E8%A7%92%20.html
 19.中心点事件
 ## https://hypnosnova.github.io/ThreeQuery/examples/019%E4%B8%AD%E5%BF%83%E7%82%B9%E4%BA%8B%E4%BB%B6%20.html
-其他一些demo
+其他一些混合各种功能的demo
+https://hypnosnova.github.io/ThreeQuery/demo/shoot.html
+https://hypnosnova.github.io/ThreeQuery/demo/index.html
