@@ -15,3 +15,7 @@
 ## https://hypnosnova.github.io/ThreeQuery/examples/005%E5%8A%A0%E5%85%A5%E5%85%89%E6%BA%90.html
 6.试一试VR效果
 ## https://hypnosnova.github.io/ThreeQuery/examples/006%E8%AF%95%E4%B8%80%E8%AF%95VR%E6%95%88%E6%9E%9C.html
+7.加载图片资源
+## https://hypnosnova.github.io/ThreeQuery/examples/007%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90.html
+8.球形轨道控制器
+## https://hypnosnova.github.io/ThreeQuery/examples/008%E7%90%83%E5%BD%A2%E8%BD%A8%E9%81%93%E6%8E%A7%E5%88%B6%E5%99%A8.html
