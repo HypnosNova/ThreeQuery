@@ -14,18 +14,16 @@ $$.extend = new(function() {
 		$$.controls = controls;
 		return controls;
 	}
-	this.createTrackBallControls = function() {
+	this.createTrackBallControls = function(options) {
+		if(!options){
+			options={};
+		}
 		var camera = $$.global.camera;
 		var scene = $$.global.world;
 		controls = new THREE.TrackballControls(camera);
-		controls.rotateSpeed = 1;
-		controls.minDistance = 1000;
-		controls.maxDistance = 1000;
-		//		controls.keys = [65, 83, 68];
-
-		//		controls.addEventListener('change',function(){
-		//			$$.global.renderer.render( scene, camera )
-		//		});
+		controls.rotateSpeed = options.rotateSpeed || 1;
+		controls.minDistance = options.minDistance || 1000;
+		controls.maxDistance = options.maxDistance || 1000;
 		$$.controls = controls;
 		return controls;
 	}
@@ -36,6 +34,17 @@ $$.extend = new(function() {
 		window.removeEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
 		window.addEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
 		$$.controls = controls;
+		return controls;
+	}
+	this.createPointerLockControls=function(){
+		var controls = new THREE.PointerLockControls($$.global.camera);
+		$$.controls = controls;
+		scene.add(controls.getObject());
+		controls.controlsEnabled = true;
+		controls.enabled = true;
+		controls.update=function(){
+			
+		}
 		return controls;
 	}
 	this.createFirstCharacterControls = function(options, blocker) {

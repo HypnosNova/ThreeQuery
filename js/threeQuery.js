@@ -489,7 +489,7 @@ var threeQuery = function() {
 	this.createSkydome = function(pic, size) {
 		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
 		var texture = $$.global.RESOURCE.textures["../textures/patterns/checker.png"] || THREE.ImageUtils.loadTexture(pic);
-		var material = new THREE.MeshPhongMaterial({
+		var material = new THREE.MeshBasicMaterial({
 			map: texture,
 		});
 		var sky = new THREE.Mesh(skyGeo, material);
@@ -598,3 +598,49 @@ var threeQuery = function() {
 	};
 }
 var $$ = new threeQuery();
+
+$$.Component = new(function() {
+	this.createTextTexture = function(str, options) {
+		var canvas = document.createElement("canvas");
+		canvas.style.position = "fixed";
+		canvas.style.top = "0px";
+		canvas.style.left = "0px";
+		canvas.width = 256;
+		canvas.height = 256;
+		var ctx = canvas.getContext("2d");
+		ctx.font = "30px Courier New";
+		ctx.fillStyle = "blue";
+		ctx.fillText("CodePlayer+中文测试", 50, 50);
+		ctx.beginPath();
+		ctx.beginPath();
+			ctx.fillStyle = "#F00"; /*设置填充颜色*/
+			ctx.fillRect(0, 0, 200, 100); /*绘制一个矩形，前两个参数决定开始位置，后两个分别是矩形的宽和高*/
+			
+			ctx.strokeStyle = "#999"; /*设置边框*/
+			ctx.lineWidth = 3; /*边框的宽度*/
+			ctx.strokeRect(0, 120, 200, 100);
+			ctx.beginPath();
+			ctx.moveTo(0, 350);
+			ctx.lineTo(100, 250);
+			ctx.lineTo(200, 300);
+			ctx.closePath(); /*可选步骤，关闭绘制的路径*/
+			ctx.stroke();
+		document.body.appendChild(canvas);
+		var img=document.createElement("img");
+		img.src=canvas.toDataURL();
+		return img;
+	}
+	this.drawTextImage = function(str, options) {
+		if(!options) {
+			options = {};
+		}
+		var canvas = document.createElement("canvas");
+		canvas.width = 256;
+		canvas.height = 256;
+		var ctx = canvas.getContext("2d");
+		ctx.font = options.font || "30px Courier New";
+		ctx.fillStyle = options.color || "black";
+		ctx.fillText(str, options.x, options.y);
+		return canvas;
+	}
+})();

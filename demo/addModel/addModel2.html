@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title></title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/MTLLoader.js"></script>
+		<script src="../../lib/OBJLoader.js"></script>
+		
+		<script src="../../lib/plugins/Mirror.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/plugins/WaterShader.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+
+		<script>
+			var [scene, renderer,camera]=$$.init(null,null,{far:3000000});
+			renderer.setClearColor(0xffffff);
+			init();
+			var controls=$$.extend.createTrackBallControls();
+			controls.minDistance=1000;
+			controls.maxDistance=1000;
+			function init() {
+
+				camera.position.y = 1000;
+				camera.position.z = 1000;
+
+				var ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+				directionalLight.position.set( 0, 0, 1 ).normalize();
+				scene.add( directionalLight );
+
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath( 'FlyingCar/' );
+				mtlLoader.load( 'HN_48_Flying_Car.mtl', function( materials ) {
+					materials.preload();
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials( materials );
+					objLoader.setPath( 'FlyingCar/' );
+					objLoader.load( 'HN 48 Flying Car.obj', function ( object ) {
+						scene.add( object );
+						object.scale.x = object.scale.y = object.scale.z = 3;
+						object.position.y=50;
+					});
+
+				});
+				
+				$$.createSkybox("../../textures/patterns/skybox.png", 2000000)
+				$$.createSea({texture:"../../textures/patterns/waternormals.jpg",color:0x999999});
+			
+
+			}
+			
+			$$.animate();
+
+
+		</script>
+
+	</body>
+</html>

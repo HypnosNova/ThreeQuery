@@ -1,0 +1,105 @@
+newmtl default
+d 0.8
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+Km 0
+
+newmtl default_headlights
+d 1
+Ns 1
+Ni 0
+Ka 0.286275 0.611765 1
+Kd 0.501961 1 1
+Ks 1 1 1
+Km 0
+
+newmtl default_brakelights
+d 1
+Ns 1
+Ni 0
+Ka 1 0 0
+Kd 1 0 0
+Ks 1 1 1
+Km 0
+
+newmtl default_rotor_blades
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 0.501961 0
+Ks 1 1 1
+Km 0
+
+newmtl default_cockpit_console_displays
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/gm1.jpg
+
+newmtl default_display_center_front
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/fx1.jpg
+
+newmtl default_display_center_rear
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/gt3_02_01_01_01.jpg
+
+newmtl default_top_display
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/gt3_02_01_01_01.jpg
+
+newmtl default_body2b2
+d 1
+Ns 0.75
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/bxz1b.jpg
+
+newmtl default_cushions
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/yx1_02_01_01.jpg
+
+newmtl default_name
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 0.145098 0.168627 0.176471
+Ks 1 1 1
+Km 0
+

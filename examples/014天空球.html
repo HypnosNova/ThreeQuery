@@ -21,7 +21,6 @@
 				fov:50
 			});
 			var controls = $$.extend.createOrbitControls();
-			scene.add(new THREE.AmbientLight(0xffffff));
 			$$.loadTexture(["../textures/patterns/skydome.jpg"]);
 			$$.onLoadComplete = function() {
 				$$.createSkydome("../textures/patterns/skydome.jpg");

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js"></script>
+		<script src="../../js/threeQuery.js"></script>
+		<script src="../../js/threeQuery.extend.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init(null,null,{far:5000});
+			var time = new THREE.Clock();
+			$$.extend.createOrbitControls();
+			
+			$$.loadTexture(["001_electric.jpg","skydome.jpg"]);
+			$$.onLoadComplete = function() {
+				$$.createSkydome("skydome.jpg",3000);
+				var tunnelTexture = $$.global.RESOURCE.textures["001_electric.jpg"];
+				tunnelTexture.wrapT = tunnelTexture.wrapS = THREE.RepeatWrapping;
+				tunnelTexture.repeat.set(1, 2);
+				var tunnelMesh = new THREE.Mesh(
+					new THREE.CylinderGeometry(1, 10, 1024, 128, 32, true),
+					new THREE.MeshBasicMaterial({
+						color: 0x2222ff,
+						ambient: 0x2222ff,
+						transparent: true,
+						alphaMap: tunnelTexture,
+						side: THREE.BackSide,
+					})
+				);
+				tunnelMesh.rotation.x = -Math.PI / 2;
+				scene.add(tunnelMesh);
+
+				$$.actionInjections.push(function() {
+					tunnelMesh.material.color.setHSL(Math.abs(Math.cos((time.getElapsedTime() / 10))), 1, 0.5);
+					tunnelTexture.offset.y = time.getElapsedTime() / 16;
+					tunnelTexture.offset.x = time.getElapsedTime() / 20;
+				});
+			}
+			
+			$$.animate();
+		</script>
+	</body>
+
+</html>

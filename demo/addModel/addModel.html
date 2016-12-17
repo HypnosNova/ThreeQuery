@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title></title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/MTLLoader.js"></script>
+		<script src="../../lib/OBJLoader.js"></script>
+		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+
+		<script>
+			var [scene, renderer,camera]=$$.init();
+			renderer.setClearColor(0xffffff);
+			init();
+			var controls=$$.extend.createTrackBallControls();
+			controls.minDistance=500;
+			controls.maxDistance=500;
+			function init() {
+
+				camera.position.z = 250;
+
+				var ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+				directionalLight.position.set( 0, 0, 1 ).normalize();
+				scene.add( directionalLight );
+
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath( 'spacecar/' );
+				mtlLoader.load( 'Wraith_Raider_Starship.mtl', function( materials ) {
+					materials.preload();
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials( materials );
+					objLoader.setPath( 'spacecar/' );
+					objLoader.load( 'Wraith Raider Starship.obj', function ( object ) {
+						scene.add( object );
+
+					});
+
+				});
+
+			}
+			$$.animate();
+
+
+		</script>
+
+	</body>
+</html>
