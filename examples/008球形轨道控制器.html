@@ -15,7 +15,10 @@
 		<script>
 			var [scene, renderer, camera] = $$.init();
 			camera.position.z = 500;
-			var controls = $$.extend.createTrackBallControls();
+			var controls = $$.extend.createTrackBallControls({
+				maxDistance:10000,
+				minDistance:1000
+			});
 			createSomethingInScene();
 
 			function createSomethingInScene() {
@@ -45,6 +48,7 @@
 			}
 
 			$$.animate();
+
 		</script>
 
 	</body>

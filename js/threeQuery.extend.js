@@ -24,6 +24,12 @@ $$.extend = new(function() {
 		controls.rotateSpeed = options.rotateSpeed || 1;
 		controls.minDistance = options.minDistance || 1000;
 		controls.maxDistance = options.maxDistance || 1000;
+		controls.zoomSpeed = options.zoomSpeed ||1;
+		controls.panSpeed = options.panSpeed ||1;
+		controls.noZoom = options.noZoom ||false;
+		controls.noPan = options.noPan ||false;
+		controls.dynamicDampingFactor = options.dynamicDampingFactor ||0.3;
+		controls.staticMoving = options.staticMoving ||false;
 		$$.controls = controls;
 		return controls;
 	}

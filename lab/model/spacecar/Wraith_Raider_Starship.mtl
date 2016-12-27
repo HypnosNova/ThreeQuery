@@ -1,0 +1,180 @@
+newmtl material_1
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_blue_joystick
+d 1
+Ns 1
+Ni 0
+Ka 0.376471 0.486275 1
+Kd 0.203922 0.694118 1
+Ks 1 1 1
+Km 0
+
+newmtl material_1_cockpit
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/cockpit_mtl1_diffcol.jpg
+
+newmtl material_1_couplers
+d 1
+Ns 1
+Ni 0
+Ka 0.501961 1 0
+Kd 0.501961 1 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_cushion
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/yx1_02_01_01.jpg
+
+newmtl material_1_displays
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/d17b.jpg
+
+newmtl material_2
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/bmq1.jpg
+
+newmtl material_3
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/d10.jpg
+
+newmtl material_4
+d 1
+Ns 1
+Ni 0
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/d17.jpg
+
+newmtl material_1_door
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/door_mtl1_diffcol.jpg
+
+newmtl material_2_door
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/door_mtl2_diffcol.jpg
+
+newmtl material_1_green
+d 1
+Ns 1
+Ni 0
+Ka 0.501961 1 0
+Kd 0.501961 1 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_lights
+d 1
+Ns 1
+Ni 0
+Ka 0.501961 1 1
+Kd 0.501961 1 1
+Ks 1 1 1
+Km 0
+
+newmtl material_1_propulsion
+d 1
+Ns 1
+Ni 0
+Ka 0.501961 1 1
+Kd 0.501961 1 1
+Ks 1 1 1
+Km 0
+
+newmtl material_1_red
+d 1
+Ns 1
+Ni 0
+Ka 1 0 0
+Kd 1 0 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_red_joystick
+d 1
+Ns 1
+Ni 0
+Ka 1 0 0
+Kd 1 0 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_windshield_glass
+d 0.8
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+Km 0
+
+newmtl material_1_windshield_liner
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+
+newmtl default
+d 1
+Ns 1
+Ni 0
+Ka 0 0 0
+Kd 1 1 1
+Ks 1 1 1
+Km 0
+map_Kd /Maps/vj2c.jpg
+

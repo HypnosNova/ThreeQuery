@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>空的框架</title>
+	</head>
+
+	<body>
+		<script src="../lib/three.min.js"></script>
+		<script src="../lib/StereoEffect.js"></script>
+		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.extend.js"></script>
+		<script src="../lib/trackBallControls.js"></script>
+		<script>
+			var [scene, render, camera] = $$.init();
+			var geometry = new THREE.SphereGeometry( 30, 32, 32 );
+			
+			var controls=$$.extend.createTrackBallControls({maxDistance:50,minDistance:50});
+			var spriteMap = new THREE.TextureLoader().load( "../textures/sprite.png" );
+			var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff } );
+			for(var i=0;i<geometry.vertices.length;i++){
+				var sprite = new THREE.Sprite( spriteMaterial );
+				scene.add(sprite);
+				sprite.position.x=geometry.vertices[i].x;
+				sprite.position.y=geometry.vertices[i].y;
+				sprite.position.z=geometry.vertices[i].z;
+			}
+			
+			
+			camera.position.x = 10;
+			camera.position.y = 10;
+			camera.position.z = 10;
+			camera.lookAt(new THREE.Vector3(0,0,0));
+
+
+			$$.animate();
+		</script>
+	</body>
+
+</html>

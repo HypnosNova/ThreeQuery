@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js"></script>
+		<script src="../../js/threeQuery.js"></script>
+		<script src="../../js/threeQuery.extend.js"></script>
+		<script src="../../lib/trackBallControls.js"></script>
+		<script src="around.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 1000000
+			});
+
+			$$.animate();
+
+			$$.loadTexture(["skydome.jpg", "sun.jpg","earth.jpg","moon.jpg"]);
+			$$.onLoadComplete = function() {
+				camera.position.x = 1000;
+				camera.position.y = 1000;
+				camera.position.z = 1000;
+				
+				$$.extend.createTrackBallControls({maxDistance:10000,minDistance:2000});
+				
+				$$.createSkydome("skydome.jpg");
+				
+				//太阳
+				var geometry = new THREE.SphereBufferGeometry(300, 32, 32);
+				var material = new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					map: $$.global.RESOURCE.textures["sun.jpg"]
+				});
+				var sphere = new THREE.Mesh(geometry, material);
+				scene.add(sphere);
+				camera.lookAt(sphere.position);
+
+
+				//地球
+				var geometry = new THREE.SphereBufferGeometry(100, 32, 32);
+				var material = new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					map: $$.global.RESOURCE.textures["earth.jpg"]
+				});
+				var sphere2 = new THREE.Mesh(geometry, material);
+				sphere2.position.x = 1300;
+				scene.add(sphere2);
+				
+				
+				//月亮
+				var geometry = new THREE.SphereBufferGeometry(30, 32, 32);
+				var material = new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					map: $$.global.RESOURCE.textures["moon.jpg"]
+				});
+				var sphere3 = new THREE.Mesh(geometry, material);
+				sphere3.position.x = 1700;
+				scene.add(sphere3);
+
+				var sys = new aroundSystem(sphere, sphere2, 3, {
+					x: 0,
+					y: 1,
+					z: 0
+				});
+				
+				var sys2 = new aroundSystem(sphere2, sphere3, 10, {
+					x: 0,
+					y: 1,
+					z: 0
+				});
+
+				$$.actionInjections.push(function() {
+					sphere.rotation.y+=0.002;
+					sphere2.rotation.y+=0.01;
+					sys2.update();
+					sys.update();
+					
+				});
+
+			}
+		</script>
+	</body>
+
+</html>

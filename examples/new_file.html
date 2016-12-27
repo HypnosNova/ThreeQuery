@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>HTML5 Canvas绘制文本文字入门示例</title>
+	</head>
+
+	<body>
+
+		<script type="text/javascript">
+			var canvas = document.createElement("canvas");
+			canvas.width = "256";
+			canvas.height = 256;
+			var ctx = canvas.getContext("2d");
+			ctx.font = "30px Courier New";
+			ctx.fillStyle = "blue";
+			ctx.fillText("CodePlayer+中文测试", 50, 50);
+			ctx.beginPath();
+			ctx.fillStyle = "#F00"; /*设置填充颜色*/
+			ctx.fillRect(0, 0, 200, 100); /*绘制一个矩形，前两个参数决定开始位置，后两个分别是矩形的宽和高*/
+			ctx.beginPath();
+			ctx.strokeStyle = "#000"; /*设置边框*/
+			ctx.lineWidth = 3; /*边框的宽度*/
+			ctx.strokeRect(0, 120, 200, 100);
+			ctx.beginPath();
+			ctx.moveTo(0, 350);
+			ctx.lineTo(100, 250);
+			ctx.lineTo(200, 300);
+			ctx.closePath(); /*可选步骤，关闭绘制的路径*/
+			ctx.stroke();
+			document.body.appendChild(canvas)
+			canvas.style.position = "fixed";
+			canvas.style.top = "0px";
+			canvas.style.left = "0px";
+			var img = document.createElement("img");
+			img.src = canvas.toDataURL();
+			document.body.appendChild(img)
+		</script>
+	</body>
+
+</html>

@@ -147,6 +147,7 @@ var threeQuery = function() {
 		}
 		$$.worldActions();
 		for(var i in $$.actionInjections) {
+			if($$.actionInjections[i] instanceof Function ==true)
 			$$.actionInjections[i]();
 		}
 		$$.updateRaycaster();
@@ -488,7 +489,7 @@ var threeQuery = function() {
 
 	this.createSkydome = function(pic, size) {
 		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
-		var texture = $$.global.RESOURCE.textures["../textures/patterns/checker.png"] || THREE.ImageUtils.loadTexture(pic);
+		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
 		var material = new THREE.MeshBasicMaterial({
 			map: texture,
 		});
@@ -599,48 +600,120 @@ var threeQuery = function() {
 }
 var $$ = new threeQuery();
 
+//九宫格对齐方式：
+//1 2 3
+//4 5 6
+//7 8 9
 $$.Component = new(function() {
-	this.createTextTexture = function(str, options) {
-		var canvas = document.createElement("canvas");
-		canvas.style.position = "fixed";
-		canvas.style.top = "0px";
-		canvas.style.left = "0px";
-		canvas.width = 256;
-		canvas.height = 256;
-		var ctx = canvas.getContext("2d");
-		ctx.font = "30px Courier New";
-		ctx.fillStyle = "blue";
-		ctx.fillText("CodePlayer+中文测试", 50, 50);
-		ctx.beginPath();
-		ctx.beginPath();
-			ctx.fillStyle = "#F00"; /*设置填充颜色*/
-			ctx.fillRect(0, 0, 200, 100); /*绘制一个矩形，前两个参数决定开始位置，后两个分别是矩形的宽和高*/
-			
-			ctx.strokeStyle = "#999"; /*设置边框*/
-			ctx.lineWidth = 3; /*边框的宽度*/
-			ctx.strokeRect(0, 120, 200, 100);
-			ctx.beginPath();
-			ctx.moveTo(0, 350);
-			ctx.lineTo(100, 250);
-			ctx.lineTo(200, 300);
-			ctx.closePath(); /*可选步骤，关闭绘制的路径*/
-			ctx.stroke();
-		document.body.appendChild(canvas);
-		var img=document.createElement("img");
-		img.src=canvas.toDataURL();
-		return img;
-	}
 	this.drawTextImage = function(str, options) {
-		if(!options) {
-			options = {};
+		var optionDefault={
+			fontSize:30,
+			fontFamily:"Courier New",
+			color: "white",
+			textAlign:5,//九宫格对齐方式，5是居中
+			backgroundColor:"red",
+//			backgroundImage:"",
+			width:1,
+			height:1,
+			lineHeight:30,
+			x:0,
+			y:0
 		}
+		var strArr=str.split("\n");
+		
+		var maxLength=0;
+		for(var i in strArr){
+			if(maxLength<strArr[i].length){
+				maxLength=strArr[i].length;
+			}
+		}
+		var optionstmp=$$.extends({},[optionDefault,options]);	
+		
+		if(!options.width){
+			while(optionstmp.width<maxLength*optionstmp.fontSize){
+				optionstmp.width*=2;
+			}
+		}
+		if(!options.height){
+			var tmpheight=strArr.length*optionstmp.lineHeight;
+			while(optionstmp.height<tmpheight){
+				optionstmp.height*=2;
+			}
+		}
+		
 		var canvas = document.createElement("canvas");
-		canvas.width = 256;
-		canvas.height = 256;
+		canvas.width = optionstmp.width;
+		canvas.height = optionstmp.height;
 		var ctx = canvas.getContext("2d");
-		ctx.font = options.font || "30px Courier New";
-		ctx.fillStyle = options.color || "black";
-		ctx.fillText(str, options.x, options.y);
+		ctx.fillStyle=optionstmp.backgroundColor;
+		ctx.fillRect(0,0,optionstmp.width,optionstmp.height);
+		ctx.font = optionstmp.fontSize+"px "+optionstmp.fontFamily;
+		ctx.fillStyle = optionstmp.color;
+		
+		var x=0,y=0;
+		
+		for(var i in strArr){
+			ctx.fillText(strArr[i], optionstmp.x, optionstmp.y+(optionstmp.lineHeight*i+optionstmp.lineHeight));
+		}
 		return canvas;
+	}
+	
+	//创建计时器，计时器的总时间，间隔触发事件时间
+	this.$$Timer=function(options){
+		var defaultOptions={
+			id:"",
+			life:1000,
+			duration:1000,
+			onStart:function(){
+				console.log("timer start");
+			},
+			onRepeat:function(){
+				console.log("repeat");
+			},
+			onEnd:function(){
+				console.log("timer end");
+			}
+		}
+		this.options=$$.extends({},[defaultOptions,options]);
+		this.id=options.id;
+		this.life=options.life;
+		this.duration=options.duration;
+		this.onStart=options.onStart;
+		this.onRepeat=options.onRepeat;
+		this.onEnd=options.onEnd;
+		this.lastTime;
+		this.nowTime;
+		this.elapsedTime=0;
+		this.durationTmp=0;
+		this.start=function(){
+			this.lastTime=this.nowTime=performance.now();
+			this.onStart();
+			console.log(this)
+			$$.actionInjections.push(this.update);
+			//console.log(typeof $$.actionInjections[$$.actionInjections.length-1]);
+		}
+		let thisObj=this;
+		this.update=function(){
+			thisObj.lastTime=thisObj.nowTime;
+			thisObj.nowTime=performance.now();
+			thisObj.elapsedTime=thisObj.nowTime-thisObj.lastTime;
+			thisObj.life-=thisObj.elapsedTime;
+			
+			if(thisObj.life<=0){
+				thisObj.onEnd();
+				for(var i in $$.actionInjections){
+					if(thisObj.update==$$.actionInjections[i]){
+						$$.actionInjections.splice(i,1);
+						break;
+					}
+				}
+				return;
+			}
+			thisObj.durationTmp+=thisObj.elapsedTime;
+			if(thisObj.durationTmp>=thisObj.duration){
+				thisObj.durationTmp-=thisObj.duration;
+				thisObj.onRepeat();
+			}
+		}
 	}
 })();

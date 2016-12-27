@@ -55,9 +55,9 @@ function transform(targets, duration) {
 			.easing(TWEEN.Easing.Exponential.InOut)
 			.start();
 	}
-	new TWEEN.Tween(this)
-		.to({}, duration * 2)
-		.start();
+//	new TWEEN.Tween(this)
+//		.to({}, duration * 2)
+//		.start();
 }
 
 function createLetters() {
