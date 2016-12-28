@@ -17,7 +17,8 @@
 		<script src="around.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			var [scene, renderer, camera] = $$.init(null, null, {
-				far: 1000000
+				far: 10000000,
+				fov:45
 			});
 
 			$$.animate();
@@ -30,7 +31,7 @@
 				
 				$$.extend.createTrackBallControls({maxDistance:10000,minDistance:2000});
 				
-				$$.createSkydome("skydome.jpg");
+				
 				
 				//太阳
 				var geometry = new THREE.SphereBufferGeometry(300, 32, 32);
@@ -83,8 +84,8 @@
 					sys.update();
 					
 				});
-
 			}
+			$$.createSkydome("skydome.jpg");
 		</script>
 	</body>
 
