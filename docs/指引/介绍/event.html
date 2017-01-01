@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<base href="../../" />
+		<script src="list.js"></script>
+		<script src="page.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+
+	<body>
+		<h1>如何给场景内的物体添加事件</h1><br />
+		<div>对于新手而言，为3D场景内的物体添加事件会是一件复杂繁琐的事情。由于大部分3D应用都涉及与3D物体进行交互，因此使用ThreeQuery框架添加比如点击、触屏事件是相当容易的。</div>
+		<div>ThreeQuery框架提供如下一些基础事件的监听：</div>
+		<ul>
+			<li>鼠标点击/触屏点击——onClick</li>
+			<li>鼠标进入——onEnter</li>
+			<li>鼠标离开——onLeave</li>
+			<li>鼠标按下/触屏手指按下——onDown</li>
+			<li>鼠标抬起/触屏手指松开——onUp</li>
+		</ul>
+		<div>对于类似CS，守望先锋那样的游戏类型，通过屏幕正中心和场景进行交互的方式，ThreeQuery提供了中心点事件：</div>
+		<ul>
+			<li>中心点对准物体后的鼠标点击——onCenterClick</li>
+			<li>中心点开始对准物体——onCenterEnter</li>
+			<li>中心点离开物体——onCenterLeave</li>
+			<li>中心点对准物体后的鼠标按下——onCenterDown</li>
+			<li>中心点对准物体后的鼠标松开——onCenterUp</li>
+		</ul>
+
+		<div>在快速入门中，仅介绍基础事件的使用，在API文档中会详细介绍各类事件的使用与判断。</div>
+		<div>通过ThreeQuery框架，只需像操作DOM元素那样，给网格（Mesh）对象添加相应的事件属性名称即可。</div>
+		<div>在“创建第一个创建”的快速入门教程中，我们有一个实例——一个红色的立方体在场景中旋转。我们只需要将“$$.global.settings.vr=true;”这行代码放入之前的代码中，即可实现VR效果。（可以放在代码中的任意位置）完整的代码如下：</div>
+		<code>
+		mesh.onEnter=function(obj){
+			console.log("Enter");
+		}
+		mesh.onLeave=function(obj){
+			console.log("Leave");
+		}
+		mesh.onClick=function(obj){
+			console.log("Click");
+		}
+		mesh.onDown=function(obj){
+			console.log("Down");
+		}
+		mesh.onUp=function(obj){
+			console.log("Up");
+		}
+		</code>
+		<div>事件的函数有一个参数obj，代表着这个事件所属的网格物体。</div>
+		<div>下面是一个实例代码。给一个立方体添加各类事件使其变色。</div>
+		<code>
+		&lt;!DOCTYPE html&gt;
+		&lt;html&gt;
+			&lt;head&gt;
+				&lt;meta charset=utf-8&gt;
+				&lt;title&gt;第一个场景&lt;/title&gt;
+			&lt;/head&gt;
+			&lt;body&gt;
+				&lt;script src="js/three.js"&gt;&lt;/script&gt;
+				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
+				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
+				&lt;script&gt;
+					var [scene, renderer, camera] = $$.init();
+					$$.animate();
+					camera.position.set(10, 10, 10);
+
+					var box;
+					addBox();
+
+					function addBox() {
+						//创建一个立方体
+						var geometry = new THREE.BoxGeometry(3, 3, 3);
+						var material = new THREE.MeshLambertMaterial({
+							color: 0xff0000
+						});
+						box = new THREE.Mesh(geometry, material);
+						scene.add(box);
+						addEvents(box);
+						//加入一个白光
+						var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+						directionalLight.position.set(0, 1, 0);
+						scene.add(directionalLight);
+						//加入环境光
+						var light = new THREE.AmbientLight(0x222222);
+						scene.add(light);
+						camera.lookAt(box.position);
+					}
+
+					function addEvents(mesh) {
+						mesh.onEnter = function(obj) {
+							console.log("Enter");
+							obj.object.material.emissive.setHex(0x555555);
+						}
+						mesh.onLeave = function(obj) {
+							console.log("Leave");
+							obj.object.material.emissive.setHex(0);
+						}
+						mesh.onClick = function(obj) {
+							console.log("Click");
+						}
+						mesh.onDown = function(obj) {
+							console.log("Down");
+							obj.object.material.emissive.setHex(0x999900);
+						}
+						mesh.onUp = function(obj) {
+							console.log("Up");
+							obj.object.material.emissive.setHex(0x555555);
+						}
+					}
+		
+					$$.worldActions = function() {
+						box.rotation.x += 0.01;
+						box.rotation.y += 0.01;
+					};
+				&lt;/script&gt;
+			&lt;/body&gt;
+		&lt;/html&gt;
+		</code>
+		<div>运行效果如下：</div>
+		<div><iframe src="examples/004events.html"></iframe></div>
+	</body>
+
+</html>

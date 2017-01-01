@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset=utf-8>
+		<title>第一个场景</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js"></script>
+		<script src="../../js/threeQuery.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+			camera.position.set(10, 10, 10);
+
+			var box;
+			addBox();
+
+			function addBox() {
+				//创建一个立方体
+				var geometry = new THREE.BoxGeometry(3, 3, 3);
+				var material = new THREE.MeshLambertMaterial({
+					color: 0xff0000
+				});
+				box = new THREE.Mesh(geometry, material);
+				scene.add(box);
+				addEvents(box);
+				//加入一个白光
+				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+				directionalLight.position.set(0, 1, 0);
+				scene.add(directionalLight);
+				//加入环境光
+				var light = new THREE.AmbientLight(0x222222);
+				scene.add(light);
+				camera.lookAt(box.position);
+			}
+
+			function addEvents(mesh) {
+				mesh.onEnter = function(obj) {
+					console.log("Enter");
+					obj.object.material.emissive.setHex(0x555555);
+				}
+				mesh.onLeave = function(obj) {
+					console.log("Leave");
+					obj.object.material.emissive.setHex(0);
+				}
+				mesh.onClick = function(obj) {
+					console.log("Click");
+				}
+				mesh.onDown = function(obj) {
+					console.log("Down");
+					obj.object.material.emissive.setHex(0x999900);
+				}
+				mesh.onUp = function(obj) {
+					console.log("Up");
+					obj.object.material.emissive.setHex(0x555555);
+				}
+			}
+
+			$$.worldActions = function() {
+				box.rotation.x += 0.01;
+				box.rotation.y += 0.01;
+			};
+		</script>
+	</body>
+
+</html>

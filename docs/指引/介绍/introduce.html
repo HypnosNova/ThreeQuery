@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<base href="../../" />
+		<script src="list.js"></script>
+		<script src="page.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+	<body>
+		<h1>ThreeQuery框架简介</h1>
+		<h2>ThreeQuery是什么</h2>
+		<div>ThreeQuery是基于three.js写成的WebGL框架。</div>
+		<div>ThreeQuery更像是一个函数库。框架包含了在使用three.js开发中所经常需要用的一些函数。通常这些函数的特性是写起来繁琐，千篇一律。对于这样的函数无需开发者重复写，只需一行代码即可调用框架内的。这样的函数有：全屏切换、创建场景并不断的进行渲染、浏览器窗口大小改变时调整渲染范围……</div>
+		<div>除了常用的功能外，一些需要程序员自己写的功能，比如动画特效，加载进度，天空盒子/球，常见的controls，一些特殊物体运动等，框架都会包含。随着VR的潮流越来越强，框架可以轻松将一个普通的WebGL 3D场景转化为VR效果，而且仅仅只需设置一个bool值即可，大大方便开发。</div>
+		<div>由ThreeQuery的名称可以知道，框架的目的就是为了让WebGL开发像使用jQuery开发DOM那样容易。但是区别在于ThreeQuery不对three.js里面的任何对象进行再次封装，因为过度封装没有任何意义。程序员在使用框架的同时，可以完全使用three.js的所有功能而不会有任何开发上的差异。</div>
+		<h2>开源协议</h2>
+		<div>本框架使用MIT开源协议。大家可以随意下载，用在自己的项目，修改框架的代码。</div>
+		<h2>其他说明</h2>
+		<div>本框API文档会采用对比的方式：使用框架所写的代码与纯粹使用three.js的代码进行对照，方便程序员了解框架实现一些功能的原理。（其实没什么太难的东西，对照出来的不同部分基本上就是框架内部部分源码）</div>
+		<div>本框架适合了解three.js的开发者使用。</div>
+	</body>
+</html>

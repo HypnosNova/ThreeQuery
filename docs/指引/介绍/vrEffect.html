@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<base href="../../" />
+		<script src="list.js"></script>
+		<script src="page.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+
+	<body>
+		<h1>如何快速创建VR场景</h1><br />
+		<div>提供使用ThreeQuery框架，使一个普通3D画面转变成VR画面极其简单，只需改变一个参数设置：</div>
+		<code>
+		$$.global.settings.vr=true;//这个属性是true，画面就变vr了
+		</code>
+
+		<div>如上述代码所示，需要呈现VR效果，只需设置$$.global.settings.vr这个参数。</div>
+		<div>对于全局需要用到的变量，都会在global命名空间下，由于VR效果只是一个设置值，因此它在settings里面。在API文档中会介绍其他一些settings和global里的全局变量。</div>
+		<div>在“创建第一个创建”的快速入门教程中，我们有一个实例——一个红色的立方体在场景中旋转。我们只需要将“$$.global.settings.vr=true;”这行代码放入之前的代码中，即可实现VR效果。（可以放在代码中的任意位置）完整的代码如下：</div>
+		<code>
+		&lt;!DOCTYPE html&gt;
+		&lt;html&gt;
+			&lt;head&gt;
+				&lt;meta charset=utf-8&gt;
+				&lt;title&gt;第一个场景&lt;/title&gt;
+			&lt;/head&gt;
+			&lt;body&gt;
+				&lt;script src="js/three.js"&gt;&lt;/script&gt;
+				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
+				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
+				&lt;script&gt;
+					var [scene,renderer,camera]=$$.init();
+					$$.global.settings.vr=true;
+					$$.animate();
+					camera.position.set(10,10,10);
+					
+					var box;
+					addBox();
+					function addBox(){
+						//创建一个立方体
+						var geometry = new THREE.BoxGeometry(3, 3, 3);
+						var material = new THREE.MeshLambertMaterial({
+							color: 0xff0000
+						});
+						box = new THREE.Mesh(geometry, material);
+						scene.add(box);
+						//加入一个白光
+						var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+						directionalLight.position.set(0, 1, 0);
+						scene.add(directionalLight);
+						//加入环境光
+						var light = new THREE.AmbientLight( 0x222222 );
+						scene.add( light );
+						camera.lookAt(box.position);
+					}
+
+					$$.worldActions = function() {
+						box.rotation.x += 0.01;
+						box.rotation.y += 0.01;
+					};
+				&lt;/script&gt;
+			&lt;/body&gt;
+		&lt;/html&gt;
+		</code>
+		<div><iframe src="examples/002VREffect.html"></iframe></div>
+		<div>场景非常简单，因此在PC屏幕上看到的效果就是2个红色的立方体在旋转。你们在实际开发中可以在手机上打开VR例子的页面，然后使用VR手机盒子，看到的就是一个立体的方块在眼前。有一个更加直观的例子如下所示：</div>
+		<div><iframe src="examples/003VREffect2.html"></iframe></div>
+		<div>这个例子可以通过拖拽屏幕移动视角。</div>
+
+		
+	</body>
+
+</html>

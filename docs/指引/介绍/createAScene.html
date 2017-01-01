@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<base href="../../" />
+		<script src="list.js"></script>
+		<script src="page.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+
+	<body>
+		<h1>快速创建一个场景</h1><br />
+		<div>为了清楚的说明ThreeQuery框架的使用，基础的例子会包含完整的代码（包括html，js文件引入。js文件的路径开发者需要根据自己实际项目当中的js路径进行修改）</div>
+		<code>
+		&lt;!DOCTYPE html&gt;
+		&lt;html&gt;
+			&lt;head&gt;
+				&lt;meta charset=utf-8&gt;
+				&lt;title&gt;第一个场景&lt;/title&gt;
+			&lt;/head&gt;
+			&lt;body&gt;
+				&lt;script src="js/three.js"&gt;&lt;/script&gt;
+				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
+				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
+				&lt;script&gt;
+					$$.init();
+					$$.animate();
+				&lt;/script&gt;
+			&lt;/body&gt;
+		&lt;/html&gt;
+		</code>
+
+		<div>如上图所示，使用ThreeQuery框架，创建一个场景并开始渲染循环只需2行代码</div>
+		<h2>代码分析</h2>
+		<div>由于ThreeQuery框架依赖three.js，请务必<b>将three.js在框架之前加载</b>。此外，由于框架对VR效果有专门的支持，因此需要<b>把StereoEffect.js文件也先于框架进行加载</b>（即便项目不需要用到VR效果）。</div>
+		<div>接下来就是开发者所需要写的2行代码。我们看到代码中有“$$”，$$代表了ThreeQruey框架，就好比$代表jQuery一样。</div>
+		<code>
+		$$.init();
+		</code>
+		<div>上述代码做了如下5件事：</div>
+		<ul>
+			<li>设置CSS。我们知道浏览器有默认的padding和margin。如果不设置CSS，那么页面就会出现白边。</li>
+			<li>创建一个场景</li>
+			<li>创建一个渲染器对场景进行渲染</li>
+			<li>创建一个相机拍摄场景</li>
+			<li>监听创建内物体的各类事件，比如：鼠标点击。（关于事件的详细文档在“事件监听”文档中会列出并有实例代码。</li>
+		</ul>
+		<div>对于大部分的WebGL应用，上述五件事通常都会用到，开发项目无需次次都写这些重复的代码，框架将这些都在init函数里一起执行掉。init函数使用时也可以传入参数，也存在3个返回值。具体对init函数的介绍会在API文档里说明。</div>
+
+		<div>接下来是如下代码：</div>
+
+		<code>
+		$$.animate();
+		</code>
+
+		<div>上述代码做了如下4件事：</div>
+		<ul>
+			<li>执行渲染循环</li>
+			<li>对浏览器窗口resize事件进行监听，自动调整画面大小</li>
+			<li>检测用户的操作</li>
+			<li>执行注入的代码</li>
+		</ul>
+
+		<div>实际上，这段代码会做很多其他额外的事情。在框架提供的功能中，会有很多需要使用渲染循环的函数，都会由animate函数统一执行。</div>
+
+		<div>现在为止，一个空的场景已经创建完了，并且渲染循环不断在递归执行绘制场景里的画面。对于一个空的场景，会是一片漆黑，我们接下来要做的就是在场景内添加元素。完整的实例代码如下：</div>
+
+		<code>
+		&lt;!DOCTYPE html&gt;
+		&lt;html&gt;
+			&lt;head&gt;
+				&lt;meta charset=utf-8&gt;
+				&lt;title&gt;第一个场景&lt;/title&gt;
+			&lt;/head&gt;
+			&lt;body&gt;
+				&lt;script src="js/three.js"&gt;&lt;/script&gt;
+				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
+				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
+				&lt;script&gt;
+					var [scene,renderer,camera]=$$.init();
+					$$.animate();
+					camera.position.set(10,10,10);
+					
+					var box;
+					addBox();
+					function addBox(){
+						//创建一个立方体
+						var geometry = new THREE.BoxGeometry(3, 3, 3);
+						var material = new THREE.MeshLambertMaterial({
+							color: 0xff0000
+						});
+						box = new THREE.Mesh(geometry, material);
+						scene.add(box);
+						//加入一个白光
+						var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+						directionalLight.position.set(0, 1, 0);
+						scene.add(directionalLight);
+						//加入环境光
+						var light = new THREE.AmbientLight( 0x222222 );
+						scene.add( light );
+						camera.lookAt(box.position);
+					}
+
+					$$.worldActions = function() {
+						box.rotation.x += 0.01;
+						box.rotation.y += 0.01;
+					};
+				&lt;/script&gt;
+			&lt;/body&gt;
+		&lt;/html&gt;
+		</code>
+		<div><iframe src="examples/001firstScene.html"></iframe></div>
+		<div>我们看到在使用框架之后，我们直接使用three.js代码创建3D物体，添加光源，可以和three.js的开发方式完美融合。因为框架不对任何three.js的对象进行封装，所做的一切都是使用three.js完成常用的各种功能。</div>
+		<div>注意：框架的init函数具有返回值，在接收返回值时，一定要注意顺序：场景->渲染器->相机。</div>
+		<div>我们的场景中的立方体在不断旋转。我们知道如果我们要让一个物体运动，就要在渲染循环中写代码。但是animate函数已经封装了渲染循环的操作，我们可以使用worldActions函数，框架会在渲染循环执行时执行worldActions函数。（如果worldActions存在的话就会执行）</div>
+		<div>对于简单的场景以及物体的运动，我们可以很容易使用worldActions函数完成我们想要的效果。但是一旦场景复杂，渲染循环的代码会变得极其复杂，难以维护，性能也会降低。框架提供了依赖注入，我们可以在代码执行的任何时间往渲染循环内添加更多的操作，并且在任务执行完毕时释放这些操作从而提高性能。由于是依赖注入的方式，渲染循环的内容是有外部提供很多函数注入进去，从而很容易维护代码。</div>
+		<div>关于渲染循环的依赖注入内容，将会在API文档里进行详细说明，可以参见：actionInjections</div>
+
+		
+	</body>
+
+</html>

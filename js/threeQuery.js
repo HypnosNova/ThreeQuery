@@ -74,11 +74,11 @@ var threeQuery = function() {
 		this.createWorld(worldOpt);
 		this.createRender(renderOpt);
 		this.createCamera(cameraOpt);
-		addEvent();
+		this.addEventListener();
 		return [this.global.world, this.global.renderer, this.global.camera];
 	};
 	//添加鼠标事件
-	function addEvent() {
+	this.addEventListener=function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
 			event.preventDefault();
@@ -224,7 +224,7 @@ var threeQuery = function() {
 				},
 				function(xhr) {},
 				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arrr[i]);
+					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
 					console.log(arr[i] + " is not found");
 				}
 			);
@@ -242,7 +242,7 @@ var threeQuery = function() {
 					},
 					function(xhr) {},
 					function(xhr) {
-						$$.global.RESOURCE.unloadedSource.textures.push(arrr[i]);
+						$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
 						console.log(arr[i] + " is not found");
 					}
 				);
@@ -254,7 +254,7 @@ var threeQuery = function() {
 					},
 					function(xhr) {},
 					function(xhr) {
-						$$.global.RESOURCE.unloadedSource.textures.push(arrr[i]);
+						$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
 						console.log(arr[i] + " is not found");
 					}
 				);
@@ -554,7 +554,7 @@ var threeQuery = function() {
 				},
 				function(xhr) {},
 				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arrr[i]);
+					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
 					console.log(arr[i] + " is not found");
 				}
 			);
