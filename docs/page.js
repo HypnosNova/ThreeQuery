@@ -63,17 +63,17 @@ var onDocumentLoad = function ( event ) {
 
 	// Edit button
 
-	var button = document.createElement( 'div' );
-	button.id = 'button';
-	button.textContent = 'Edit';
-
-	button.addEventListener( 'click', function ( event ) {
-
-		window.open( 'https://github.com/mrdoob/three.js/blob/dev/docs/' + section + '/' + path + '.html' );
-
-	}, false );
-
-	document.body.appendChild( button );
+//	var button = document.createElement( 'div' );
+//	button.id = 'button';
+//	button.textContent = 'Edit';
+//
+//	button.addEventListener( 'click', function ( event ) {
+//
+//		window.open( 'https://github.com/mrdoob/three.js/blob/dev/docs/' + section + '/' + path + '.html' );
+//
+//	}, false );
+//
+//	document.body.appendChild( button );
 
 	// Syntax highlighting
 
@@ -111,3 +111,18 @@ var onDocumentLoad = function ( event ) {
 };
 
 document.addEventListener( 'DOMContentLoaded', onDocumentLoad, false );
+
+
+//var aArr=document.getElementsByClassName("maoDot");
+//for(var i=0;i<aArr.length;i++){
+//	aArr[i].addEventListener("click",function(){
+//		console.log("event");
+////		console.log(event);
+////		console.log(event.target.mao);
+//		document.getElementById(event.target.mao).scrollIntoView()
+//	});
+//	console.log(aArr[i])
+//}
+function gotoId(id){
+	document.getElementById(id).scrollIntoView()
+}

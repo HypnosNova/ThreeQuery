@@ -38,47 +38,58 @@ var threeQuery = function() {
 	};
 
 	this.createWorld = function() {
-		this.global.world = new THREE.Scene();
-		return this.global.world;
+		var world = new THREE.Scene();
+		if(!this.global.world) {
+			this.global.world = world;
+		}
+		return world;
 	};
-	this.createRender = function(options) {
+	this.createRenderer = function(options) {
 		options = this.extends({}, [this.global.settings.render, options]);
-		this.global.renderer = new THREE.WebGLRenderer();
-		this.global.renderer.setSize(this.getWorldWidth(), this.getWorldHeight());
-		this.global.canvasContainerDom.appendChild(this.global.renderer.domElement);
-		this.global.renderer.precision = options.precision;
-		this.global.renderer.alpha = options.alpha;
-		this.global.renderer.premultipliedAlpha = options.premultipliedAlpha;
-		this.global.renderer.antialias = options.antialias;
-		this.global.renderer.stencil = options.stencil;
-		this.global.renderer.preserveDrawingBuffer = options.preserveDrawingBuffer;
-		this.global.renderer.depth = options.depth;
-		this.global.renderer.logarithmicDepthBuffer = options.logarithmicDepthBuffer;
-		this.global.renderer.setClearColor(options.clearColor);
-		this.global.vrEffect = new THREE.StereoEffect(this.global.renderer);
-		this.global.canvasDom = this.global.renderer.domElement;
-		return this.global.renderer;
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(this.getWorldWidth(), this.getWorldHeight());
+		renderer.precision = options.precision;
+		renderer.alpha = options.alpha;
+		renderer.premultipliedAlpha = options.premultipliedAlpha;
+		renderer.antialias = options.antialias;
+		renderer.stencil = options.stencil;
+		renderer.preserveDrawingBuffer = options.preserveDrawingBuffer;
+		renderer.depth = options.depth;
+		renderer.logarithmicDepthBuffer = options.logarithmicDepthBuffer;
+		renderer.setClearColor(options.clearColor);
+		if(!this.global.renderer) {
+			this.global.renderer=renderer;
+			this.global.canvasContainerDom.appendChild(this.global.renderer.domElement);
+			this.global.vrEffect = new THREE.StereoEffect(this.global.renderer);
+			this.global.canvasDom = this.global.renderer.domElement;
+		}
+
+		return renderer;
 	};
 	this.createCamera = function(options) {
+		var camera;
 		var options = this.extends({}, [this.global.settings.camera, options]);
 		if(options.type != "OrthographicCamera") {
-			this.global.camera = new THREE.PerspectiveCamera(options.fov, options.aspect, options.near, options.far);
+			camera = new THREE.PerspectiveCamera(options.fov, options.aspect, options.near, options.far);
 		} else {
-			this.global.camera = new THREE.OrthographicCamera(options.left, options.right, options.top, options.bottom, options.near, options.far);
+			camera = new THREE.OrthographicCamera(options.left, options.right, options.top, options.bottom, options.near, options.far);
 		}
-		return this.global.camera;
+		if(!this.global.camera) {
+			this.global.camera = camera;
+		}
+		return camera;
 	};
 
 	this.init = function(worldOpt, renderOpt, cameraOpt) {
 		this.setCommonCSS();
 		this.createWorld(worldOpt);
-		this.createRender(renderOpt);
+		this.createRenderer(renderOpt);
 		this.createCamera(cameraOpt);
 		this.addEventListener();
 		return [this.global.world, this.global.renderer, this.global.camera];
 	};
 	//添加鼠标事件
-	this.addEventListener=function() {
+	this.addEventListener = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
 			event.preventDefault();
@@ -137,7 +148,7 @@ var threeQuery = function() {
 		$$.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
 	}
 
-	this.animate = function(func) {
+	this.animate = function() {
 		requestAnimationFrame($$.animate);
 		if($$.global.settings.renderPause) {
 			return;
@@ -147,10 +158,10 @@ var threeQuery = function() {
 		}
 		$$.worldActions();
 		for(var i in $$.actionInjections) {
-			if($$.actionInjections[i] instanceof Function ==true)
-			$$.actionInjections[i]();
+			if($$.actionInjections[i] instanceof Function == true)
+				$$.actionInjections[i]();
 		}
-		$$.updateRaycaster();
+		updateRaycaster();
 		if($$.global.settings.vr) {
 			$$.global.renderer.render($$.global.world, $$.global.camera);
 			$$.global.vrEffect.render($$.global.world, $$.global.camera);
@@ -296,6 +307,14 @@ var threeQuery = function() {
 		}
 		return $$.global.settings.isFullScreem;
 	}
+	this.toggleFullScreen = function() {
+		if($$.global.settings.isFullScreem) {
+			this.closeFullScreen();
+		} else {
+			this.openFullScreen
+		}
+	}
+
 	this.groups = {}; //添加小组，可以把不同的物体放在不同的组里。并且后续的性能优化，操作方式都会用到group。但是这个group只是把里面的物体进行分类，不进行其他任何操作
 	//传入一个group的名称,每个名称的group都是个单例
 	this.createGroup = function(str) {
@@ -374,7 +393,8 @@ var threeQuery = function() {
 			}
 		}
 	}
-	this.updateRaycaster = function() {
+
+	function updateRaycaster() {
 		updateMouseRaycaster();
 		updateCenterRaycaster();
 	}
@@ -606,112 +626,113 @@ var $$ = new threeQuery();
 //7 8 9
 $$.Component = new(function() {
 	this.drawTextImage = function(str, options) {
-		var optionDefault={
-			fontSize:30,
-			fontFamily:"Courier New",
+		var optionDefault = {
+			fontSize: 30,
+			fontFamily: "Courier New",
 			color: "white",
-			textAlign:5,//九宫格对齐方式，5是居中
-			backgroundColor:"red",
-//			backgroundImage:"",
-			width:1,
-			height:1,
-			lineHeight:30,
-			x:0,
-			y:0
+			textAlign: 5, //九宫格对齐方式，5是居中
+			backgroundColor: "red",
+			//			backgroundImage:"",
+			width: 1,
+			height: 1,
+			lineHeight: 30,
+			x: 0,
+			y: 0
 		}
-		var strArr=str.split("\n");
-		
-		var maxLength=0;
-		for(var i in strArr){
-			if(maxLength<strArr[i].length){
-				maxLength=strArr[i].length;
+		var strArr = str.split("\n");
+
+		var maxLength = 0;
+		for(var i in strArr) {
+			if(maxLength < strArr[i].length) {
+				maxLength = strArr[i].length;
 			}
 		}
-		var optionstmp=$$.extends({},[optionDefault,options]);	
-		
-		if(!options.width){
-			while(optionstmp.width<maxLength*optionstmp.fontSize){
-				optionstmp.width*=2;
+		var optionstmp = $$.extends({}, [optionDefault, options]);
+
+		if(!options.width) {
+			while(optionstmp.width < maxLength * optionstmp.fontSize) {
+				optionstmp.width *= 2;
 			}
 		}
-		if(!options.height){
-			var tmpheight=strArr.length*optionstmp.lineHeight;
-			while(optionstmp.height<tmpheight){
-				optionstmp.height*=2;
+		if(!options.height) {
+			var tmpheight = strArr.length * optionstmp.lineHeight;
+			while(optionstmp.height < tmpheight) {
+				optionstmp.height *= 2;
 			}
 		}
-		
+
 		var canvas = document.createElement("canvas");
 		canvas.width = optionstmp.width;
 		canvas.height = optionstmp.height;
 		var ctx = canvas.getContext("2d");
-		ctx.fillStyle=optionstmp.backgroundColor;
-		ctx.fillRect(0,0,optionstmp.width,optionstmp.height);
-		ctx.font = optionstmp.fontSize+"px "+optionstmp.fontFamily;
+		ctx.fillStyle = optionstmp.backgroundColor;
+		ctx.fillRect(0, 0, optionstmp.width, optionstmp.height);
+		ctx.font = optionstmp.fontSize + "px " + optionstmp.fontFamily;
 		ctx.fillStyle = optionstmp.color;
-		
-		var x=0,y=0;
-		
-		for(var i in strArr){
-			ctx.fillText(strArr[i], optionstmp.x, optionstmp.y+(optionstmp.lineHeight*i+optionstmp.lineHeight));
+
+		var x = 0,
+			y = 0;
+
+		for(var i in strArr) {
+			ctx.fillText(strArr[i], optionstmp.x, optionstmp.y + (optionstmp.lineHeight * i + optionstmp.lineHeight));
 		}
 		return canvas;
 	}
-	
+
 	//创建计时器，计时器的总时间，间隔触发事件时间
-	this.$$Timer=function(options){
-		var defaultOptions={
-			id:"",
-			life:1000,
-			duration:1000,
-			onStart:function(){
+	this.$$Timer = function(options) {
+		var defaultOptions = {
+			id: "",
+			life: 1000,
+			duration: 1000,
+			onStart: function() {
 				console.log("timer start");
 			},
-			onRepeat:function(){
+			onRepeat: function() {
 				console.log("repeat");
 			},
-			onEnd:function(){
+			onEnd: function() {
 				console.log("timer end");
 			}
 		}
-		this.options=$$.extends({},[defaultOptions,options]);
-		this.id=options.id;
-		this.life=options.life;
-		this.duration=options.duration;
-		this.onStart=options.onStart;
-		this.onRepeat=options.onRepeat;
-		this.onEnd=options.onEnd;
+		this.options = $$.extends({}, [defaultOptions, options]);
+		this.id = options.id;
+		this.life = options.life;
+		this.duration = options.duration;
+		this.onStart = options.onStart;
+		this.onRepeat = options.onRepeat;
+		this.onEnd = options.onEnd;
 		this.lastTime;
 		this.nowTime;
-		this.elapsedTime=0;
-		this.durationTmp=0;
-		this.start=function(){
-			this.lastTime=this.nowTime=performance.now();
+		this.elapsedTime = 0;
+		this.durationTmp = 0;
+		this.start = function() {
+			this.lastTime = this.nowTime = performance.now();
 			this.onStart();
 			console.log(this)
 			$$.actionInjections.push(this.update);
 			//console.log(typeof $$.actionInjections[$$.actionInjections.length-1]);
 		}
-		let thisObj=this;
-		this.update=function(){
-			thisObj.lastTime=thisObj.nowTime;
-			thisObj.nowTime=performance.now();
-			thisObj.elapsedTime=thisObj.nowTime-thisObj.lastTime;
-			thisObj.life-=thisObj.elapsedTime;
-			
-			if(thisObj.life<=0){
+		let thisObj = this;
+		this.update = function() {
+			thisObj.lastTime = thisObj.nowTime;
+			thisObj.nowTime = performance.now();
+			thisObj.elapsedTime = thisObj.nowTime - thisObj.lastTime;
+			thisObj.life -= thisObj.elapsedTime;
+
+			if(thisObj.life <= 0) {
 				thisObj.onEnd();
-				for(var i in $$.actionInjections){
-					if(thisObj.update==$$.actionInjections[i]){
-						$$.actionInjections.splice(i,1);
+				for(var i in $$.actionInjections) {
+					if(thisObj.update == $$.actionInjections[i]) {
+						$$.actionInjections.splice(i, 1);
 						break;
 					}
 				}
 				return;
 			}
-			thisObj.durationTmp+=thisObj.elapsedTime;
-			if(thisObj.durationTmp>=thisObj.duration){
-				thisObj.durationTmp-=thisObj.duration;
+			thisObj.durationTmp += thisObj.elapsedTime;
+			if(thisObj.durationTmp >= thisObj.duration) {
+				thisObj.durationTmp -= thisObj.duration;
 				thisObj.onRepeat();
 			}
 		}

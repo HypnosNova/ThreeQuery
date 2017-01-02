@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<base href="../" />
+		<script src="list.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+
+	<body>
+		<h1>ThreeQuery核心——$$</h1>
+		<div>
+			<div class="small5">
+				<h2>函数</h2>
+				<ul>
+					<li><a class="maoDot" onclick="gotoId('addEventListener')">addEventListener()</a></li>
+					<li><a class="maoDot" onclick="gotoId('animate')">animate()</a></li>
+					<li><a class="maoDot" onclick="gotoId('closeFullScreen')">closeFullScreen()</a></li>
+					<li><a class="maoDot" onclick="gotoId('createCamera')">createCamera()</a></li>
+					<li><a class="maoDot" onclick="gotoId('createRenderer')">createRenderer()</a></li>
+					<li><a class="maoDot" onclick="gotoId('createWorld')">createWorld()</a></li>
+					<li><a class="maoDot" onclick="gotoId('extends')">extends()</a></li>
+					<li><a class="maoDot" onclick="gotoId('get')">get()</a></li>
+					<li><a class="maoDot" onclick="gotoId('getWorldHeight')">getWorldHeight()</a></li>
+					<li><a class="maoDot" onclick="gotoId('getWorldWidth')">getWorldWidth()</a></li>
+					<li><a class="maoDot" onclick="gotoId('init')">init()</a></li>
+					<li><a class="maoDot" onclick="gotoId('loadTexture')">loadTexture()</a></li>
+					<li><a class="maoDot" onclick="gotoId('loadFont')">loadFont()</a></li>
+					<li><a class="maoDot" onclick="gotoId('openFullScreen')">openFullScreen()</a></li>
+					<li><a class="maoDot" onclick="gotoId('onLoadComplete')">onLoadComplete()</a></li>
+					<li><a class="maoDot" onclick="gotoId('resize')">resize()</a></li>
+					<li><a class="maoDot" onclick="gotoId('setCommonCSS')">setCommonCSS()</a></li>
+					<li><a class="maoDot" onclick="gotoId('toggleFullScreen')">toggleFullScreen()</a></li>
+				</ul>
+			</div>
+			<div class="small5">
+				<h2>成员</h2>
+				<ul>
+					<li>actionInjections</li>
+					<li>worldActions</li>
+				</ul>
+				<h2>其他成员（单独文档介绍）</h2>
+				<ul>
+					<li>Component</li>
+					<li>extend</li>
+					<li>global</li>
+				</ul>
+			</div>
+		</div>
+		<code class="emptyCode"></code>
+		<h3 id="addEventListener">addEventListener()</h2>
+		<div><b>参数：</b>（无）</div>
+		<div><b>返回值：</b>undefined</div>
+		<div><b>实例地址：</b></div>
+		<ul>
+			<li><a href="../examples/012物体的各类事件.html" target="_blank">012物体的各类事件.html</a></li>
+			<li><a href="../examples/019中心点事件.html" target="_blank">019中心点事件.html</a></li>
+		</ul>
+		<div><b>描述：</b>为document添加事件监听。事件监听用于判断鼠标点击，触屏点击。通过场景内物体的交互，产生如下事件：</div>
+		<ul>
+			<li>鼠标点击/触屏点击——onClick</li>
+			<li>鼠标进入——onEnter</li>
+			<li>鼠标离开——onLeave</li>
+			<li>鼠标按下/触屏手指按下——onDown</li>
+			<li>鼠标抬起/触屏手指松开——onUp</li>
+		</ul>
+		<ul>
+			<li>中心点对准物体后的鼠标点击——onCenterClick</li>
+			<li>中心点开始对准物体——onCenterEnter</li>
+			<li>中心点离开物体——onCenterLeave</li>
+			<li>中心点对准物体后的鼠标按下——onCenterDown</li>
+			<li>中心点对准物体后的鼠标松开——onCenterUp</li>
+		</ul>
+		<div>在使用中，只需给网格（mesh）对象添加对应的函数即可。</div>
+		<code class="emptyCode"></code>
+		<h3 id="animate">animate()</h2>
+		<div><b>参数：</b>（无）</div>
+		<div><b>返回值：</b>undefined</div>
+		<div><b>描述：</b>这个函数做如下4件事：</div>
+		<ul>
+			<li>执行渲染循环</li>
+			<li>对浏览器窗口resize事件进行监听，自动调整画面大小</li>
+			<li>检测用户的操作</li>
+			<li>执行注入的代码</li>
+		</ul>
+		<div>执行渲染循环，相当于如下伪代码所描述的功能：</div>
+		<code>
+		function animate() {
+			//渲染循环
+			requestAnimationFrame(animate);
+			
+			//处理一些其他的事情
+			doSomething();
+			function doSomething(){
+				//检查浏览器窗口大小是否改变，如果改变就调整渲染画面尺寸
+				resize();
+				
+				//worldActions函数执行
+				worldActions();
+				
+				//依赖注入的函数列表进行执行
+				for(i in actionInjections){
+					actionInjections[i]();
+				}
+				
+				//射线更新，用于判定鼠标事件，屏幕中心点的事件等
+				updateRaycaster();
+				
+				//控制器的刷新，比如如果用户使用TrackBallControls等一系列的各种控制器
+				updateControls();
+			}
+		};
+		</code>
+		<code class="emptyCode"></code>
+		<h3 id="closeFullScreen">closeFullScreen()</h2>
+		<div><b>参数：</b>（无）</div>
+		<div><b>返回值：</b>undefined</div>
+		<div><b>实例地址：</b></div>
+		<ul>
+			<li><a href="../examples/011全屏与非全屏切换.html" target="_blank">011全屏与非全屏切换.html</a></li>
+		</ul>
+		<div><b>描述：</b>关闭浏览器全屏。由于浏览器的机制，该函数应当放在用户的操作事件中（比如点击事件的函数），不应该直接调用改函数执行。（安全机制导致大部分浏览器会报错）</div>
+		<code class="emptyCode"></code>
+		<h3 id="createCamera">createCamera()</h2>
+		<div><b>参数：</b>options——Object类型（非必须）</div>
+		<code>
+		//默认值为
+		{
+			type: "PerspectiveCamera",								//相机类型：透视相机还是正交相机
+			fov: 90,												//透视相机视野广角，单位是度数
+			aspect: this.getWorldWidth() / this.getWorldHeight(), 	//拉伸比例
+			near: 1,												//透视相机最近距离
+			far: 10000,												//透视相机最远距离
+			left: -this.getWorldWidth() / 2, 						//正交相机的左边缘
+			right: this.getWorldWidth() / 2, 						//正交相机的左边缘
+			top: this.getWorldHeight() / 2, 						//正交相机的左边缘
+			bottom: -this.getWorldHeight() / 2						//正交相机的左边缘
+		}
+		</code>
+		<div><b>返回值：</b>camera——THREE.PerspectiveCamera或者THREE.OrthographicCamera</div>
+		<div><b>描述：</b>如果global.camera为空，则会为gloabl.camera赋值为改函数所创建的相机。除了这个区别外，和直接使用three.js创建相机没有任何区别。</div>
+		<code class="emptyCode"></code>
+		<h3 id="createRenderer">createRenderer()</h2>
+		<div><b>参数：</b>options——Object类型（非必须）</div>
+		<code>
+		//默认值为
+		{
+			alpha: false,					//是否透明
+			antialias: true,				//抗锯齿
+			clearColor: 0x000000,			//清除颜色
+			depth: true,					//深度渲染
+			logarithmicDepthBuffer: false,	//对数深度缓存逻辑
+			precision: "highp",				//画质
+			premultipliedAlpha: false,		//左乘透明度
+			preserveDrawingBuffer: false,	//维持绘图缓存
+			stencil: true					//模板
+		}
+		</code>
+		<div><b>返回值：</b>renderer——THREE.WebGLRenderer</div>
+		<div><b>描述：</b>如果global.renderer为空，则会为gloabl.renderer赋值为改函数所创建的相机。除了这个区别外，和直接使用three.js创建WebGLRenderer没有任何区别。</div>
+		<code class="emptyCode"></code>
+		<h3 id="createWorld">createWorld()</h2>
+		<div><b>参数：</b>（无）</div>
+		<div><b>返回值：</b>world——THREE.Scene</div>
+		<div><b>描述：</b>如果global.world为空，则会为gloabl.world赋值为改函数所创建的场景。除了这个区别外，和直接使用three.js创建场景没有任何区别。</div>
+		<code class="emptyCode"></code>
+		<h3 id="extends">extends()</h2>
+		<div><b>参数：</b></div>
+		<ul>
+			<li>obj——Object类型</li>
+			<li>objArr——Object数组</li>
+			<li>option——布尔值，默认true（非必须）</li>
+		</ul>
+		<div><b>返回值：</b>obj——Object类型</div>
+		<div><b>描述：</b>将objArr里的json属性统统添加在obj上，并返回obj。option表示是否会覆盖具有相同名字的属性。</div>
+		<div>例子如下：</div>
+		<code>
+		let obj1={
+			a:1,
+			b:2
+		};
+		let obj2={
+			a:100,
+			c:3,
+			d:4,
+		};
+		let c= $$.extends({},[obj1,obj2],true);
+		//c的值为：
+		//{
+		//	a:100,
+		//	b:2,
+		//	c:3,
+		//	d:4
+		//}
+		let d= $$.extends({},[obj1,obj2],false);
+		//d的值为：
+		//{
+		//	a:1,
+		//	b:2,
+		//	c:3,
+		//	d:4
+		//}
+		</code>
+		<code class="emptyCode"></code>
+	</body>
+	<script src="page.js"></script>
+</html>

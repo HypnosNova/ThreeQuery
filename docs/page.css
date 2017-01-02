@@ -118,3 +118,34 @@ code{
 	border-radius: 10px;
 	background-color: rgba(225,255,225,0.5)!important;
 }
+
+.emptyCode{
+	border: 0;
+	border-radius: 0;
+	background-color: transparent!important;
+	padding: 0 20px;
+	border-bottom:1px solid #5555aa ;
+}
+
+.small5{
+	width: 50%;
+	float: left;
+}
+
+hr{
+	display: block;
+}
+
+h3{
+	font-weight: bold;
+	color: #0000aa;
+}
+
+.maoDot{
+	color: #666;
+	cursor: pointer;
+}
+.maoDot:hover{
+	color: #1184CE;
+	cursor: pointer;
+}
