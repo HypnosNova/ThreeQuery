@@ -9,16 +9,15 @@
 	<body>
 		<script src="../../lib/three.min.js"></script>
 		<script src="../../lib/StereoEffect.js"></script>
-		<script src="../../js/threeQuery.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
 		<script src="../../lib/OrbitControls.js"></script>
-		<script src="../../js/threeQuery.extend.js"></script>
 		<script>
 			$$.global.settings.vr=true;
 			var scene, camera, renderer;
 			[scene, renderer, camera] = $$.init();
 			camera.position.y = 20;
 			//这个功能只需添加这一行代码即可完成
-			var controls = $$.extend.createOrbitControls();
+			var controls = $$.Controls.createOrbitControls();
 
 			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.7);
 			scene.add(light);

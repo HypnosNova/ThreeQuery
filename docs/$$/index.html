@@ -18,10 +18,11 @@
 					<li><a class="maoDot" onclick="gotoId('animate')">animate()</a></li>
 					<li><a class="maoDot" onclick="gotoId('closeFullScreen')">closeFullScreen()</a></li>
 					<li><a class="maoDot" onclick="gotoId('createCamera')">createCamera()</a></li>
+					<li><a class="maoDot" onclick="gotoId('createFog')">createFog()</a></li>
 					<li><a class="maoDot" onclick="gotoId('createRenderer')">createRenderer()</a></li>
 					<li><a class="maoDot" onclick="gotoId('createWorld')">createWorld()</a></li>
 					<li><a class="maoDot" onclick="gotoId('extends')">extends()</a></li>
-					<li><a class="maoDot" onclick="gotoId('get')">get()</a></li>
+					<!--<li><a class="maoDot" onclick="gotoId('get')">get()</a></li>-->
 					<li><a class="maoDot" onclick="gotoId('getWorldHeight')">getWorldHeight()</a></li>
 					<li><a class="maoDot" onclick="gotoId('getWorldWidth')">getWorldWidth()</a></li>
 					<li><a class="maoDot" onclick="gotoId('init')">init()</a></li>
@@ -43,8 +44,10 @@
 				<h2>其他成员（单独文档介绍）</h2>
 				<ul>
 					<li>Component</li>
-					<li>extend</li>
+					<li>Controls</li>
 					<li>global</li>
+					<li>Move</li>
+					<li>settings</li>
 				</ul>
 			</div>
 		</div>
@@ -141,6 +144,22 @@
 		<div><b>返回值：</b>camera——THREE.PerspectiveCamera或者THREE.OrthographicCamera</div>
 		<div><b>描述：</b>如果global.camera为空，则会为gloabl.camera赋值为改函数所创建的相机。除了这个区别外，和直接使用three.js创建相机没有任何区别。</div>
 		<code class="emptyCode"></code>
+		<h3 id="createFog">createFog()</h2>
+		<div><b>参数：</b></div>
+		<ul>
+			<li>options——Object类型（非必须）</li>
+			<li>scene——THREE.Scene，默认为$$.global.world（非必须）</li>
+		</ul>
+		<code>
+		//options默认值为
+		{	
+			color:0xffffff,					//雾的颜色
+			concentration:0.01				//雾的浓稠度
+		}
+		</code>
+		<div><b>返回值：</b>fog——THREE.FogExp2</div>
+		<div><b>描述：</b>为指定的scene添加雾的效果。</div>
+		<code class="emptyCode"></code>
 		<h3 id="createRenderer">createRenderer()</h2>
 		<div><b>参数：</b>options——Object类型（非必须）</div>
 		<code>
@@ -203,6 +222,15 @@
 		//}
 		</code>
 		<code class="emptyCode"></code>
+		<h3 id="getWorldHeight">getWorldHeight()</h2>
+		<div><b>参数：（无）</b></div>
+		<div><b>返回值：</b>height——number类型</div>
+		<div><b>描述：</b>获取场景对应的canvas的高度。</div>
+		<code class="emptyCode"></code>
+		<h3 id="getWorldWidth">getWorldWidth()</h2>
+		<div><b>参数：（无）</b></div>
+		<div><b>返回值：</b>width——number类型</div>
+		<div><b>描述：</b>获取场景对应的canvas的宽度。</div>
 	</body>
 	<script src="page.js"></script>
 </html>

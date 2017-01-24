@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang=zh-cn manifest=index.manifest>
+	<!-- 离线缓存图片文件，以便下次使用相关图片时，可以迅速载入 -->
+
+	<head>
+		<title>指南针</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,
+height=device-height,initial-scale=1.0, minimum-scale=1.0,
+maximum-scale=1.0,user-scalable=no, target-densityDpi=device-dpi">
+		<link href="opera.css" rel="stylesheet" type="text/css">
+		<style>
+			body {
+				background-color: #404041;
+			}
+		</style>
+		<script type="text/javascript" charset="utf-8" src="foropera.js"></script>
+	</head>
+
+	<body style="margin-left:0px">
+		<div id="helpme" style="opacity: 0.9;position:absolute;z-index:1000;top:100px;left:
+20px;display:none;background-color:#333;-webkit-border-radius:15px;right:20px;">
+			<center style="margin-left:10px;margin-right:10px;border-bottom:1px #777
+solid;">
+				<spanstyle="color:#fff;height:30px;line-height:60px;font-size:26px;
+margin-top:25px;margin-bottom:35px;">指南针</span>
+			</center>
+			<div style="color:#ccc;font-size:18px;margin-left:20px;margin-right:20px;margin-top:
+16p x;">通过Device API,HTML5应用在欧朋浏览器HTML5体验版调取了方向传感器。基于传感器的数据 能帮你确定方向。此demo利用此项功能制作出网页指南针。
+			</div>
+			<br>
+			<center><button onclick="hiddeDiv('helpme')" style="opacity:1;
+background-color:#777;border:0px;height:35px;line-height:25px;color:#eee;
+width:140px;font-size:18px;-webkit-border-radius:5px;">关闭提示
+</button></center>
+			<br>
+		</div>
+		<div id="help" style="z-index:1000;position:absolute;left:0px;top:30px;">
+			<imgsrc="help.png" onclick="showhelp()" alt="help" />
+		</div>
+		<canvas id="compass" style="margin-left:0px;margin-top:10px" width=480 height=480></canvas>
+		<script type="text/javascript">
+			function hiddeDiv(id) {
+				document.getElementById('helpme').style.display = 'none';
+			}
+
+			function showhelp() {
+				document.getElementById('helpme').style.display = '';
+			}
+			var canvas = document.getElementById("compass");
+			var ctx = canvas.getContext('2d');
+			window.addEventListener('deviceorientation', update, false);
+			var imageObj_arrow = new Image(); //实例化一个图片对象
+			imageObj_arrow.src = "opera.png"; //将图片对象的路径设定好
+			var heading = 0; //初始化朝向
+			var current_heading = 0; //初始化当前朝向
+			var max_speed = 10; //初始化最大速度
+			window.scrollTo(0, 1); //隐藏浏览器地址栏
+			function update(evt) { //更新函数
+				heading = evt.alpha + 15;
+			}
+
+			function paint() { //图形绘制函数
+				ww = canvas.width;
+				wh = canvas.height;
+				ctx.fillStyle = "#404041";
+				ctx.fillRect(0, 0, ww, wh);
+				ctx.save();
+				ctx.translate(ww / 2, ww / 2); //设定旋转中心
+				ctx.rotate(Math.PI * current_heading / 180); //根据当前朝向角度旋转
+				ctx.drawImage(imageObj_arrow, -ww / 2, -wh / 2, ww, wh); //绘制指南针与针盘
+				ctx.restore();
+				deg1 = heading - current_heading; //得到偏转朝向
+				deg2 = 360 - Math.abs(deg1); //取得差值
+				step = 0;
+				if(Math.abs(deg1) < Math.abs(deg2)) { //判断两个角度是否一致
+					step = Math.min(Math.abs(deg1) / 15, max_speed);
+					step = deg1 > 0 ? step : -step
+				} else {
+					step = Math.min(deg2 / 15, max_speed);
+					step = deg1 > 0 ? -step : step;
+				}
+				current_heading += step; //动态调整朝向
+				setTimeout("paint();", 33);
+			}
+			paint(); //绘出表示针盘和指南针的函数
+		</script>
+	</body>
+
+</html>

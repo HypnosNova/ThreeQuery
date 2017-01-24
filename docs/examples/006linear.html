@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>空的框架</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			camera.position.set(0, -50, 50);
+			camera.lookAt(scene.position);
+
+			var character, plane;
+
+			function addBasicThing() {
+				var geometry = new THREE.PlaneBufferGeometry(150, 150, 1);
+				var material = new THREE.MeshLambertMaterial({
+					color: 0x00ff34
+				});
+				plane = new THREE.Mesh(geometry, material);
+				scene.add(plane);
+				//加入一个白光
+				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+				directionalLight.position.set(1, 1, 1);
+				scene.add(directionalLight);
+				//加入环境光
+				var light = new THREE.AmbientLight(0x222222); // soft white light
+				scene.add(light);
+			}
+			addBasicThing();
+
+			var geometry = new THREE.BoxGeometry(10, 10, 20);
+			var material = new THREE.MeshLambertMaterial({ //这边采用lambert材质
+				color: 0xff0000
+			});
+			character = new THREE.Mesh(geometry, material);
+			character.position.x = 0;
+			scene.add(character);
+
+			plane.onClick = function(obj, event) {
+				if(character.moveAction) {
+					character.moveAction.destroy();
+				}
+				character.moveAction = new $$.Move.Linear(character, 1, obj.point);
+				$$.actionInjections.push(character.moveAction.update);
+			}
+
+			$$.animate();
+
+			function vecLength(vec) {
+				return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+			}
+
+			function unitVector(vec) {
+				var len = vecLength(vec);
+				var res = {
+					x: vec.x / len,
+					y: vec.y / len,
+					z: vec.z / len,
+				}
+				return res;
+			}
+		</script>
+	</body>
+
+</html>

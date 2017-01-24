@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - scenes transition</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+	<body>
+		<div id="container"></div>
+
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="dat.gui.min.js"></script>
+		<script src="crossfade/scenes.js"></script>
+		<script src="crossfade/gui.js"></script>
+		<script src="crossfade/transition.js"></script>
+		
+		<script>
+
+			var container;
+			var renderer;
+			var transition;
+			
+			var clock = new THREE.Clock();
+
+			init();
+			animate();
+			
+			function init() {
+
+				initGUI();
+				
+				container = document.getElementById( "container" );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.sortObjects = false;
+				container.appendChild( renderer.domElement );
+
+				sceneA = new Scene( "cube", 5000, 1200, 120, new THREE.Vector3(0,-0.4,0), 0xffffff );
+				sceneB = new Scene( "sphere", 500, 2000, 50, new THREE.Vector3(0,0.2,0.1), 0x000000 );
+				
+				transition = new Transition(sceneA,sceneB);
+				
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+			
+			function render() {
+				
+				transition.render( clock.getDelta() );
+				
+			}
+
+		</script>
+
+	</body>
+	
+</html>

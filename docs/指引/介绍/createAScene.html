@@ -21,7 +21,6 @@
 			&lt;/head&gt;
 			&lt;body&gt;
 				&lt;script src="js/three.js"&gt;&lt;/script&gt;
-				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
 				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
 				&lt;script&gt;
 					$$.init();
@@ -33,7 +32,7 @@
 
 		<div>如上图所示，使用ThreeQuery框架，创建一个场景并开始渲染循环只需2行代码</div>
 		<h2>代码分析</h2>
-		<div>由于ThreeQuery框架依赖three.js，请务必<b>将three.js在框架之前加载</b>。此外，由于框架对VR效果有专门的支持，因此需要<b>把StereoEffect.js文件也先于框架进行加载</b>（即便项目不需要用到VR效果）。</div>
+		<div>由于ThreeQuery框架依赖three.js，请务必<b>将three.js在框架之前加载</b>。</div>
 		<div>接下来就是开发者所需要写的2行代码。我们看到代码中有“$$”，$$代表了ThreeQruey框架，就好比$代表jQuery一样。</div>
 		<code>
 		$$.init();
@@ -75,7 +74,6 @@
 			&lt;/head&gt;
 			&lt;body&gt;
 				&lt;script src="js/three.js"&gt;&lt;/script&gt;
-				&lt;script src="js/StereoEffect.js"&gt;&lt;/script&gt;
 				&lt;script src="js/threeQuery.js"&gt;&lt;/script&gt;
 				&lt;script&gt;
 					var [scene,renderer,camera]=$$.init();

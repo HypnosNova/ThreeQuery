@@ -45,9 +45,9 @@
 	<body>
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/StereoEffect.js"></script>
-		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 		<script src="../lib/PointerLockControls.js"></script>
-		<script src="../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<!--<script src="../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>-->
 		<div id="blocker">
 			<div id="instructions">
 				<span style="font-size:40px">Click to play</span>
@@ -59,7 +59,7 @@
 		<script>
 			var blocker = document.getElementById( 'blocker' );
 			var [scene,renderer,camera]=$$.init();
-			var controls=$$.extend.createFirstCharacterControls({keymove:true},blocker);
+			var controls=$$.Controls.createFirstCharacterControls({keymove:true},blocker);
 
 			addSomethingInScene();
 			

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>hello three</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<!--<script src="../../lib/StereoEffect.js"></script>-->
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script>
+			var scene, camera, renderer;
+			[scene, renderer, camera] = $$.init();
+			camera.position.y = 20;
+			//这个功能只需添加这一行代码即可完成
+			var controls = $$.Controls.createOrbitControls();
+
+			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.7);
+			scene.add(light);
+
+			$$.loadTexture(["../../textures/patterns/checker.png"]);
+
+			$$.onLoadComplete = function() {
+				var texture = $$.global.RESOURCE.textures["../../textures/patterns/checker.png"];
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+				texture.repeat = new THREE.Vector2(50, 50);
+				texture.anisotropy = renderer.getMaxAnisotropy();
+
+				var material = new THREE.MeshPhongMaterial({
+					color: 0xffffff,
+					specular: 0xffffff,
+					shininess: 20,
+					shading: THREE.FlatShading,
+					map: texture
+				});
+
+				var geometry = new THREE.PlaneGeometry(1000, 1000);
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.rotation.x = -Math.PI / 2;
+				scene.add(mesh);
+			}
+
+			$$.animate();
+		</script>
+	</body>
+
+</html>
