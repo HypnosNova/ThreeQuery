@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/cannon.min.js"></script>
+		<script src="../../js/threeQuery2.js"></script>
+		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+			
+			var world, mass, body, shape, timeStep = 1 / 60,
+				geometry, material, mesh,groundBody,mesh2;
+
+			function initCannon() {
+				world = new CANNON.World();
+				world.gravity.set(0, -5, 0);
+				world.broadphase = new CANNON.NaiveBroadphase();
+				world.solver.iterations = 10;
+				shape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
+				mass = 1;
+				body = new CANNON.Body({
+					mass: 1,
+					position:{x:0,y:4,z:0}
+				});
+				body.addShape(shape);
+				body.angularVelocity.set(0, 10, 0);
+				body.angularDamping = 0.5;
+				world.addBody(body);
+
+				groundBody = new CANNON.Body({
+					mass: 0 // mass == 0 makes the body static
+				});
+				var groundShape = new CANNON.Box(new CANNON.Vec3(20, 0.1, 20));
+				groundBody.addShape(groundShape);
+				world.addBody(groundBody)
+			}
+
+			function initThree() {
+				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+				directionalLight.position.set(1, 1, 1);
+				scene.add(directionalLight);
+				var light = new THREE.AmbientLight(0x222222);
+				scene.add(light);
+				geometry = new THREE.BoxGeometry(2, 2, 2);
+				material = new THREE.MeshPhongMaterial({
+					color: 0xff0000,
+				});
+				mesh = new THREE.Mesh(geometry, material);
+				scene.add(mesh);
+				
+				geometry2 = new THREE.BoxGeometry(20,0.1,20);
+				material2 = new THREE.MeshPhongMaterial({
+					color: 0x0000ff,
+				});
+				mesh2 = new THREE.Mesh(geometry2, material2);
+				scene.add(mesh2);
+				camera.position.set(10, 10, 10);
+				camera.lookAt(scene.position);
+				$$.Controls.createTrackBallControls({minDistance:10,maxDistance:10});
+			}
+
+			function updatePhysics() {
+				world.step(timeStep);
+				mesh.position.copy(body.position);
+				mesh.quaternion.copy(body.quaternion);
+				mesh2.position.copy(groundBody.position);
+				mesh2.quaternion.copy(groundBody.quaternion);
+				
+			}
+			initThree();
+			initCannon();
+			$$.actionInjections.push(updatePhysics);
+		</script>
+	</body>
+
+</html>

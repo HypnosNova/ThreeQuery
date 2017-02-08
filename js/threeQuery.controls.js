@@ -11,15 +11,15 @@ $$.Controls = {
 		);
 		controls.noZoom = true;
 		controls.noPan = true;
-		$$.controls = controls;
+		$$.global.controls = controls;
 		return controls;
 	},
-	createTrackBallControls: function(options) {
+	createTrackBallControls: function(options, world) {
 		if(!options) {
 			options = {};
 		}
-		var camera = $$.global.camera;
-		var scene = $$.global.world;
+		var camera = world ? world.camera : $$.global.camera;
+		//		var scene = $$.global.world;
 		controls = new THREE.TrackballControls(camera);
 		controls.rotateSpeed = options.rotateSpeed || 1;
 		controls.minDistance = options.minDistance || 1000;
@@ -28,9 +28,16 @@ $$.Controls = {
 		controls.panSpeed = options.panSpeed || 1;
 		controls.noZoom = options.noZoom || false;
 		controls.noPan = options.noPan || false;
+		controls.enabled = options.enabled == null ? true : options.enabled;
 		controls.dynamicDampingFactor = options.dynamicDampingFactor || 0.3;
 		controls.staticMoving = options.staticMoving || false;
-		$$.controls = controls;
+		if(world) {
+			world.controls = controls;
+			world.controls.enabledBefore=controls.enabled;
+		} else {
+			$$.global.controls = controls;
+		}
+
 		return controls;
 	},
 	createDeviceOrientationControls: function() {
@@ -39,12 +46,12 @@ $$.Controls = {
 		controls.update();
 		window.removeEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
 		window.addEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
-		$$.controls = controls;
+		$$.global.controls = controls;
 		return controls;
 	},
 	createPointerLockControls: function() {
 		var controls = new THREE.PointerLockControls($$.global.camera);
-		$$.controls = controls;
+		$$.global.controls = controls;
 		scene.add(controls.getObject());
 		controls.controlsEnabled = true;
 		controls.enabled = true;
@@ -55,7 +62,7 @@ $$.Controls = {
 	},
 	createFirstCharacterControls: function(options, blocker) {
 		var controls = new THREE.PointerLockControls($$.global.camera);
-		$$.controls = controls;
+		$$.global.controls = controls;
 		scene.add(controls.getObject());
 
 		var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;

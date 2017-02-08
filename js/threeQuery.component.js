@@ -3,7 +3,7 @@
 //4 5 6
 //7 8 9
 $$.Component = {
-	drawTextImage : function(str, options) {
+	drawTextImage: function(str, options) {
 		var optionDefault = {
 			fontSize: 30,
 			fontFamily: "Courier New",
@@ -58,7 +58,7 @@ $$.Component = {
 	},
 
 	//创建计时器，计时器的总时间，间隔触发事件时间
-	$$Timer : function(options) {
+	Timer: function(options) {
 		var defaultOptions = {
 			id: "",
 			life: 1000,
@@ -77,9 +77,15 @@ $$.Component = {
 		this.id = options.id;
 		this.life = options.life;
 		this.duration = options.duration;
-		this.onStart = options.onStart;
-		this.onRepeat = options.onRepeat;
-		this.onEnd = options.onEnd;
+		this.onStart = options.onStart || function() {
+			console.log("timer start");
+		};
+		this.onRepeat = options.onRepeat||function() {
+			console.log("timer repeat");
+		};
+		this.onEnd = options.onEnd||function() {
+			console.log("timer end");
+		};
 		this.lastTime;
 		this.nowTime;
 		this.elapsedTime = 0;
@@ -113,9 +119,9 @@ $$.Component = {
 			}
 		};
 	},
-	
+
 	//创建子弹，它会直线前进，直到生命周期到了
-	createBullet : function(mesh, options) {
+	createBullet: function(mesh, options) {
 		var position = $$.controls.getObject().position;
 		var direction = $$.global.centerRaycaster.ray.direction;
 		var defOpts = {

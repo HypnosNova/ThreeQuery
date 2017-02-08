@@ -14,14 +14,14 @@ var threeQuery = function() {
 	this.getWorldHeight = function() {
 		return this.global.canvasContainerDom == document.body ? window.innerHeight : this.global.canvasContainerDom.offsetHeight;
 	};
-	
-	this.rightButtonEvent=function(func){
-		this.global.canvasContainerDom.oncontextmenu = function(e){
-			if(func){
+
+	this.rightButtonEvent = function(func) {
+		this.global.canvasContainerDom.oncontextmenu = function(e) {
+			if(func) {
 				func(e);
 			}
-            e.preventDefault();
-        };
+			e.preventDefault();
+		};
 	};
 
 	this.resize = function() {
@@ -39,13 +39,13 @@ var threeQuery = function() {
 			this.global.camera.bottom = -height / 2;
 		}
 		this.global.renderer.setSize(width, height);
-		if($$.global.settings.vr&&$$.global.vrEffect){
+		if($$.global.settings.vr && $$.global.vrEffect) {
 			this.global.vrEffect.setSize(width, height);
 		}
 	};
 	//设置最基本的css
 	this.setCommonCSS = function() {
-		document.write("<style>*{margin:0;padding:0} body{overflow:hidden}</style>")
+		document.write("<style>*{margin:0;padding:0} body{overflow:hidden}</style>");
 	};
 
 	this.createWorld = function(options) {
@@ -55,22 +55,25 @@ var threeQuery = function() {
 		}
 		return world;
 	};
-	
-	this.createFog =function(option,world){
-		option=option||{color:0xffffff,concentration:0.01};
-		var scene=world||this.global.world;
-		scene.fog = new THREE.FogExp2(option.color||0, option.concentration||0 );
+
+	this.createFog = function(option, world) {
+		option = option || {
+			color: 0xffffff,
+			concentration: 0.01
+		};
+		var scene = world || this.global.world;
+		scene.fog = new THREE.FogExp2(option.color || 0, option.concentration || 0);
 		return scene.fog;
 	};
-	
+
 	this.createRenderer = function(options) {
 		options = this.extends({}, [this.global.settings.render, options]);
 		var renderer = new THREE.WebGLRenderer(options);
 		renderer.setSize(this.getWorldWidth(), this.getWorldHeight());
 		if(!this.global.renderer) {
-			this.global.renderer=renderer;
+			this.global.renderer = renderer;
 			this.global.canvasContainerDom.appendChild(this.global.renderer.domElement);
-			if($$.global.settings.vr){
+			if($$.global.settings.vr) {
 				this.global.vrEffect = new THREE.StereoEffect(this.global.renderer);
 			}
 			this.global.canvasDom = this.global.renderer.domElement;
@@ -115,11 +118,11 @@ var threeQuery = function() {
 		function onDocumentMouseClick(event) {
 			if($$.global.selectedObj && $$.global.selectedObj.object.onClick && $$.global.selectedObj.object.isDown == true) {
 				$$.global.selectedObj.object.isDown = false;
-				$$.global.selectedObj.object.onClick($$.global.selectedObj,event);
+				$$.global.selectedObj.object.onClick($$.global.selectedObj, event);
 			}
 			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterClick && $$.global.centerSelectedObj.object.isCenterDown == true) {
 				$$.global.centerSelectedObj.object.isCenterDown = false;
-				$$.global.centerSelectedObj.object.onCenterClick($$.global.centerSelectedObj,event);
+				$$.global.centerSelectedObj.object.onCenterClick($$.global.centerSelectedObj, event);
 			}
 		}
 
@@ -129,7 +132,7 @@ var threeQuery = function() {
 				$$.global.selectedObj.object.isDown = true;
 			}
 			if($$.global.selectedObj && $$.global.selectedObj.object.onDown) {
-				$$.global.selectedObj.object.onDown($$.global.selectedObj,event);
+				$$.global.selectedObj.object.onDown($$.global.selectedObj, event);
 			}
 
 			$$.global.isCenterDown = true;
@@ -137,19 +140,19 @@ var threeQuery = function() {
 				$$.global.centerSelectedObj.object.isCenterDown = true;
 			}
 			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterDown) {
-				$$.global.centerSelectedObj.object.onCenterDown($$.global.centerSelectedObj,event);
+				$$.global.centerSelectedObj.object.onCenterDown($$.global.centerSelectedObj, event);
 			}
 		}
 
 		function onMouseUpOrTouchEnd(event) {
 			$$.global.isDown = false;
 			if($$.global.selectedObj && $$.global.selectedObj.object.onUp && $$.global.selectedObj.object.isDown == true) {
-				$$.global.selectedObj.object.onUp($$.global.selectedObj,event);
+				$$.global.selectedObj.object.onUp($$.global.selectedObj, event);
 			}
 
 			$$.global.isCenterDown = false;
 			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterUp && $$.global.centerSelectedObj.object.isCenterDown == true) {
-				$$.global.centerSelectedObj.object.onCenterUp($$.global.centerSelectedObj,event);
+				$$.global.centerSelectedObj.object.onCenterUp($$.global.centerSelectedObj, event);
 			}
 		}
 		$$.global.canvasContainerDom.addEventListener("click", onDocumentMouseClick);
@@ -175,7 +178,7 @@ var threeQuery = function() {
 		}
 		updateRaycaster();
 		if($$.global.settings.vr) {
-			if(!$$.global.vrEffect){
+			if(!$$.global.vrEffect) {
 				$$.global.vrEffect = new THREE.StereoEffect($$.global.renderer);
 			}
 			$$.global.renderer.render($$.global.world, $$.global.camera);
@@ -183,8 +186,8 @@ var threeQuery = function() {
 		} else {
 			$$.global.renderer.render($$.global.world, $$.global.camera);
 		}
-		if($$.controls) {
-			$$.controls.update();
+		if($$.global.controls) {
+			$$.global.controls.update();
 		}
 	};
 	this.actionInjections = [];
@@ -236,7 +239,7 @@ var threeQuery = function() {
 			}
 		}
 	};
-	this.onProgress=function(){};
+	this.onProgress = function() {};
 	this.onLoadComplete = function() {};
 	this.loadTexture = function(arr) {
 		var loader = new THREE.TextureLoader(this.global.loadingManager);
@@ -359,11 +362,11 @@ var threeQuery = function() {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
 		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children);
 		var intersect;
-		for(var i =0;i<intersects.length;i++){
-			if(intersects[i].isPenetrated){
+		for(var i = 0; i < intersects.length; i++) {
+			if(intersects[i].isPenetrated) {
 				continue;
-			}else{
-				intersect=intersects[i];
+			} else {
+				intersect = intersects[i];
 			}
 		}
 		if(intersect) {
@@ -377,7 +380,7 @@ var threeQuery = function() {
 				if($$.global.selectedObj.object.onEnter) {
 					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
 				}
-			}else{
+			} else {
 				$$.global.selectedObj = intersect;
 			}
 		} else {
@@ -395,11 +398,11 @@ var threeQuery = function() {
 		$$.global.centerRaycaster.setFromCamera(centerV, $$.global.camera);
 		var intersects = $$.global.centerRaycaster.intersectObjects($$.global.world.children);
 		var intersect;
-		for(var i =0;i<intersects.length;i++){
-			if(intersects[i].isPenetrated){
+		for(var i = 0; i < intersects.length; i++) {
+			if(intersects[i].isPenetrated) {
 				continue;
-			}else{
-				intersect=intersects[i];
+			} else {
+				intersect = intersects[i];
 			}
 		}
 		if(intersect) {
@@ -413,7 +416,7 @@ var threeQuery = function() {
 				if($$.global.centerSelectedObj.object.onCenterEnter) {
 					$$.global.centerSelectedObj.object.onCenterEnter($$.global.centerSelectedObj);
 				}
-			}else{
+			} else {
 				$$.global.centerSelectedObj = intersect;
 			}
 		} else {
@@ -610,6 +613,307 @@ var threeQuery = function() {
 				}
 			);
 		}
+	};
+
+	this.subWorlds = {
+		getCurrentSubWorld: function() {
+			for(var i in $$.subWorlds) {
+				if($$.subWorlds[i].isCurrent) {
+					return $$.subWorlds[i];
+				}
+			}
+		},
+		getSubWorldByName: function(name) {
+			for(var i in $$.subWorlds) {
+				if($$.subWorlds[i].name == name) {
+					return $$.subWorlds[i];
+				}
+			}
+		}
+	};
+
+	this.SubWorld = function(optWorld, optCamera) {
+		this.name = optWorld.name || "";
+		this.id = $$.rndString(16);
+		this.scene = new THREE.Scene();
+		this.camera = "";
+		var options = $$.extends({}, [$$.global.settings.camera, optCamera]);
+		if(options.type != "OrthographicCamera") {
+			this.camera = new THREE.PerspectiveCamera(options.fov, options.aspect, options.near, options.far);
+		} else {
+			this.camera = new THREE.OrthographicCamera(options.left, options.right, options.top, options.bottom, options.near, options.far);
+		}
+		this.actionInjections = [];
+		renderTargetParameters = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBFormat,
+			stencilBuffer: false
+		};
+		this.clearColor = optWorld.clearColor;
+		this.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
+		this.isResize = optWorld.resize == null ? true : optWorld.resize;
+		this.resize = function() {
+			var width = $$.getWorldWidth();
+			var height = $$.getWorldHeight();
+			if(this.camera.type == "PerspectiveCamera") {
+				this.camera.aspect = width / height;
+				this.camera.updateProjectionMatrix();
+			} else {
+				this.camera.left = -width / 2;
+				this.camera.right = width / 2;
+				this.camera.top = height / 2;
+				this.camera.bottom = -height / 2;
+			}
+			$$.global.renderer.setSize(width, height);
+			if($$.global.settings.vr && $$.global.vrEffect) {
+				$$.global.vrEffect.setSize(width, height);
+			}
+		};
+		this.update = function(rtt) {
+			if(this.isResize) {
+				this.resize();
+			}
+			for(var i = 0; i < this.actionInjections.length; i++) {
+				this.actionInjections[i]();
+			}
+			if(rtt) {
+				$$.global.renderer.render(this.scene, this.camera, this.fbo, true);
+			} else {
+				$$.global.renderer.render(this.scene, this.camera);
+			}
+
+		};
+		this.isCurrent = false;
+		this.toMain = function() {
+			$$.global.world = this.scene;
+			$$.global.camera = this.camera;
+			$$.actionInjections = this.actionInjections;
+			$$.global.renderer.setClearColor(this.clearColor);
+			$$.global.controls = this.controls;
+
+			for(var i in $$.subWorlds) {
+				if($$.subWorlds[i].isCurrent) {
+					$$.subWorlds[i].isCurrent = false;
+					if($$.subWorlds[i].controls) {
+						$$.subWorlds[i].controls.enabledBefore = $$.subWorlds[i].controls.enabled;
+						$$.subWorlds[i].controls.enabled = false;
+					}
+				}
+			}
+			this.isCurrent = true;
+			if(this.controls) {
+				this.controls.enabled = this.controls.enabledBefore;
+			}
+		};
+		$$.subWorlds[this.id] = this;
+	};
+
+	this.Transition = function(sceneA, option, texture) {
+		var makeSubWorld = function(scene, camera, injections, clearColor) {
+			var subWorld = {
+				scene: scene,
+				camera: camera,
+				actionInjections: injections
+			};
+			renderTargetParameters = {
+				minFilter: THREE.LinearFilter,
+				magFilter: THREE.LinearFilter,
+				format: THREE.RGBFormat,
+				stencilBuffer: false
+			};
+			subWorld.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
+			subWorld.clearColor = clearColor;
+			subWorld.update = function(rtt) {
+				if($$.global.settings.resize) {
+					var width = $$.getWorldWidth();
+					var height = $$.getWorldHeight();
+					if(subWorld.camera.type == "PerspectiveCamera") {
+						subWorld.camera.aspect = width / height;
+						subWorld.camera.updateProjectionMatrix();
+					} else {
+						subWorld.camera.left = -width / 2;
+						subWorld.camera.right = width / 2;
+						subWorld.camera.top = height / 2;
+						subWorld.camera.bottom = -height / 2;
+					}
+					$$.global.renderer.setSize(width, height);
+				}
+				$$.global.renderer.setClearColor(subWorld.clearColor);
+				if(rtt)
+					$$.global.renderer.render(subWorld.scene, subWorld.camera, subWorld.fbo, true);
+				else {
+					$$.global.renderer.render(subWorld.scene, subWorld.camera);
+				}
+			};
+			return subWorld;
+		};
+
+		var transitionParams = $$.extends({}, [{
+			"useTexture": true,
+			"transition": 0,
+			"transitionSpeed": 10,
+			"texture": 5,
+			"loopTexture": true,
+			"animateTransition": true,
+			"textureThreshold": 0.3
+		}, option]);
+		var sceneB = makeSubWorld($$.global.world, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
+
+		this.scene = new THREE.Scene();
+		this.cameraOrtho = $$.createCamera({
+			type: "OrthographicCamera",
+			near: -10,
+			far: 10
+		});
+		this.texture = texture;
+		this.quadmaterial = new THREE.ShaderMaterial({
+			uniforms: {
+				tDiffuse1: {
+					value: null
+				},
+				tDiffuse2: {
+					value: null
+				},
+				mixRatio: {
+					value: 0.0
+				},
+				threshold: {
+					value: 0.1
+				},
+				useTexture: {
+					value: 1
+				},
+				tMixTexture: {
+					value: this.texture
+				}
+			},
+			vertexShader: [
+
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+				"vUv = vec2( uv.x, uv.y );",
+				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+				"}"
+
+			].join("\n"),
+			fragmentShader: [
+				"uniform float mixRatio;",
+				"uniform sampler2D tDiffuse1;",
+				"uniform sampler2D tDiffuse2;",
+				"uniform sampler2D tMixTexture;",
+				"uniform int useTexture;",
+				"uniform float threshold;",
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+				"vec4 texel1 = texture2D( tDiffuse1, vUv );",
+				"vec4 texel2 = texture2D( tDiffuse2, vUv );",
+
+				"if (useTexture==1) {",
+
+				"vec4 transitionTexel = texture2D( tMixTexture, vUv );",
+				"float r = mixRatio * (1.0 + threshold * 2.0) - threshold;",
+				"float mixf=clamp((transitionTexel.r - r)*(1.0/threshold), 0.0, 1.0);",
+
+				"gl_FragColor = mix( texel1, texel2, mixf );",
+				"} else {",
+
+				"gl_FragColor = mix( texel2, texel1, mixRatio );",
+
+				"}",
+				"}"
+
+			].join("\n")
+		});
+
+		$$.global.world = this.scene;
+		$$.global.camera = this.cameraOrtho;
+
+		quadgeometry = new THREE.PlaneBufferGeometry($$.getWorldWidth(), $$.getWorldHeight());
+
+		this.quad = new THREE.Mesh(quadgeometry, this.quadmaterial);
+		this.scene.add(this.quad);
+
+		this.sceneA = sceneA;
+		this.sceneB = sceneB;
+
+		this.quadmaterial.uniforms.tDiffuse1.value = sceneA.fbo.texture;
+		this.quadmaterial.uniforms.tDiffuse2.value = sceneB.fbo.texture;
+
+		this.needChange = false;
+
+		this.setTextureThreshold = function(value) {
+
+			this.quadmaterial.uniforms.threshold.value = value;
+
+		};
+
+		this.useTexture = function(value) {
+
+			this.quadmaterial.uniforms.useTexture.value = value ? 1 : 0;
+
+		};
+
+		this.setTexture = function(i) {
+
+			this.quadmaterial.uniforms.tMixTexture.value = this.texture;
+
+		};
+
+		this.render = function() {
+			var owner = arguments.callee.owner;
+			if($$.global.settings.resize) {
+				var width = $$.getWorldWidth();
+				var height = $$.getWorldHeight();
+				owner.cameraOrtho.left = -width / 2;
+				owner.cameraOrtho.right = width / 2;
+				owner.cameraOrtho.top = height / 2;
+				owner.cameraOrtho.bottom = -height / 2;
+			}
+
+			if(transitionParams.animateTransition) {
+				transitionParams.transition += 0.001 * transitionParams.transitionSpeed;
+			}
+			owner.quadmaterial.uniforms.mixRatio.value = Math.min(transitionParams.transition, 1);
+			if(transitionParams.transition === 0) {
+				owner.sceneB.update(false);
+			} else if(transitionParams.transition >= 1) {
+				owner.sceneA.update(true);
+				for(var i = 0; i < $$.actionInjections.length; i++) {
+					if($$.actionInjections[i] == arguments.callee) {
+						$$.actionInjections.splice(i, 1);
+					}
+				}
+				owner.sceneA.toMain();
+
+			} else {
+				$$.global.renderer.setClearColor(owner.sceneB.clearColor);
+				owner.sceneB.update(true);
+				$$.global.renderer.setClearColor(owner.sceneA.clearColor);
+				owner.sceneA.update(true);
+				$$.global.renderer.render(owner.scene, owner.cameraOrtho, null, true);
+			}
+		};
+		this.render.owner = this;
+	};
+
+	this.rndString = function(len) {
+		if(len <= 0) {
+			return "";
+		}
+		len = len - 1 || 31;　　
+		var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';　　
+		var maxPos = $chars.length + 1;　　
+		var pwd = $chars.charAt(Math.floor(Math.random() * (maxPos - 10)));
+		for(i = 0; i < len; i++) {　　　　
+			pwd += $chars.charAt(Math.floor(Math.random() * maxPos));　　
+		}　　
+		return pwd;
 	};
 
 	this.global.settings = {

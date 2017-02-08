@@ -1,4 +1,44 @@
 $$.Transition = function(sceneA, option, texture) {
+
+	var makeSubWorld = function(scene, camera, injections, clearColor) {
+		var subWorld = {
+			scene: scene,
+			camera: camera,
+			actionInjections: injections
+		};
+		renderTargetParameters = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBFormat,
+			stencilBuffer: false
+		};
+		subWorld.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
+		subWorld.clearColor = clearColor;
+		subWorld.update = function(rtt) {
+			if($$.global.settings.resize) {
+				var width = $$.getWorldWidth();
+				var height = $$.getWorldHeight();
+				if(subWorld.camera.type == "PerspectiveCamera") {
+					subWorld.camera.aspect = width / height;
+					subWorld.camera.updateProjectionMatrix();
+				} else {
+					subWorld.camera.left = -width / 2;
+					subWorld.camera.right = width / 2;
+					subWorld.camera.top = height / 2;
+					subWorld.camera.bottom = -height / 2;
+				}
+				$$.global.renderer.setSize(width, height);
+			}
+			$$.global.renderer.setClearColor(subWorld.clearColor);
+			if(rtt)
+				$$.global.renderer.render(subWorld.scene, subWorld.camera, subWorld.fbo, true);
+			else {
+				$$.global.renderer.render(subWorld.scene, subWorld.camera);
+			}
+		};
+		return subWorld;
+	};
+
 	var transitionParams = $$.extends({}, [{
 		"useTexture": true,
 		"transition": 0,
@@ -8,7 +48,8 @@ $$.Transition = function(sceneA, option, texture) {
 		"animateTransition": true,
 		"textureThreshold": 0.3
 	}, option]);
-	var sceneB = $$.makeSubWorld($$.global.world, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
+	var sceneB = makeSubWorld($$.global.world, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
+
 	this.scene = new THREE.Scene();
 	this.cameraOrtho = $$.createCamera({
 		type: "OrthographicCamera",
@@ -83,7 +124,7 @@ $$.Transition = function(sceneA, option, texture) {
 	$$.global.world = this.scene;
 	$$.global.camera = this.cameraOrtho;
 
-	quadgeometry = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+	quadgeometry = new THREE.PlaneBufferGeometry($$.getWorldWidth(), $$.getWorldHeight());
 
 	this.quad = new THREE.Mesh(quadgeometry, this.quadmaterial);
 	this.scene.add(this.quad);
@@ -117,31 +158,37 @@ $$.Transition = function(sceneA, option, texture) {
 
 	this.render = function() {
 		var owner = arguments.callee.owner;
+		if($$.global.settings.resize) {
+			var width = $$.getWorldWidth();
+			var height = $$.getWorldHeight();
+			owner.cameraOrtho.left = -width / 2;
+			owner.cameraOrtho.right = width / 2;
+			owner.cameraOrtho.top = height / 2;
+			owner.cameraOrtho.bottom = -height / 2;
+		}
+
 		if(transitionParams.animateTransition) {
 			transitionParams.transition += 0.001 * transitionParams.transitionSpeed;
 		}
-
-		owner.quadmaterial.uniforms.mixRatio.value = Math.min(transitionParams.transition, 1); //>=1?1:transitionParams.transition;
-
-		// Prevent render both scenes when it's not necessary
-		if(transitionParams.transition == 0) {
+		owner.quadmaterial.uniforms.mixRatio.value = Math.min(transitionParams.transition, 1);
+		if(transitionParams.transition === 0) {
 			owner.sceneB.update(false);
 		} else if(transitionParams.transition >= 1) {
 			owner.sceneA.update(true);
-			$$.global.camera = owner.sceneA.camera;
-			$$.global.world = owner.sceneA.scene;
 			for(var i = 0; i < $$.actionInjections.length; i++) {
 				if($$.actionInjections[i] == arguments.callee) {
 					$$.actionInjections.splice(i, 1);
 				}
 			}
-			$$.actionInjections = owner.sceneA.actionInjections;
+			owner.sceneA.toMain();
 
 		} else {
+			$$.global.renderer.setClearColor(owner.sceneB.clearColor);
 			owner.sceneB.update(true);
+			$$.global.renderer.setClearColor(owner.sceneA.clearColor);
 			owner.sceneA.update(true);
 			$$.global.renderer.render(owner.scene, owner.cameraOrtho, null, true);
 		}
-	}
+	};
 	this.render.owner = this;
-}
+};

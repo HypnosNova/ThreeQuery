@@ -10,9 +10,11 @@
 	<body>
 
 		<script src="js/three.min.js"></script>
-		<script src="js/threeQuery.min.js"></script>
-		<script src="crossfade/scenes.js"></script>
-		<script src="crossfade/transition.js"></script>
+		<script src="../../js/threeQuery.min.js" type="text/javascript" charset="utf-8"></script>
+		<!--<script src="../../js/threeQuery.controls.js" type="text/javascript" charset="utf-8"></script>-->
+		<script src="../../lib/trackBallControls.js"></script>
+		<!--<script src="crossfade/scenes.js"></script>
+		<script src="crossfade/transition.js"></script>-->
 		<script>
 			$$.init();
 			$$.animate();
@@ -22,7 +24,7 @@
 			createSceneB();
 			createSceneC();
 			function createSceneA() {
-				sceneA = $$.createSubWorld({
+				sceneA = new $$.SubWorld({
 					clearColor: 0xffff00
 				});
 				sceneA.camera.position.set(10, 10, 10);
@@ -30,8 +32,9 @@
 				var material = new THREE.MeshLambertMaterial({
 					color: 0x0000ff
 				});
-				box2 = new THREE.Mesh(geometry, material);
-				sceneA.scene.add(box2);
+				var box = new THREE.Mesh(geometry, material);
+				box.position.set(10,0,0)
+				sceneA.scene.add(box);
 				//加入一个白光
 				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
 				directionalLight.position.set(0, 1, 0);
@@ -39,19 +42,21 @@
 				//加入环境光
 				var light = new THREE.AmbientLight(0x222222);
 				sceneA.scene.add(light);
-				sceneA.camera.lookAt(box2.position);
+				sceneA.camera.lookAt(box.position);
 				sceneA.actionInjections.push(function() {
-					box2.rotation.x -= 0.01;
-					box2.rotation.y -= 0.01;
+					box.rotation.x -= 0.01;
+					box.rotation.y -= 0.01;
 				});
-				box2.onClick = function() {
-					transition = new $$.Transition(sceneC, {}, new THREE.TextureLoader().load('transition/transition1.png'));
+				box.onClick = function() {
+					transition = new $$.Transition(sceneC, {}, new THREE.TextureLoader().load('transition/transition2.png'));
 					$$.actionInjections.push(transition.render);
 				}
+				$$.Controls.createTrackBallControls({maxDistance:20,minDistance:20,enabled:true},sceneA);
+//				console.log(sceneA)
 			}
 			
 			function createSceneB() {
-				sceneB = $$.createSubWorld({
+				sceneB = new $$.SubWorld({
 					clearColor: 0x000000
 				});
 				sceneB.camera.position.set(10, 10, 10);
@@ -59,7 +64,8 @@
 				var material = new THREE.MeshLambertMaterial({
 					color: 0xff0000
 				});
-				box = new THREE.Mesh(geometry, material);
+				var box = new THREE.Mesh(geometry, material);
+				box.position.set(0,5,0);
 				sceneB.scene.add(box);
 				//加入一个白光
 				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -74,13 +80,14 @@
 					box.rotation.y -= 0.01;
 				});
 				box.onClick = function() {
-					transition = new $$.Transition(sceneA, {}, new THREE.TextureLoader().load('transition/transition1.png'));
+					transition = new $$.Transition(sceneA, {}, new THREE.TextureLoader().load('transition/transition4.png'));
 					$$.actionInjections.push(transition.render);
 				}
+				$$.Controls.createTrackBallControls({maxDistance:20,minDistance:20,enabled:true},sceneB);
 			}
 			
 			function createSceneC() {
-				sceneC = $$.createSubWorld({
+				sceneC = new $$.SubWorld({
 					clearColor: 0x00ffff
 				});
 				sceneC.camera.position.set(10, 10, 10);
@@ -107,16 +114,9 @@
 					$$.actionInjections.push(transition.render);
 				}
 			}
-			
-			
-			
-			$$.global.world=sceneB.scene;
-			$$.global.camera=sceneB.camera;
-			$$.actionInjections=sceneB.actionInjections;
 
+			sceneA.toMain();
 
-
-			
 		</script>
 
 	</body>

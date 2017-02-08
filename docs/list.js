@@ -10,23 +10,22 @@ var list = {
 	},
 
 	"API文档": {
-
 		"核心": [
-			[ "$$", "$$/index" ],
-			[ "$$.Component", "404" ],
-			[ "$$.Controls", "$$/controls" ],
-			[ "$$.global", "404" ],
-			[ "$$.Move", "$$/move" ],
-			[ "$$.settings", "404" ]
+			[ "$$", "核心/index" ],
+			[ "$$.Component", "核心/404" ],
+			[ "$$.Controls", "核心/controls" ],
+			[ "$$.global", "核心/404" ],
+			[ "$$.Move", "核心/move" ],
+			[ "$$.settings", "核心/404" ]
 		],
-//		"组件": [
-//		  [ "绘制文字图片", "404" ],
-//		  [ "计时器Timer", "404" ],
-//		],
-//		"拓展": [
-//		  [ "TrackBallControls", "404" ],
-//		  [ "OrbitContro;s", "404" ]
-//		],
+		"组件": [
+		  [ "绘制文字图片", "404" ],
+		  [ "计时器Timer", "404" ],
+		],
+		"拓展": [
+		  [ "TrackBallControls", "404" ],
+		  [ "OrbitContro;s", "404" ]
+		],
 	}
 	
 };

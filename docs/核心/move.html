@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<base href="../" />
+		<script src="list.js"></script>
+		<script src="page.js"></script>
+		<link type="text/css" rel="stylesheet" href="page.css" />
+	</head>
+
+	<body>
+		<h1>ThreeQuery移动——$$.Move</h1>
+		<div>
+			<div class="small5">
+				<h2>类</h2>
+				<ul>
+					<li><a class="maoDot" onclick="gotoId('Linear')">Linear</a></li>
+					<li><a class="maoDot" onclick="gotoId('Surround')">Surround</a></li>
+				</ul>
+			</div>
+			<div class="small5">
+			</div>
+		</div>
+		<code class="emptyCode"></code>
+		<h3 id="Linear">Linear</h2>
+		<div><b>构造函数参数：</b></div>
+		<ul>
+			<li>obj——THREE.Object3D，需要运动的物体</li>
+			<li>speedRate——number类型，运动速率</li>
+			<li>targetPosition——THREE.Vector3，目标位置</li>
+		</ul>
+		<div><b>函数：</b></div>
+		<ul>
+			<li>destroy()——立即销毁物体当前的运动状态。</li>
+			<li>update()——运动状态更新，在渲染循环中执行。当物体移动到目标位置时，执行destroy()函数。</li>
+		</ul>
+		<div><b>实例地址：</b><a href="examples/006linear.html" target="_blank">006linear.html</a></div>
+		<div><b>描述：</b>用于物体匀速直线运动的处理。</div>
+		<code class="emptyCode"></code>
+		<h3 id="Surround">Surround</h2>
+		<div><b>构造函数参数：</b></div>
+		<ul>
+			<li>mother——THREE.Object3D，被环绕的物体</li>
+			<li>child——THREE.Object3D，进行圆周运动的物体</li>
+			<li>speedRate——number类型，匀速圆周运动的线速度</li>
+			<li>vVect——THREE.Vector3，圆周运动所在平面的法向量</li>
+		</ul>
+		<div><b>函数：</b></div>
+		<ul>
+			<li>destroy()——立即销毁物体当前的运动状态。</li>
+			<li>update()——运动状态更新，在渲染循环中执行。</li>
+		</ul>
+		<div><b>实例地址：</b><a href="examples/007surround.html" target="_blank">007surround.html</a></div>
+		<div><b>描述：</b>用于物体环绕另一物体做匀速圆周运动。</div>
+		<code class="emptyCode"></code>
+		
+	</body>
+	<script src="page.js"></script>
+</html>

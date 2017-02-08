@@ -83,7 +83,7 @@ $$.Transition = function(sceneA, option, texture) {
 	$$.global.world = this.scene;
 	$$.global.camera = this.cameraOrtho;
 
-	quadgeometry = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+	quadgeometry = new THREE.PlaneBufferGeometry($$.getWorldWidth(), $$.getWorldHeight());
 
 	this.quad = new THREE.Mesh(quadgeometry, this.quadmaterial);
 	this.scene.add(this.quad);
