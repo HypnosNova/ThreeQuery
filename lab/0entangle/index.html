@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			*{
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script src="../../js/threeQuery.js"></script>
+		<script src="../../lib/plugins/Mirror.js"></script>
+		<script src="../../lib/plugins/WaterShader.js"></script>
+		<script src="../../lib/opentype.min.js"></script>
+		<script src="../../lib/TTFLoader.js"></script>
+		<script src="../../lib/tween.js"></script>
+		<script src="js/mainScene.js"></script>
+		<script src="js/loadingScene.js"></script>
+		<script src="js/curvePan.js"></script>
+		<script src="js/map.js"></script>
+		<script>
+			$$.init();
+			$$.animate();
+			var loadingScene=createLoadingScene();
+			loadingScene.toMain();
+		</script>
+		<div style="position:absolute;width:100px;height:100px;background:black;left: 0;top: 0;" id="leftBtn"></div>
+		<div style="position:absolute;width:100px;height:100px;background:black;left: 200px;top: 0;" id="rightBtn"></div>
+	</body>
+
+</html>

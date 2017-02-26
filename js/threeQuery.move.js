@@ -10,10 +10,7 @@ $$.Move = {
 			z: this.targetPosition.z - this.obj.position.z,
 		};
 
-		//	console.log(vecLength(this.direction));
-		//	console.log(this.targetPosition);
 		var uvec = $$.unitVector(this.direction);
-		//	console.log(uvec);
 		this.speed = {
 			x: uvec.x * speedRate,
 			y: uvec.y * speedRate,
@@ -104,8 +101,37 @@ $$.Move = {
 				}
 			}
 		};
+	},
+	RelateToCamera:function(obj,isFaceToCamera,world){
+		if(!world){
+			this.camera=$$.global.camera;
+		}else{
+			this.camera=world.camera;
+		}
+		this.obj=obj;
+		this.isFaceToCamera=isFaceToCamera;
+		this.absVec={
+			x:obj.position.x-this.camera.position.x,
+			y:obj.position.y-this.camera.position.y,
+			z:obj.position.z-this.camera.position.z
+		};
+		this.update=function(){
+			this.obj.position.x=this.camera.position.x+this.absVec.x;
+			this.obj.position.y=this.camera.position.y+this.absVec.y;
+			this.obj.position.z=this.camera.position.z+this.absVec.z;
+			if(isFaceToCamera){
+				this.obj.lookAt(this.camera.position);
+			}
+		};
+		this.destroy = function() {
+			for(var i = 0; i < $$.actionInjections.length; i++) {
+				if($$.actionInjections[i] == this.update) {
+					$$.actionInjections.splice(i, 1);
+					break;
+				}
+			}
+		};
 	}
-
 };
 
 $$.crossMulti = function(vec1, vec2) {

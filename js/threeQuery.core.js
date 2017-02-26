@@ -27,7 +27,6 @@ var threeQuery = function() {
 	this.resize = function() {
 		var width = this.getWorldWidth();
 		var height = this.getWorldHeight();
-		//console.log(width+"----"+height);
 		if(this.global.settings.camera.type == "PerspectiveCamera") {
 			this.global.camera.aspect = width / height;
 			this.global.camera.updateProjectionMatrix();
@@ -360,15 +359,18 @@ var threeQuery = function() {
 
 	function updateMouseRaycaster() {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
-		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children);
+		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children,true);
+		
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
-			if(intersects[i].isPenetrated) {
+			if(intersects[i].object.isPenetrated) {
 				continue;
 			} else {
 				intersect = intersects[i];
+				break;
 			}
 		}
+
 		if(intersect) {
 			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
 				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid) {
@@ -399,10 +401,11 @@ var threeQuery = function() {
 		var intersects = $$.global.centerRaycaster.intersectObjects($$.global.world.children);
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
-			if(intersects[i].isPenetrated) {
+			if(intersects[i].object.isPenetrated) {
 				continue;
 			} else {
 				intersect = intersects[i];
+				break;
 			}
 		}
 		if(intersect) {
@@ -914,6 +917,10 @@ var threeQuery = function() {
 			pwd += $chars.charAt(Math.floor(Math.random() * maxPos));　　
 		}　　
 		return pwd;
+	};
+	
+	this.rndInt=function(max){
+		return Math.floor(Math.random()*max);
 	};
 
 	this.global.settings = {

@@ -10,10 +10,8 @@
 	<body>
 
 		<script src="../lib/three.js"></script>
-		<script src="../lib/StereoEffect.js"></script>
 		<script src="../lib/OrbitControls.js"></script>
 		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
 		<script src="../lib/plugins/Mirror.js"></script>
 		<script src="../lib/plugins/WaterShader.js"></script>
 
@@ -22,13 +20,12 @@
 				far: 3000000,
 				fov: 50
 			});
-			$$.global.settings.vr=true;
-			var controls=$$.extend.createOrbitControls();
+			var controls=$$.Controls.createOrbitControls();
 			controls.target.set( 0, 500, 0 );
 			controls.update();
-			scene.add(new THREE.AmbientLight(0x444444));
-			$$.createSkybox("../textures/patterns/skybox.png", 2000000)
-			$$.createSea({texture:"../textures/patterns/waternormals.jpg",color:0x999999});
+			
+			$$.Component.createSkybox("../textures/patterns/skybox.png", 2000000)
+			$$.Component.createSea({texture:"../textures/patterns/waternormals.jpg",color:0x999999});
 			$$.animate();
 		</script>
 	</body>

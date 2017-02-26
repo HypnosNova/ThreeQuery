@@ -4,6 +4,12 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Threejs snow</title>
+		<style>
+			body{
+				background-image: url(timg.jpg);
+				background-size: cover;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -12,7 +18,7 @@
 		<script src="../../js/threeQuery.component.js" type="text/javascript" charset="utf-8"></script>
 
 		<script>
-			$$.init();
+			$$.init(null,{alpha:true},null);
 			$$.animate();
 			$$.Weather = {};
 			$$.Weather.Snow = function(options, texture) {
@@ -21,7 +27,7 @@
 					endSpeed: 10,
 					duration: 50,
 					amount: 2000,
-					startAmount: 0,
+					startAmount: 500,
 					fallSpeed: 2,
 					scale: [10, 20],
 					wind: {
@@ -51,7 +57,8 @@
 				this.duration = options.duration;
 				this.particles = [];
 				this.material = new THREE.SpriteMaterial({
-					map: texture
+					map: texture,
+					color:0xffffff
 				});
 				this.onStartEnd=function(){console.log("snow start end")};
 				this.onEndEnd=function(){console.log("snow end end")};

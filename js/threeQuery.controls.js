@@ -1,6 +1,6 @@
 $$.Controls = {
-	createOrbitControls: function() {
-		var camera = $$.global.camera;
+	createOrbitControls: function(world) {
+		var camera = world?world.camera:$$.global.camera;
 		var element = $$.global.canvasDom;
 		var controls = new THREE.OrbitControls(camera, element);
 		controls.rotateUp(Math.PI / 4);
@@ -11,7 +11,12 @@ $$.Controls = {
 		);
 		controls.noZoom = true;
 		controls.noPan = true;
-		$$.global.controls = controls;
+		if(world) {
+			world.controls = controls;
+			world.controls.enabledBefore=controls.enabled;
+		} else {
+			$$.global.controls = controls;
+		}
 		return controls;
 	},
 	createTrackBallControls: function(options, world) {

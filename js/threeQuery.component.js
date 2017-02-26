@@ -58,7 +58,8 @@ $$.Component = {
 	},
 
 	//创建计时器，计时器的总时间，间隔触发事件时间
-	Timer: function(options) {
+	Timer: function(options,world) {
+		this.actionInjections=world?world.actionInjections:$$.actionInjections;
 		var defaultOptions = {
 			id: "",
 			life: 1000,
@@ -80,10 +81,10 @@ $$.Component = {
 		this.onStart = options.onStart || function() {
 			console.log("timer start");
 		};
-		this.onRepeat = options.onRepeat||function() {
+		this.onRepeat = options.onRepeat || function() {
 			console.log("timer repeat");
 		};
-		this.onEnd = options.onEnd||function() {
+		this.onEnd = options.onEnd || function() {
 			console.log("timer end");
 		};
 		this.lastTime;
@@ -93,7 +94,7 @@ $$.Component = {
 		this.start = function() {
 			this.lastTime = this.nowTime = performance.now();
 			this.onStart();
-			$$.actionInjections.push(this.update);
+			this.actionInjections.push(this.update);
 		};
 		let thisObj = this;
 		this.update = function() {
@@ -104,9 +105,10 @@ $$.Component = {
 
 			if(thisObj.life <= 0) {
 				thisObj.onEnd();
-				for(var i in $$.actionInjections) {
-					if(thisObj.update == $$.actionInjections[i]) {
-						$$.actionInjections.splice(i, 1);
+				for(var i in thisObj.actionInjections) {
+					if(thisObj.update == thisObj.actionInjections[i]) {
+						
+						thisObj.actionInjections.splice(i, 1);
 						break;
 					}
 				}
@@ -152,5 +154,157 @@ $$.Component = {
 				}
 			}
 		});
+	},
+	createSkydome: function(pic, size, world) {
+		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
+		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
+		var material = new THREE.MeshBasicMaterial({
+			map: texture,
+		});
+		var sky = new THREE.Mesh(skyGeo, material);
+		sky.material.side = THREE.BackSide;
+		if(world) {
+			world.scene.add(sky);
+		} else {
+			$$.global.world.add(sky);
+		}
+
+		return sky;
+	},
+	createSkybox: function(texture, width, world) {
+		var cubeMap = new THREE.CubeTexture([]);
+		cubeMap.format = THREE.RGBFormat;
+
+		var loader = new THREE.ImageLoader();
+		loader.load(texture, function(image) {
+			var getSide = function(x, y) {
+
+				var size = 1024;
+
+				var canvas = document.createElement('canvas');
+				canvas.width = size;
+				canvas.height = size;
+
+				var context = canvas.getContext('2d');
+				context.drawImage(image, -x * size, -y * size);
+				return canvas;
+			};
+
+			cubeMap.images[0] = getSide(2, 1); // px
+			cubeMap.images[1] = getSide(0, 1); // nx
+			cubeMap.images[2] = getSide(1, 0); // py
+			cubeMap.images[3] = getSide(1, 2); // ny
+			cubeMap.images[4] = getSide(1, 1); // pz
+			cubeMap.images[5] = getSide(3, 1); // nz
+			cubeMap.needsUpdate = true;
+
+		});
+
+		var cubeShader = THREE.ShaderLib.cube;
+		cubeShader.uniforms.tCube.value = cubeMap;
+		var skyBoxMaterial = new THREE.ShaderMaterial({
+			fragmentShader: cubeShader.fragmentShader,
+			vertexShader: cubeShader.vertexShader,
+			uniforms: cubeShader.uniforms,
+			depthWrite: false,
+			side: THREE.BackSide
+		});
+
+		var skyBox = new THREE.Mesh(
+			new THREE.BoxGeometry(width || 1000000, width || 1000000, width || 1000000),
+			skyBoxMaterial
+		);
+
+		if(world) {
+			world.scene.add(skyBox);
+		} else {
+			$$.global.world.add(skyBox);
+		}
+		return skyBox;
+	},
+	createSea: function(options, world) {
+		world = world || {
+			scene: $$.global.world,
+			camera: $$.global.camera,
+			renderer: $$.global.renderer
+		};
+		options = $$.extends({}, [$$.global.settings.sea, options]);
+		if($$.global.RESOURCE.textures[options.texture]) {
+			waterNormals = $$.global.RESOURCE.textures[options.texture];
+			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+			water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
+				textureWidth: waterNormals.image.width,
+				textureHeight: waterNormals.image.height,
+				waterNormals: waterNormals,
+				alpha: options.alpha,
+				waterColor: options.color,
+			});
+
+			mirrorMesh = new THREE.Mesh(
+				new THREE.PlaneBufferGeometry(options.width, options.height),
+				water.material
+			);
+
+			mirrorMesh.add(water);
+			mirrorMesh.rotation.x = -Math.PI * 0.5;
+			world.scene.add(mirrorMesh);
+			water.waterMesh = mirrorMesh;
+			if(world) {
+				world.actionInjections.push(function() {
+					water.material.uniforms.time.value += 1.0 / 60.0;
+					water.render();
+				});
+			} else {
+				$$.actionInjections.push(function() {
+					water.material.uniforms.time.value += 1.0 / 60.0;
+					water.render();
+				});
+			}
+			return water;
+		} else {
+			var loader = new THREE.TextureLoader();
+			loader.load(options.texture,
+				function(texture) {
+					$$.global.RESOURCE.textures[options.texture] = texture;
+					waterNormals = texture;
+					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+					water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
+						textureWidth: waterNormals.image.width,
+						textureHeight: waterNormals.image.height,
+						waterNormals: waterNormals,
+						alpha: options.alpha,
+						waterColor: options.color,
+					});
+
+					mirrorMesh = new THREE.Mesh(
+						new THREE.PlaneBufferGeometry(options.width, options.height),
+						water.material
+					);
+
+					mirrorMesh.add(water);
+					mirrorMesh.rotation.x = -Math.PI * 0.5;
+					world.scene.add(mirrorMesh);
+					water.waterMesh = mirrorMesh;
+					if(world) {
+						world.actionInjections.push(function() {
+							water.material.uniforms.time.value += 1.0 / 60.0;
+							water.render();
+						});
+					} else {
+						$$.actionInjections.push(function() {
+							water.material.uniforms.time.value += 1.0 / 60.0;
+							water.render();
+						});
+					}
+
+					return water;
+				},
+				function(xhr) {},
+				function(xhr) {
+					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+					console.log(arr[i] + " is not found");
+				}
+			);
+		}
 	}
 };
