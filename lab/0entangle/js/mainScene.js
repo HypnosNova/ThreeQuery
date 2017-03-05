@@ -27,9 +27,9 @@ function createMainScene() {
 	});
 	var theMap; //= maps[0];
 	var curveArr = [];
-//	for(var i in theMap.map) {
-//		curveArr.push([]);
-//	}
+	//	for(var i in theMap.map) {
+	//		curveArr.push([]);
+	//	}
 
 	function makeSoundArr() {
 		for(var i in curveSound) {
@@ -143,20 +143,6 @@ function createMainScene() {
 											break;
 										}
 									}
-									//									world.currentUserPan=thePan;
-									//									var eventTmp=panTarget.group.children[0].onDown;
-									//									panTarget.group.children[0].onDown=thePan.group.children[0].onDown;
-									//									thePan.group.children[0].onDown=eventTmp;
-									//									var iTmp=panTarget.group.i;
-									//									panTarget.group.i=thePan.group.i;
-									//									thePan.group.i=iTmp;
-									//									var jTmp=panTarget.group.j;
-									//									panTarget.group.j=thePan.group.j;
-									//									thePan.group.j=jTmp;
-									//									console.log(thePan);
-									//									console.log(panTarget)
-									//									curvePanManager.setPositionByIJ(thePan.group,thePan.group.i,thePan.group.j,theMap.map);
-									//									curvePanManager.setPositionByIJ(panTarget.group,panTarget.group.i,panTarget.group.j,theMap.map);
 								}
 							}
 						}
@@ -412,9 +398,43 @@ function createMainScene() {
 			onEnd: makeStartPan
 		}, world).start();
 	}
-	
-	function startHomePage(){
-		
+	startHomePage();
+
+	function startHomePage() {
+		var levelArr = [];
+		var group = new THREE.Group();
+		var geometry = new THREE.CylinderBufferGeometry(curvePanManager.panRadius * 2, curvePanManager.panRadius * 2, curvePanManager.stonePanHeight, 6);
+		var cylinder = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
+			color: 0xffffff,
+			map: $$.global.RESOURCE.textures["texture/3.jpg"]
+		}));
+		group.add(cylinder);
+
+		var geometry = new THREE.TorusBufferGeometry(curvePanManager.panRadius * 1.8, curvePanManager.panRadius / 5, 4, 6);
+		var torus = new THREE.Mesh(geometry, curvePanManager.stonePanMaterial);
+		torus.position.y = curvePanManager.stonePanHeight / 2;
+		torus.rotation.x = Math.PI / 2;
+		torus.rotation.z = Math.PI / 6;
+		group.add(torus);
+		world.scene.add(group);
+		levelArr.push(group);
+		group.children[0].onDown = function(obj) {
+			var group = obj.object.parent;
+			var tween = new TWEEN.Tween(group.position)
+				.to({ y: -60 }, 1500).start();
+			obj.object.onDown = null;
+
+			new $$.Component.Timer({
+				life: 1500,
+				duration: 1500,
+				onEnd: function(){
+					world.scene.remove(group);
+					startGame(2);
+				}
+			}, world).start();
+
+			
+		}
 	}
 
 	var options = {

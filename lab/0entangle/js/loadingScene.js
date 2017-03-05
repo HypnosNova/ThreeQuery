@@ -6,6 +6,7 @@ function loadSource(){
 		"texture/stone.jpg",
 		"texture/emptyPan.jpg",
 		"texture/scorePan.jpg",
+		"texture/3.jpg",
 		"texture/pan.jpg"]);
 	$$.loadFont(["font/tahomabd.ttf"]);
 	
