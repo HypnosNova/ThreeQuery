@@ -1,5 +1,4 @@
 function loadSource(){
-	$$.loadSound(soundArr);
 	$$.loadTexture(["texture/skybox.jpg",
 		"texture/waternormals.jpg",
 		"transition/transition1.png",
@@ -8,7 +7,6 @@ function loadSource(){
 		"texture/scorePan.jpg",
 		"texture/pan.jpg"]);
 	$$.loadFont(["font/tahomabd.ttf"]);
-	
 }
 var curvePanManager;
 $$.onLoadComplete=function(){

@@ -233,14 +233,18 @@ var threeQuery = function() {
 	this.global.loadingManager.onProgress = function(item, loaded, total) {
 		$$.onProgress(item, loaded, total);
 		if(loaded == total) {
-			if($$.onLoadComplete) {
-				$$.onLoadComplete();
+			allLoaded = true;
+			if(allLoaded && soundDecodeNum == 0) {
+				if($$.onLoadComplete) {
+					$$.onLoadComplete();
+				}
 			}
 		}
 	};
 	this.onProgress = function() {};
 	this.onLoadComplete = function() {};
 	this.loadTexture = function(arr) {
+		allLoaded = false;
 		var loader = new THREE.TextureLoader(this.global.loadingManager);
 		for(let i in arr) {
 			loader.load(arr[i],
@@ -255,7 +259,32 @@ var threeQuery = function() {
 			);
 		}
 	};
+	var soundDecodeNum = 0; //需要解码的音频数量
+	var allLoaded = true;
+	this.loadSound = function(arr) {
+		var loader = new THREE.AudioLoader(this.global.loadingManager);
+		for(let i in arr) {
+			soundDecodeNum++;
+			loader.load(arr[i],
+				function(buffer) {
+					$$.global.RESOURCE.sounds[arr[i]] = buffer;
+					soundDecodeNum--;
+					if(allLoaded && soundDecodeNum == 0) {
+						if($$.onLoadComplete) {
+							$$.onLoadComplete();
+						}
+					}
+				},
+				function(xhr) {},
+				function(xhr) {
+					$$.global.RESOURCE.unloadedSource.sounds.push(arr[i]);
+					console.log(arr[i] + " is not found");
+				}
+			);
+		}
+	};
 	this.loadFont = function(arr) {
+		allLoaded = false;
 		var loader = new THREE.FontLoader(this.global.loadingManager);
 		var loader2 = new THREE.TTFLoader(this.global.loadingManager);
 		for(let i in arr) {
@@ -359,8 +388,8 @@ var threeQuery = function() {
 
 	function updateMouseRaycaster() {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
-		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children,true);
-		
+		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children, true);
+
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
 			if(intersects[i].object.isPenetrated) {
@@ -918,9 +947,9 @@ var threeQuery = function() {
 		}　　
 		return pwd;
 	};
-	
-	this.rndInt=function(max){
-		return Math.floor(Math.random()*max);
+
+	this.rndInt = function(max) {
+		return Math.floor(Math.random() * max);
 	};
 
 	this.global.settings = {

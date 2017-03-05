@@ -22,6 +22,7 @@
 		<script src="../../lib/opentype.min.js"></script>
 		<script src="../../lib/TTFLoader.js"></script>
 		<script src="../../lib/tween.js"></script>
+		<script src="js/sound.js"></script>
 		<script src="js/mainScene.js"></script>
 		<script src="js/loadingScene.js"></script>
 		<script src="js/curvePan.js"></script>
@@ -32,8 +33,8 @@
 			var loadingScene=createLoadingScene();
 			loadingScene.toMain();
 		</script>
-		<div style="position:absolute;width:100px;height:100px;background:black;left: 0;top: 0;" id="leftBtn"></div>
-		<div style="position:absolute;width:100px;height:100px;background:black;left: 200px;top: 0;" id="rightBtn"></div>
+		<div style="display: none; position:absolute;width:100px;height:100px;left: 0;top: 100%;transform: translate(20%,-120%);background-image: url(texture/anticlockwise.png);background-size: cover;" id="rightBtn"></div>
+		<div style="display: none; position:absolute;width:100px;height:100px;left: 100%;top: 100%;transform: translate(-120%,-120%);background-image: url(texture/clockwise.png);background-size: cover;" id="leftBtn"></div>
 	</body>
 
 </html>

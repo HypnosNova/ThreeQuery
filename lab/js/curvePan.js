@@ -1,7 +1,7 @@
 var CurvePanManager = function() {
 	var indexArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 	this.panRadius = 32;
-	this.inRate = 0.5;
+	this.inRate = 0.45;
 	this.panHeight = 20;
 	this.stonePanHeight = 40;
 	this.panMaterial = new THREE.MeshLambertMaterial({
@@ -28,7 +28,7 @@ var CurvePanManager = function() {
 		color: 0xffffff,
 		map: $$.global.RESOURCE.textures["texture/scorePan.jpg"]
 	});
-	this.tubeRadius = 1.25;
+	this.tubeRadius = 1.75;
 	this.tubeMaterial = new THREE.MeshPhongMaterial({
 		color: 0xffffff,
 		side: THREE.DoubleSide,
@@ -71,10 +71,7 @@ var CurvePanManager = function() {
 	this.createCurvePan = function() {
 		var group = new THREE.Group();
 		var geometry = new THREE.CylinderBufferGeometry(that.panRadius, that.panRadius, that.panHeight, 6);
-		var cylinder = new THREE.Mesh(geometry, this.panMaterial = new THREE.MeshLambertMaterial({
-			color: 0xffffff,
-			map: $$.global.RESOURCE.textures["texture/pan.jpg"]
-		}));
+		var cylinder = new THREE.Mesh(geometry, that.panMaterial);
 		group.add(cylinder);
 		indexArr.sort(function() {
 			return Math.random() - 0.5;
@@ -93,7 +90,6 @@ var CurvePanManager = function() {
 			var mesh = new THREE.Mesh(geometry, that.tubeMaterial);
 			mesh.position.y = that.panHeight / 2;
 			mesh.isPenetrated = true;
-			mesh.isOriginCurve=true;
 			group.add(mesh);
 		}
 		var geometry = new THREE.TorusBufferGeometry(that.panRadius * 0.975, that.panRadius / 40, 4, 6);
@@ -223,8 +219,8 @@ var CurvePanManager = function() {
 			i1 = pan.pointIndexArr[startPointIndex];
 			i2 = pan.pointIndexArr[startPointIndex + 1];
 		}
-		pan.firstPoint = i1;
-		pan.secondPoint = i2;
+		pan.firstPoint=i1;
+		pan.secondPoint=i2;
 
 		var curve = new THREE.CubicBezierCurve3(
 			that.pointsOut[i1],
@@ -232,18 +228,17 @@ var CurvePanManager = function() {
 			that.pointsIn[i2],
 			that.pointsOut[i2]
 		);
-		var geometry = new THREE.TubeBufferGeometry(curve, 20, that.tubeRadius * 1.75, 8, false);
+		var geometry = new THREE.TubeBufferGeometry(curve, 20, that.tubeRadius * 1.5, 8, false);
 		var mesh = new THREE.Mesh(geometry, that.panCurveDeepMaterial);
 		mesh.position.y = that.panHeight / 2;
 		mesh.isPenetrated = true;
-		mesh.isBlue=true;
 		pan.group.add(mesh);
 	};
-
-	this.getEndPoint = function(pan, startPointIndex) {
-		for(var i = 0; i < 12; i++) {
-			if(startPointIndex == pan.pointIndexArr[i]) {
-				startPointIndex = i;
+	
+	this.getEndPoint=function(pan,startPointIndex){
+		for(var i =0;i<12;i++){
+			if(startPointIndex==pan.pointIndexArr[i]){
+				startPointIndex=i;
 				break;
 			}
 		}
@@ -253,7 +248,7 @@ var CurvePanManager = function() {
 			return pan.pointIndexArr[startPointIndex + 1];
 		}
 	};
-
+	
 	this.clockwisePan = function(pan, duration, func) {
 		pan.group.rotateTimes--;
 		if(duration) {
@@ -441,24 +436,6 @@ var CurvePan = function(group, arr) {
 	this.pointIndexArr = arr;
 	this.group.rotateTimes = 0;
 	this.group.owner = this;
-}
+	//传入固定点数组的索引
 
-var SinPanColorer = function(pan) {
-	this.time = 0;
-	this.speed = 0.04;
-	this.pan = pan;
-	this.update = function() {
-		var owner = arguments.callee.owner;
-		owner.time += owner.speed;
-		owner.pan.material.emissive.setHex(256*Math.floor(90 * (1 + Math.sin(owner.time))));
-	};
-	this.destroy = function() {
-		for(var i = 0; i < $$.actionInjections.length; i++) {
-			if($$.actionInjections[i] == this.update) {
-				$$.actionInjections.splice(i, 1);
-				break;
-			}
-		}
-	};
-	this.update.owner = this;
 }
