@@ -450,7 +450,7 @@ var SinPanColorer = function(pan) {
 	this.update = function() {
 		var owner = arguments.callee.owner;
 		owner.time += owner.speed;
-		owner.pan.material.emissive.setHex(256*Math.floor(90 * (1 + Math.sin(owner.time))));
+		owner.pan.material.emissive.setHex(256*Math.floor(80 * (1 + Math.sin(owner.time))));
 	};
 	this.destroy = function() {
 		for(var i = 0; i < $$.actionInjections.length; i++) {

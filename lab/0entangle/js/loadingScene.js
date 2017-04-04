@@ -6,6 +6,8 @@ function loadSource(){
 		"texture/stone.jpg",
 		"texture/emptyPan.jpg",
 		"texture/scorePan.jpg",
+		"texture/1.jpg",
+		"texture/2.jpg",
 		"texture/3.jpg",
 		"texture/pan.jpg"]);
 	$$.loadFont(["font/tahomabd.ttf"]);
@@ -23,7 +25,7 @@ loadSource();
 
 function createLoadingScene() {
 	var world = new $$.SubWorld({
-		clearColor: 0xffff00
+		clearColor: 0x000000
 	});
 	world.camera.position.set(10, 10, 10);
 	var geometry = new THREE.BoxGeometry(5, 5, 5);

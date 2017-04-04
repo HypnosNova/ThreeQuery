@@ -9,18 +9,17 @@
 
 	<body>
 
-		<script src="../lib/three.js"></script>
+		<script src="../lib/three.min.js"></script>
 		<script src="../lib/StereoEffect.js"></script>
 		<script src="../lib/OrbitControls.js"></script>
 		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
 
 		<script>
 			var [scene, renderer, camera] = $$.init(null, null, {
 				far: 3000000,
 				fov:50
 			});
-			var controls = $$.extend.createOrbitControls();
+			var controls = $$.Controls.createOrbitControls();
 			$$.loadTexture(["../textures/patterns/skydome.jpg"]);
 			$$.onLoadComplete = function() {
 				$$.createSkydome("../textures/patterns/skydome.jpg");

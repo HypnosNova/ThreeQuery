@@ -13,13 +13,12 @@
 		<script src="../lib/StereoEffect.js"></script>
 		<script src="../lib/OrbitControls.js"></script>
 		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
 
 		<script>
 			var [scene, renderer, camera] = $$.init(null, null, {
 				far: 3000000
 			});
-			$$.extend.createOrbitControls().update();
+			$$.Controls.createOrbitControls().update();
 			scene.add(new THREE.AmbientLight(0x444444));
 			var light = new THREE.DirectionalLight(0xffffbb, 1);
 			light.position.set(-1, 1, -1);

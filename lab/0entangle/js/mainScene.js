@@ -18,18 +18,15 @@ function createMainScene() {
 	$$.Component.createSkybox("texture/skybox.jpg", 20000, world);
 	$$.Component.createSea({ texture: "texture/waternormals.jpg", color: 0x999999, alpha: 0.75, width: 20000, height: 20000 }, world);
 	world.scene.add(new THREE.AmbientLight(0x444444));
-	var directionalLight = new THREE.DirectionalLight(0xdddddd, 0.9);
+	var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
 	directionalLight.position.set(1, 3, 1);
 	world.scene.add(directionalLight);
 	world.scoreTextPan;
 	var wordMeterial = new THREE.MeshLambertMaterial({
 		color: 0xffbb88
 	});
-	var theMap; //= maps[0];
+	var theMap;
 	var curveArr = [];
-	//	for(var i in theMap.map) {
-	//		curveArr.push([]);
-	//	}
 
 	function makeSoundArr() {
 		for(var i in curveSound) {
@@ -94,7 +91,7 @@ function createMainScene() {
 							curveArr[i][j] = "stone";
 							var pan = obj.group.children[0];
 
-							pan.onDown = function(obj) {
+							pan.onClick = function(obj) {
 								var thePan = obj.object.parent.owner;
 								if(world.currentUserPan) {
 									var panTarget = world.currentUserPan;
@@ -190,7 +187,6 @@ function createMainScene() {
 			wordMeterial
 		);
 		var len = (score + "").length;
-		//options.size * 0.5, curvePanManager.stonePanHeight / 2, options.size * 0.82
 		word.position.set(options.size * 0.5, curvePanManager.stonePanHeight / 2, options.size * 0.41 * len);
 		word.rotation.x = -Math.PI / 2;
 		word.rotation.z = Math.PI / 6 + Math.PI / 3;
@@ -225,14 +221,14 @@ function createMainScene() {
 		curvePanManager.setPositionByIJ(obj.group, indexIJ.i, indexIJ.j, theMap.map);
 		world.scene.add(obj.group);
 		curveArr[indexIJ.i][indexIJ.j] = obj;
-		obj.group.children[0].onDown = panSureClick;
+		obj.group.children[0].onClick = panSureClick;
 		world.sinColor = new SinPanColorer(obj.group.children[0]);
 		world.actionInjections.push(world.sinColor.update);
 
 		function panSureClick(obj) {
 			world.scoreStep++;
 			var pan = obj.object.parent.owner;
-			obj.object.onDown = null;
+			obj.object.onClick = null;
 			world.lastUserPan = world.currentUserPan;
 			world.currentUserPan = null;
 			world.currentEndPoint = world.currentStartPoint;
@@ -255,7 +251,7 @@ function createMainScene() {
 				world.scene.add(obj.group);
 				curveArr[zb.i][zb.j] = obj;
 				world.currentUserPan = obj;
-				obj.group.children[0].onDown = panSureClick;
+				obj.group.children[0].onClick = panSureClick;
 				var id = curvePanManager.formPanToPanIndex(world.lastUserPan, world.currentStartPoint, obj);
 				for(var i = 0; i < 12; i++) {
 					if(obj.pointIndexArr[i] == id) {
@@ -389,9 +385,7 @@ function createMainScene() {
 		for(var i in theMap.map) {
 			curveArr.push([]);
 		}
-
 		animateCreatePan();
-
 		new $$.Component.Timer({
 			life: 5500,
 			duration: 5500,
@@ -399,14 +393,22 @@ function createMainScene() {
 		}, world).start();
 	}
 	startHomePage();
-
+	var levelArr=[];
 	function startHomePage() {
-		var levelArr = [];
+		levelArr = [];
+		var group = createLevelBtn(1);
+		group = createLevelBtn(2);
+		group.position.set(curvePanManager.panRadius * 3.464, 0, 0);
+		group = createLevelBtn(3);
+		group.position.set(-curvePanManager.panRadius * 3.464, 0, 0);
+	}
+
+	function createLevelBtn(index) {
 		var group = new THREE.Group();
 		var geometry = new THREE.CylinderBufferGeometry(curvePanManager.panRadius * 2, curvePanManager.panRadius * 2, curvePanManager.stonePanHeight, 6);
 		var cylinder = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
 			color: 0xffffff,
-			map: $$.global.RESOURCE.textures["texture/3.jpg"]
+			map: $$.global.RESOURCE.textures["texture/" + index + ".jpg"]
 		}));
 		group.add(cylinder);
 
@@ -417,24 +419,28 @@ function createMainScene() {
 		torus.rotation.z = Math.PI / 6;
 		group.add(torus);
 		world.scene.add(group);
-		levelArr.push(group);
-		group.children[0].onDown = function(obj) {
+		group.children[0].onClick = function(obj) {
 			var group = obj.object.parent;
-			var tween = new TWEEN.Tween(group.position)
-				.to({ y: -60 }, 1500).start();
-			obj.object.onDown = null;
+			for(var i in group.father) {
+				var tween = new TWEEN.Tween(group.father[i].position)
+					.to({ y: -160 }, 1500).start();
+				group.father[i].children[0].onClick = null;
+			}
 
 			new $$.Component.Timer({
 				life: 1500,
 				duration: 1500,
-				onEnd: function(){
-					world.scene.remove(group);
-					startGame(2);
+				onEnd: function() {
+					for(var i in group.father){
+						world.scene.remove(group.father[i]);
+					}
+					startGame(index - 1);
 				}
 			}, world).start();
-
-			
 		}
+		levelArr.push(group);
+		group.father=levelArr;
+		return group;
 	}
 
 	var options = {
@@ -446,9 +452,6 @@ function createMainScene() {
 	};
 
 	world.actionInjections.push(TWEEN.update);
-
-	//console.log($$.global.RESOURCE.sounds["media/main.ogg"]);
-
 	var listener = new THREE.AudioListener();
 	world.camera.add(listener);
 	var sound = new THREE.Audio(listener);

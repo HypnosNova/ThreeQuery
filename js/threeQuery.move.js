@@ -115,14 +115,17 @@ $$.Move = {
 			y:obj.position.y-this.camera.position.y,
 			z:obj.position.z-this.camera.position.z
 		};
+		console.log(this.absVec);
 		this.update=function(){
-			this.obj.position.x=this.camera.position.x+this.absVec.x;
-			this.obj.position.y=this.camera.position.y+this.absVec.y;
-			this.obj.position.z=this.camera.position.z+this.absVec.z;
+			var owner=arguments.callee.owner;
+			owner.obj.position.x=owner.camera.position.x+owner.absVec.x;
+			owner.obj.position.y=owner.camera.position.y+owner.absVec.y;
+			owner.obj.position.z=owner.camera.position.z+owner.absVec.z;
 			if(isFaceToCamera){
-				this.obj.lookAt(this.camera.position);
+				owner.obj.lookAt(owner.camera.position);
 			}
 		};
+		this.update.owner=this;
 		this.destroy = function() {
 			for(var i = 0; i < $$.actionInjections.length; i++) {
 				if($$.actionInjections[i] == this.update) {

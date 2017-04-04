@@ -107,8 +107,8 @@ var threeQuery = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
 			event.preventDefault();
-			$$.global.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-			$$.global.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			$$.global.mouse.x = (event.clientX / $$.getWorldWidth()) * 2 - 1;
+			$$.global.mouse.y = -(event.clientY / $$.getWorldHeight()) * 2 + 1;
 			if($$.global.selectedObj && $$.global.selectedObj.object.onDrag && $$.global.isDown) {
 				$$.global.selectedObj.object.onDrag($$.global.selectedObj);
 			}
@@ -126,6 +126,12 @@ var threeQuery = function() {
 		}
 
 		function onMouseDownOrTouchStart(event) {
+			if(event.type == "touchstart") {
+				$$.global.mouse.x = (event.targetTouches[0].clientX / $$.getWorldWidth()) * 2 - 1;
+				$$.global.mouse.y = -(event.targetTouches[0].clientY / $$.getWorldHeight()) * 2 + 1;
+				updateMouseRaycaster(true);
+			}
+
 			$$.global.isDown = true;
 			if($$.global.selectedObj && $$.global.selectedObj.object) {
 				$$.global.selectedObj.object.isDown = true;
@@ -386,7 +392,7 @@ var threeQuery = function() {
 	this.global.selectedObj = null;
 	this.global.centerSelectedObj = null;
 
-	function updateMouseRaycaster() {
+	function updateMouseRaycaster(isTouch) {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
 		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children, true);
 
@@ -402,13 +408,13 @@ var threeQuery = function() {
 
 		if(intersect) {
 			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid) {
+				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid&&!isTouch) {
 					if($$.global.selectedObj.object.onLeave) {
 						$$.global.selectedObj.object.onLeave($$.global.selectedObj);
 					}
 				}
 				$$.global.selectedObj = intersect;
-				if($$.global.selectedObj.object.onEnter) {
+				if($$.global.selectedObj.object.onEnter&&!isTouch) {
 					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
 				}
 			} else {
@@ -989,6 +995,373 @@ var threeQuery = function() {
 	};
 };
 var $$ = new threeQuery();
+$$.Controls = {
+	createOrbitControls: function(world) {
+		var camera = world?world.camera:$$.global.camera;
+		var element = $$.global.canvasDom;
+		var controls = new THREE.OrbitControls(camera, element);
+		controls.rotateUp(Math.PI / 4);
+		controls.target.set(
+			camera.position.x + 0.1,
+			camera.position.y,
+			camera.position.z
+		);
+		controls.noZoom = true;
+		controls.noPan = true;
+		if(world) {
+			world.controls = controls;
+			world.controls.enabledBefore=controls.enabled;
+		} else {
+			$$.global.controls = controls;
+		}
+		return controls;
+	},
+	createTrackBallControls: function(options, world) {
+		if(!options) {
+			options = {};
+		}
+		var camera = world ? world.camera : $$.global.camera;
+		//		var scene = $$.global.world;
+		controls = new THREE.TrackballControls(camera);
+		controls.rotateSpeed = options.rotateSpeed || 1;
+		controls.minDistance = options.minDistance || 1000;
+		controls.maxDistance = options.maxDistance || 1000;
+		controls.zoomSpeed = options.zoomSpeed || 1;
+		controls.panSpeed = options.panSpeed || 1;
+		controls.noZoom = options.noZoom || false;
+		controls.noPan = options.noPan || false;
+		controls.enabled = options.enabled == null ? true : options.enabled;
+		controls.dynamicDampingFactor = options.dynamicDampingFactor || 0.3;
+		controls.staticMoving = options.staticMoving || false;
+		if(world) {
+			world.controls = controls;
+			world.controls.enabledBefore=controls.enabled;
+		} else {
+			$$.global.controls = controls;
+		}
+
+		return controls;
+	},
+	createDeviceOrientationControls: function() {
+		var controls = new THREE.DeviceOrientationControls($$.global.camera, true);
+		controls.connect();
+		controls.update();
+		//window.removeEventListener('deviceorientation', $$.Controls.createDeviceOrientationControls, true);
+		//window.addEventListener('deviceorientation', $$.Controls.createDeviceOrientationControls, true);
+		$$.global.controls = controls;
+		return controls;
+	},
+	createPointerLockControls: function() {
+		var controls = new THREE.PointerLockControls($$.global.camera);
+		$$.global.controls = controls;
+		scene.add(controls.getObject());
+		controls.controlsEnabled = true;
+		controls.enabled = true;
+		controls.update = function() {
+
+		};
+		return controls;
+	},
+	createFirstCharacterControls: function(options, blocker) {
+		var controls = new THREE.PointerLockControls($$.global.camera);
+		$$.global.controls = controls;
+		scene.add(controls.getObject());
+
+		var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+		if(havePointerLock) {
+			var element = document.body;
+			var pointerlockchange = function(event) {
+				if(document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
+					controls.controlsEnabled = true;
+					controls.enabled = true;
+					blocker.style.display = 'none';
+				} else {
+					controls.enabled = false;
+					blocker.style.display = '-webkit-box';
+					blocker.style.display = '-moz-box';
+					blocker.style.display = 'box';
+				}
+			};
+			var pointerlockerror = function(event) {
+				blocker.style.display = '-webkit-box';
+				blocker.style.display = '-moz-box';
+				blocker.style.display = 'box';
+			};
+			// Hook pointer lock state change events
+			document.addEventListener('pointerlockchange', pointerlockchange, false);
+			document.addEventListener('mozpointerlockchange', pointerlockchange, false);
+			document.addEventListener('webkitpointerlockchange', pointerlockchange, false);
+			document.addEventListener('pointerlockerror', pointerlockerror, false);
+			document.addEventListener('mozpointerlockerror', pointerlockerror, false);
+			document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
+			blocker.addEventListener('click', function(event) {
+				blocker.style.display = 'none';
+				// Ask the browser to lock the pointer
+				element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+				if(/Firefox/i.test(navigator.userAgent)) {
+					var fullscreenchange = function(event) {
+						if(document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
+							document.removeEventListener('fullscreenchange', fullscreenchange);
+							document.removeEventListener('mozfullscreenchange', fullscreenchange);
+							element.requestPointerLock();
+						}
+					};
+					document.addEventListener('fullscreenchange', fullscreenchange, false);
+					document.addEventListener('mozfullscreenchange', fullscreenchange, false);
+					element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+					element.requestFullscreen();
+				} else {
+					element.requestPointerLock();
+				}
+			}, false);
+		} else {
+			blocker.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+		}
+		//移动模块
+		controls.controlsEnabled = false;
+		controls.moveForward = false;
+		controls.moveBackward = false;
+		controls.moveLeft = false;
+		controls.moveRight = false;
+		controls.canJump = false;
+		controls.prevTime = performance.now();
+		controls.velocity = new THREE.Vector3();
+		//是否使用键盘控制移动
+		if(options && options.keymove) {
+			document.addEventListener('keydown', function(event) {
+				switch(event.keyCode) {
+					case 38: // up
+					case 87: // w
+						$$.controls.moveForward = true;
+						break;
+					case 37: // left
+					case 65: // a
+						$$.controls.moveLeft = true;
+						break;
+					case 40: // down
+					case 83: // s
+						$$.controls.moveBackward = true;
+						break;
+					case 39: // right
+					case 68: // d
+						$$.controls.moveRight = true;
+						break;
+					case 32: // space
+						if($$.controls.canJump === true) $$.controls.velocity.y += 350;
+						$$.controls.canJump = false;
+						break;
+				}
+			}, false);
+			document.addEventListener('keyup', function(event) {
+				switch(event.keyCode) {
+					case 38: // up
+					case 87: // w
+						$$.controls.moveForward = false;
+						break;
+					case 37: // left
+					case 65: // a
+						$$.controls.moveLeft = false;
+						break;
+					case 40: // down
+					case 83: // s
+						$$.controls.moveBackward = false;
+						break;
+					case 39: // right
+					case 68: // d
+						$$.controls.moveRight = false;
+						break;
+				}
+			}, false);
+		}
+		controls.prevTime = performance.now();
+		controls.update = function() {
+			if($$.controls.controlsEnabled) {
+				$$.controls.time = performance.now();
+				var delta = ($$.controls.time - $$.controls.prevTime) / 1000;
+				$$.controls.velocity.x -= $$.controls.velocity.x * 2.0 * delta;
+				$$.controls.velocity.z -= $$.controls.velocity.z * 2.0 * delta;
+				$$.controls.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+				if($$.controls.moveForward) $$.controls.velocity.z -= 400.0 * delta;
+				if($$.controls.moveBackward) $$.controls.velocity.z += 400.0 * delta;
+				if($$.controls.moveLeft) $$.controls.velocity.x -= 400.0 * delta;
+				if($$.controls.moveRight) $$.controls.velocity.x += 400.0 * delta;
+
+				$$.controls.getObject().translateX($$.controls.velocity.x * delta);
+				$$.controls.getObject().translateY($$.controls.velocity.y * delta);
+				$$.controls.getObject().translateZ($$.controls.velocity.z * delta);
+				if($$.controls.getObject().position.y < 10) {
+					$$.controls.velocity.y = 0;
+					$$.controls.getObject().position.y = 10;
+					$$.controls.canJump = true;
+				}
+				$$.controls.prevTime = $$.controls.time;
+			}
+		};
+		return controls;
+	},
+};
+$$.Move = {
+	Linear: function(obj, speedRate, targetPosition) {
+		this.obj = obj;
+		this.speedRate = speedRate;
+		this.targetPosition = targetPosition;
+
+		this.direction = {
+			x: this.targetPosition.x - this.obj.position.x,
+			y: this.targetPosition.y - this.obj.position.y,
+			z: this.targetPosition.z - this.obj.position.z,
+		};
+
+		var uvec = $$.unitVector(this.direction);
+		this.speed = {
+			x: uvec.x * speedRate,
+			y: uvec.y * speedRate,
+			z: uvec.z * speedRate,
+		};
+
+		this.update = function() {
+			var owner = arguments.callee.owner;
+			owner.direction = {
+				x: owner.targetPosition.x - owner.obj.position.x,
+				y: owner.targetPosition.y - owner.obj.position.y,
+				z: owner.targetPosition.z - owner.obj.position.z,
+			};
+			var dLen = vecLength(owner.direction);
+			if(dLen < owner.speedRate) {
+				owner.obj.position.x = owner.targetPosition.x;
+				owner.obj.position.y = owner.targetPosition.y;
+				owner.obj.position.z = owner.targetPosition.z;
+				owner.destroy();
+			} else {
+				owner.obj.position.x += owner.speed.x;
+				owner.obj.position.y += owner.speed.y;
+				owner.obj.position.z += owner.speed.z;
+			}
+		};
+		this.update.owner = this;
+		this.destroy = function() {
+			for(var i = 0; i < $$.actionInjections.length; i++) {
+
+				if($$.actionInjections[i] == this.update) {
+					$$.actionInjections.splice(i, 1);
+					break;
+				}
+			}
+		};
+	},
+	Surround: function(mother, child, speedRate, vVect) {
+		this.angle = 0;
+		this.speedRate = speedRate;
+		this.mother = mother;
+		this.child = child;
+		this.vVect = vVect;
+		this.radius = $$.vecLength({
+			x: this.child.position.x - this.mother.position.x,
+			y: this.child.position.y - this.mother.position.y,
+			z: this.child.position.z - this.mother.position.z
+		});
+		this.update = function() {
+			var childToMotherVec = {
+				x: this.child.position.x - this.mother.position.x,
+				y: this.child.position.y - this.mother.position.y,
+				z: this.child.position.z - this.mother.position.z
+			};
+			var modVec1 = $$.vecLength(childToMotherVec);
+			childToMotherVec.x = childToMotherVec.x * this.radius / modVec1;
+			childToMotherVec.y = childToMotherVec.y * this.radius / modVec1;
+			childToMotherVec.z = childToMotherVec.z * this.radius / modVec1;
+
+			var speedVec = $$.crossMulti(childToMotherVec, vVect);
+			var modSpeedVec = $$.vecLength(speedVec);
+			speedVec.x = speedVec.x * speedRate / modSpeedVec;
+			speedVec.y = speedVec.y * speedRate / modSpeedVec;
+			speedVec.z = speedVec.z * speedRate / modSpeedVec;
+
+			child.position.x += speedVec.x;
+			child.position.y += speedVec.y;
+			child.position.z += speedVec.z;
+
+			var vec2 = {
+				x: this.child.position.x - this.mother.position.x,
+				y: this.child.position.y - this.mother.position.y,
+				z: this.child.position.z - this.mother.position.z
+			};
+
+			var modVec2 = $$.vecLength(vec2);
+			vec2.x = vec2.x * this.radius / modVec2;
+			vec2.y = vec2.y * this.radius / modVec2;
+			vec2.z = vec2.z * this.radius / modVec2;
+			this.child.position.x = this.mother.position.x + vec2.x;
+			this.child.position.y = this.mother.position.y + vec2.y;
+			this.child.position.z = this.mother.position.z + vec2.z;
+		};
+		this.destroy = function() {
+			for(var i = 0; i < $$.actionInjections.length; i++) {
+				if($$.actionInjections[i] == this.update) {
+					$$.actionInjections.splice(i, 1);
+					break;
+				}
+			}
+		};
+	},
+	RelateToCamera:function(obj,isFaceToCamera,world){
+		if(!world){
+			this.camera=$$.global.camera;
+		}else{
+			this.camera=world.camera;
+		}
+		this.obj=obj;
+		this.isFaceToCamera=isFaceToCamera;
+		this.absVec={
+			x:obj.position.x-this.camera.position.x,
+			y:obj.position.y-this.camera.position.y,
+			z:obj.position.z-this.camera.position.z
+		};
+		console.log(this.absVec);
+		this.update=function(){
+			var owner=arguments.callee.owner;
+			owner.obj.position.x=owner.camera.position.x+owner.absVec.x;
+			owner.obj.position.y=owner.camera.position.y+owner.absVec.y;
+			owner.obj.position.z=owner.camera.position.z+owner.absVec.z;
+			if(isFaceToCamera){
+				owner.obj.lookAt(owner.camera.position);
+			}
+		};
+		this.update.owner=this;
+		this.destroy = function() {
+			for(var i = 0; i < $$.actionInjections.length; i++) {
+				if($$.actionInjections[i] == this.update) {
+					$$.actionInjections.splice(i, 1);
+					break;
+				}
+			}
+		};
+	}
+};
+
+$$.crossMulti = function(vec1, vec2) {
+	var res = {
+		x: 0,
+		y: 0,
+		z: 0
+	};
+	res.x = vec1.y * vec2.z - vec2.y * vec1.z;
+	res.y = vec1.z * vec2.x - vec2.z * vec1.x;
+	res.z = vec1.x * vec2.y - vec2.x * vec1.y;
+	return res;
+};
+
+$$.vecLength = function(vec) {
+	return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+};
+
+$$.unitVector = function(vec) {
+	var len = $$.vecLength(vec);
+	vec.x /= len;
+	vec.y /= len;
+	vec.z /= len;
+	return vec;
+};
 //九宫格对齐方式：
 //1 2 3
 //4 5 6
@@ -1299,367 +1672,26 @@ $$.Component = {
 		}
 	}
 };
-$$.Controls = {
-	createOrbitControls: function(world) {
-		var camera = world?world.camera:$$.global.camera;
-		var element = $$.global.canvasDom;
-		var controls = new THREE.OrbitControls(camera, element);
-		controls.rotateUp(Math.PI / 4);
-		controls.target.set(
-			camera.position.x + 0.1,
-			camera.position.y,
-			camera.position.z
-		);
-		controls.noZoom = true;
-		controls.noPan = true;
-		if(world) {
-			world.controls = controls;
-			world.controls.enabledBefore=controls.enabled;
-		} else {
-			$$.global.controls = controls;
-		}
-		return controls;
-	},
-	createTrackBallControls: function(options, world) {
-		if(!options) {
-			options = {};
-		}
-		var camera = world ? world.camera : $$.global.camera;
-		//		var scene = $$.global.world;
-		controls = new THREE.TrackballControls(camera);
-		controls.rotateSpeed = options.rotateSpeed || 1;
-		controls.minDistance = options.minDistance || 1000;
-		controls.maxDistance = options.maxDistance || 1000;
-		controls.zoomSpeed = options.zoomSpeed || 1;
-		controls.panSpeed = options.panSpeed || 1;
-		controls.noZoom = options.noZoom || false;
-		controls.noPan = options.noPan || false;
-		controls.enabled = options.enabled == null ? true : options.enabled;
-		controls.dynamicDampingFactor = options.dynamicDampingFactor || 0.3;
-		controls.staticMoving = options.staticMoving || false;
-		if(world) {
-			world.controls = controls;
-			world.controls.enabledBefore=controls.enabled;
-		} else {
-			$$.global.controls = controls;
-		}
-
-		return controls;
-	},
-	createDeviceOrientationControls: function() {
-		var controls = new THREE.DeviceOrientationControls($$.global.camera, true);
-		controls.connect();
-		controls.update();
-		window.removeEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
-		window.addEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
-		$$.global.controls = controls;
-		return controls;
-	},
-	createPointerLockControls: function() {
-		var controls = new THREE.PointerLockControls($$.global.camera);
-		$$.global.controls = controls;
-		scene.add(controls.getObject());
-		controls.controlsEnabled = true;
-		controls.enabled = true;
-		controls.update = function() {
-
-		};
-		return controls;
-	},
-	createFirstCharacterControls: function(options, blocker) {
-		var controls = new THREE.PointerLockControls($$.global.camera);
-		$$.global.controls = controls;
-		scene.add(controls.getObject());
-
-		var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-		if(havePointerLock) {
-			var element = document.body;
-			var pointerlockchange = function(event) {
-				if(document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-					controls.controlsEnabled = true;
-					controls.enabled = true;
-					blocker.style.display = 'none';
-				} else {
-					controls.enabled = false;
-					blocker.style.display = '-webkit-box';
-					blocker.style.display = '-moz-box';
-					blocker.style.display = 'box';
-				}
-			};
-			var pointerlockerror = function(event) {
-				blocker.style.display = '-webkit-box';
-				blocker.style.display = '-moz-box';
-				blocker.style.display = 'box';
-			};
-			// Hook pointer lock state change events
-			document.addEventListener('pointerlockchange', pointerlockchange, false);
-			document.addEventListener('mozpointerlockchange', pointerlockchange, false);
-			document.addEventListener('webkitpointerlockchange', pointerlockchange, false);
-			document.addEventListener('pointerlockerror', pointerlockerror, false);
-			document.addEventListener('mozpointerlockerror', pointerlockerror, false);
-			document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
-			blocker.addEventListener('click', function(event) {
-				blocker.style.display = 'none';
-				// Ask the browser to lock the pointer
-				element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-				if(/Firefox/i.test(navigator.userAgent)) {
-					var fullscreenchange = function(event) {
-						if(document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
-							document.removeEventListener('fullscreenchange', fullscreenchange);
-							document.removeEventListener('mozfullscreenchange', fullscreenchange);
-							element.requestPointerLock();
-						}
-					};
-					document.addEventListener('fullscreenchange', fullscreenchange, false);
-					document.addEventListener('mozfullscreenchange', fullscreenchange, false);
-					element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
-					element.requestFullscreen();
-				} else {
-					element.requestPointerLock();
-				}
-			}, false);
-		} else {
-			blocker.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
-		}
-		//移动模块
-		controls.controlsEnabled = false;
-		controls.moveForward = false;
-		controls.moveBackward = false;
-		controls.moveLeft = false;
-		controls.moveRight = false;
-		controls.canJump = false;
-		controls.prevTime = performance.now();
-		controls.velocity = new THREE.Vector3();
-		//是否使用键盘控制移动
-		if(options && options.keymove) {
-			document.addEventListener('keydown', function(event) {
-				switch(event.keyCode) {
-					case 38: // up
-					case 87: // w
-						$$.controls.moveForward = true;
-						break;
-					case 37: // left
-					case 65: // a
-						$$.controls.moveLeft = true;
-						break;
-					case 40: // down
-					case 83: // s
-						$$.controls.moveBackward = true;
-						break;
-					case 39: // right
-					case 68: // d
-						$$.controls.moveRight = true;
-						break;
-					case 32: // space
-						if($$.controls.canJump === true) $$.controls.velocity.y += 350;
-						$$.controls.canJump = false;
-						break;
-				}
-			}, false);
-			document.addEventListener('keyup', function(event) {
-				switch(event.keyCode) {
-					case 38: // up
-					case 87: // w
-						$$.controls.moveForward = false;
-						break;
-					case 37: // left
-					case 65: // a
-						$$.controls.moveLeft = false;
-						break;
-					case 40: // down
-					case 83: // s
-						$$.controls.moveBackward = false;
-						break;
-					case 39: // right
-					case 68: // d
-						$$.controls.moveRight = false;
-						break;
-				}
-			}, false);
-		}
-		controls.prevTime = performance.now();
-		controls.update = function() {
-			if($$.controls.controlsEnabled) {
-				$$.controls.time = performance.now();
-				var delta = ($$.controls.time - $$.controls.prevTime) / 1000;
-				$$.controls.velocity.x -= $$.controls.velocity.x * 2.0 * delta;
-				$$.controls.velocity.z -= $$.controls.velocity.z * 2.0 * delta;
-				$$.controls.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-				if($$.controls.moveForward) $$.controls.velocity.z -= 400.0 * delta;
-				if($$.controls.moveBackward) $$.controls.velocity.z += 400.0 * delta;
-				if($$.controls.moveLeft) $$.controls.velocity.x -= 400.0 * delta;
-				if($$.controls.moveRight) $$.controls.velocity.x += 400.0 * delta;
-
-				$$.controls.getObject().translateX($$.controls.velocity.x * delta);
-				$$.controls.getObject().translateY($$.controls.velocity.y * delta);
-				$$.controls.getObject().translateZ($$.controls.velocity.z * delta);
-				if($$.controls.getObject().position.y < 10) {
-					$$.controls.velocity.y = 0;
-					$$.controls.getObject().position.y = 10;
-					$$.controls.canJump = true;
-				}
-				$$.controls.prevTime = $$.controls.time;
-			}
-		};
-		return controls;
-	},
-};
-$$.Move = {
-	Linear: function(obj, speedRate, targetPosition) {
-		this.obj = obj;
-		this.speedRate = speedRate;
-		this.targetPosition = targetPosition;
-
-		this.direction = {
-			x: this.targetPosition.x - this.obj.position.x,
-			y: this.targetPosition.y - this.obj.position.y,
-			z: this.targetPosition.z - this.obj.position.z,
-		};
-
-		var uvec = $$.unitVector(this.direction);
-		this.speed = {
-			x: uvec.x * speedRate,
-			y: uvec.y * speedRate,
-			z: uvec.z * speedRate,
-		};
-
-		this.update = function() {
-			var owner = arguments.callee.owner;
-			owner.direction = {
-				x: owner.targetPosition.x - owner.obj.position.x,
-				y: owner.targetPosition.y - owner.obj.position.y,
-				z: owner.targetPosition.z - owner.obj.position.z,
-			};
-			var dLen = vecLength(owner.direction);
-			if(dLen < owner.speedRate) {
-				owner.obj.position.x = owner.targetPosition.x;
-				owner.obj.position.y = owner.targetPosition.y;
-				owner.obj.position.z = owner.targetPosition.z;
-				owner.destroy();
-			} else {
-				owner.obj.position.x += owner.speed.x;
-				owner.obj.position.y += owner.speed.y;
-				owner.obj.position.z += owner.speed.z;
-			}
-		};
-		this.update.owner = this;
-		this.destroy = function() {
-			for(var i = 0; i < $$.actionInjections.length; i++) {
-
-				if($$.actionInjections[i] == this.update) {
-					$$.actionInjections.splice(i, 1);
-					break;
-				}
-			}
-		};
-	},
-	Surround: function(mother, child, speedRate, vVect) {
-		this.angle = 0;
-		this.speedRate = speedRate;
-		this.mother = mother;
-		this.child = child;
-		this.vVect = vVect;
-		this.radius = $$.vecLength({
-			x: this.child.position.x - this.mother.position.x,
-			y: this.child.position.y - this.mother.position.y,
-			z: this.child.position.z - this.mother.position.z
-		});
-		this.update = function() {
-			var childToMotherVec = {
-				x: this.child.position.x - this.mother.position.x,
-				y: this.child.position.y - this.mother.position.y,
-				z: this.child.position.z - this.mother.position.z
-			};
-			var modVec1 = $$.vecLength(childToMotherVec);
-			childToMotherVec.x = childToMotherVec.x * this.radius / modVec1;
-			childToMotherVec.y = childToMotherVec.y * this.radius / modVec1;
-			childToMotherVec.z = childToMotherVec.z * this.radius / modVec1;
-
-			var speedVec = $$.crossMulti(childToMotherVec, vVect);
-			var modSpeedVec = $$.vecLength(speedVec);
-			speedVec.x = speedVec.x * speedRate / modSpeedVec;
-			speedVec.y = speedVec.y * speedRate / modSpeedVec;
-			speedVec.z = speedVec.z * speedRate / modSpeedVec;
-
-			child.position.x += speedVec.x;
-			child.position.y += speedVec.y;
-			child.position.z += speedVec.z;
-
-			var vec2 = {
-				x: this.child.position.x - this.mother.position.x,
-				y: this.child.position.y - this.mother.position.y,
-				z: this.child.position.z - this.mother.position.z
-			};
-
-			var modVec2 = $$.vecLength(vec2);
-			vec2.x = vec2.x * this.radius / modVec2;
-			vec2.y = vec2.y * this.radius / modVec2;
-			vec2.z = vec2.z * this.radius / modVec2;
-			this.child.position.x = this.mother.position.x + vec2.x;
-			this.child.position.y = this.mother.position.y + vec2.y;
-			this.child.position.z = this.mother.position.z + vec2.z;
-		};
-		this.destroy = function() {
-			for(var i = 0; i < $$.actionInjections.length; i++) {
-				if($$.actionInjections[i] == this.update) {
-					$$.actionInjections.splice(i, 1);
-					break;
-				}
-			}
-		};
-	},
-	RelateToCamera:function(obj,isFaceToCamera,world){
-		if(!world){
-			this.camera=$$.global.camera;
-		}else{
-			this.camera=world.camera;
-		}
-		this.obj=obj;
-		this.isFaceToCamera=isFaceToCamera;
-		this.absVec={
-			x:obj.position.x-this.camera.position.x,
-			y:obj.position.y-this.camera.position.y,
-			z:obj.position.z-this.camera.position.z
-		};
-		this.update=function(){
-			this.obj.position.x=this.camera.position.x+this.absVec.x;
-			this.obj.position.y=this.camera.position.y+this.absVec.y;
-			this.obj.position.z=this.camera.position.z+this.absVec.z;
-			if(isFaceToCamera){
-				this.obj.lookAt(this.camera.position);
-			}
-		};
-		this.destroy = function() {
-			for(var i = 0; i < $$.actionInjections.length; i++) {
-				if($$.actionInjections[i] == this.update) {
-					$$.actionInjections.splice(i, 1);
-					break;
-				}
-			}
+$$.Device = {
+	getOSInfo: function() {
+		var ua = navigator.userAgent,
+			isWindowsPhone = /(?:Windows Phone)/.test(ua),
+			isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,
+			isAndroid = /(?:Android)/.test(ua),
+			isFireFox = /(?:Firefox)/.test(ua),
+			isChrome = /(?:Chrome|CriOS)/.test(ua),
+			isTablet = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua)),
+			isPhone = /(?:iPhone)/.test(ua) && !isTablet,
+			isPc = !isPhone && !isAndroid && !isSymbian && !isTablet;
+		return {
+			isTablet: isTablet,
+			isIPhone: isPhone,
+			isAndroid: isAndroid,
+			isPc: isPc
 		};
 	}
 };
 
-$$.crossMulti = function(vec1, vec2) {
-	var res = {
-		x: 0,
-		y: 0,
-		z: 0
-	};
-	res.x = vec1.y * vec2.z - vec2.y * vec1.z;
-	res.y = vec1.z * vec2.x - vec2.z * vec1.x;
-	res.z = vec1.x * vec2.y - vec2.x * vec1.y;
-	return res;
-};
-
-$$.vecLength = function(vec) {
-	return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-};
-
-$$.unitVector = function(vec) {
-	var len = $$.vecLength(vec);
-	vec.x /= len;
-	vec.y /= len;
-	vec.z /= len;
-	return vec;
-};
+$$.sound={
+	
+}

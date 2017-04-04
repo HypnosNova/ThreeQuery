@@ -107,8 +107,8 @@ var threeQuery = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
 			event.preventDefault();
-			$$.global.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-			$$.global.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			$$.global.mouse.x = (event.clientX / $$.getWorldWidth()) * 2 - 1;
+			$$.global.mouse.y = -(event.clientY / $$.getWorldHeight()) * 2 + 1;
 			if($$.global.selectedObj && $$.global.selectedObj.object.onDrag && $$.global.isDown) {
 				$$.global.selectedObj.object.onDrag($$.global.selectedObj);
 			}
@@ -126,6 +126,12 @@ var threeQuery = function() {
 		}
 
 		function onMouseDownOrTouchStart(event) {
+			if(event.type == "touchstart") {
+				$$.global.mouse.x = (event.targetTouches[0].clientX / $$.getWorldWidth()) * 2 - 1;
+				$$.global.mouse.y = -(event.targetTouches[0].clientY / $$.getWorldHeight()) * 2 + 1;
+				updateMouseRaycaster(true);
+			}
+
 			$$.global.isDown = true;
 			if($$.global.selectedObj && $$.global.selectedObj.object) {
 				$$.global.selectedObj.object.isDown = true;
@@ -386,7 +392,7 @@ var threeQuery = function() {
 	this.global.selectedObj = null;
 	this.global.centerSelectedObj = null;
 
-	function updateMouseRaycaster() {
+	function updateMouseRaycaster(isTouch) {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
 		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children, true);
 
@@ -402,13 +408,13 @@ var threeQuery = function() {
 
 		if(intersect) {
 			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid) {
+				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid&&!isTouch) {
 					if($$.global.selectedObj.object.onLeave) {
 						$$.global.selectedObj.object.onLeave($$.global.selectedObj);
 					}
 				}
 				$$.global.selectedObj = intersect;
-				if($$.global.selectedObj.object.onEnter) {
+				if($$.global.selectedObj.object.onEnter&&!isTouch) {
 					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
 				}
 			} else {

@@ -49,8 +49,8 @@ $$.Controls = {
 		var controls = new THREE.DeviceOrientationControls($$.global.camera, true);
 		controls.connect();
 		controls.update();
-		window.removeEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
-		window.addEventListener('deviceorientation', $$.extend.createDeviceOrientationControls, true);
+		//window.removeEventListener('deviceorientation', $$.Controls.createDeviceOrientationControls, true);
+		//window.addEventListener('deviceorientation', $$.Controls.createDeviceOrientationControls, true);
 		$$.global.controls = controls;
 		return controls;
 	},

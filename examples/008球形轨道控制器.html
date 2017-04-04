@@ -8,14 +8,12 @@
 
 	<body>
 		<script src="../lib/three.min.js"></script>
-		<script src="../lib/StereoEffect.js"></script>
 		<script src="../lib/trackBallControls.js"></script>
 		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
 		<script>
 			var [scene, renderer, camera] = $$.init();
 			camera.position.z = 500;
-			var controls = $$.extend.createTrackBallControls({
+			var controls = $$.Controls.createTrackBallControls({
 				maxDistance:10000,
 				minDistance:1000
 			});
