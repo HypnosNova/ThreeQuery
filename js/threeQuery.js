@@ -1132,23 +1132,23 @@ $$.Controls = {
 				switch(event.keyCode) {
 					case 38: // up
 					case 87: // w
-						$$.controls.moveForward = true;
+						$$.global.controls.moveForward = true;
 						break;
 					case 37: // left
 					case 65: // a
-						$$.controls.moveLeft = true;
+						$$.global.controls.moveLeft = true;
 						break;
 					case 40: // down
 					case 83: // s
-						$$.controls.moveBackward = true;
+						$$.global.controls.moveBackward = true;
 						break;
 					case 39: // right
 					case 68: // d
-						$$.controls.moveRight = true;
+						$$.global.controls.moveRight = true;
 						break;
 					case 32: // space
-						if($$.controls.canJump === true) $$.controls.velocity.y += 350;
-						$$.controls.canJump = false;
+						if($$.global.controls.canJump === true) $$.global.controls.velocity.y += 350;
+						$$.global.controls.canJump = false;
 						break;
 				}
 			}, false);
@@ -1156,45 +1156,45 @@ $$.Controls = {
 				switch(event.keyCode) {
 					case 38: // up
 					case 87: // w
-						$$.controls.moveForward = false;
+						$$.global.controls.moveForward = false;
 						break;
 					case 37: // left
 					case 65: // a
-						$$.controls.moveLeft = false;
+						$$.global.controls.moveLeft = false;
 						break;
 					case 40: // down
 					case 83: // s
-						$$.controls.moveBackward = false;
+						$$.global.controls.moveBackward = false;
 						break;
 					case 39: // right
 					case 68: // d
-						$$.controls.moveRight = false;
+						$$.global.controls.moveRight = false;
 						break;
 				}
 			}, false);
 		}
 		controls.prevTime = performance.now();
 		controls.update = function() {
-			if($$.controls.controlsEnabled) {
-				$$.controls.time = performance.now();
-				var delta = ($$.controls.time - $$.controls.prevTime) / 1000;
-				$$.controls.velocity.x -= $$.controls.velocity.x * 2.0 * delta;
-				$$.controls.velocity.z -= $$.controls.velocity.z * 2.0 * delta;
-				$$.controls.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-				if($$.controls.moveForward) $$.controls.velocity.z -= 400.0 * delta;
-				if($$.controls.moveBackward) $$.controls.velocity.z += 400.0 * delta;
-				if($$.controls.moveLeft) $$.controls.velocity.x -= 400.0 * delta;
-				if($$.controls.moveRight) $$.controls.velocity.x += 400.0 * delta;
+			if($$.global.controls.enabled) {
+				$$.global.controls.time = performance.now();
+				var delta = ($$.global.controls.time - $$.global.controls.prevTime) / 1000;
+				$$.global.controls.velocity.x -= $$.global.controls.velocity.x * 2.0 * delta;
+				$$.global.controls.velocity.z -= $$.global.controls.velocity.z * 2.0 * delta;
+				$$.global.controls.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+				if($$.global.controls.moveForward) $$.global.controls.velocity.z -= 400.0 * delta;
+				if($$.global.controls.moveBackward) $$.global.controls.velocity.z += 400.0 * delta;
+				if($$.global.controls.moveLeft) $$.global.controls.velocity.x -= 400.0 * delta;
+				if($$.global.controls.moveRight) $$.global.controls.velocity.x += 400.0 * delta;
 
-				$$.controls.getObject().translateX($$.controls.velocity.x * delta);
-				$$.controls.getObject().translateY($$.controls.velocity.y * delta);
-				$$.controls.getObject().translateZ($$.controls.velocity.z * delta);
-				if($$.controls.getObject().position.y < 10) {
-					$$.controls.velocity.y = 0;
-					$$.controls.getObject().position.y = 10;
-					$$.controls.canJump = true;
+				$$.global.controls.getObject().translateX($$.global.controls.velocity.x * delta);
+				$$.global.controls.getObject().translateY($$.global.controls.velocity.y * delta);
+				$$.global.controls.getObject().translateZ($$.global.controls.velocity.z * delta);
+				if($$.global.controls.getObject().position.y < 10) {
+					$$.global.controls.velocity.y = 0;
+					$$.global.controls.getObject().position.y = 10;
+					$$.global.controls.canJump = true;
 				}
-				$$.controls.prevTime = $$.controls.time;
+				$$.global.controls.prevTime = $$.global.controls.time;
 			}
 		};
 		return controls;

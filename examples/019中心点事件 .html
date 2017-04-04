@@ -52,12 +52,10 @@
 	</head>
 	<body>
 		<script src="../lib/three.js"></script>
-		<script src="../lib/StereoEffect.js"></script>
 		<script src="../js/threeQuery.js"></script>
 		<script src="../lib/PointerLockControls.js"></script>
 		<script src="../lib/plugins/Mirror.js"></script>
 		<script src="../lib/plugins/WaterShader.js"></script>
-		<script src="../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
 		<img src="../demo/svg/crosshair.svg" id="crosshair"/>
 		<div id="blocker">
 			<div id="instructions">
@@ -74,7 +72,7 @@
 				fov:50
 			});
 			var water;
-			var controls=$$.extend.createFirstCharacterControls({keymove:true},blocker);
+			var controls=$$.Controls.createFirstCharacterControls({keymove:true},blocker);
 			
 //			addSomethingInScene();
 			scene.add(new THREE.AmbientLight(0x444444));
