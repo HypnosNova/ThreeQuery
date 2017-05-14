@@ -65,13 +65,21 @@
 		<script src="js/material.js"></script>
 		<script src="js/createObject.js"></script>
 		<img src="../../demo/wordGame/svg/crosshair.svg" id="crosshair" />
+		
 		<div id="blocker">
 			<div id="instructions">
 				<span style="font-size:40px">Click to play</span>
 				<br /> (W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
 			</div>
 		</div>
+		<div id="maskLoading" style="width: 100%;height:100%;position:fixed;background-color: #333;font-size: 52px;text-align: center;color: #fff;">
+			<p id="progress" style="font-size: 52px;text-align: center;color: #fff;position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);">Loading</p>
+		</div>
 		<script>
+			var progress=document.getElementById("progress");
+			$$.onProgress=function(item, loaded, total){
+				progress.innerText=Math.floor(loaded/total*100)+"%";
+			}
 			var blocker = document.getElementById('blocker');
 			var [scene, renderer, camera] = $$.init(null, null, {
 				far: 3000000,
@@ -79,7 +87,8 @@
 			});
 			var water, chairModel;
 			var controls = $$.Controls.createFirstCharacterControls({
-				keymove: true
+				keymove: true,
+				tall:20
 			}, blocker);
 
 			//环境光
@@ -100,6 +109,7 @@
 			]);
 
 			$$.onLoadComplete = function() {
+				document.body.removeChild(document.getElementById("maskLoading"));
 
 				materialAll.shelfMaterial = new THREE.MeshLambertMaterial({
 					color: 0xffffff,
