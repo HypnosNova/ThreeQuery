@@ -265,6 +265,22 @@ var threeQuery = function() {
 			);
 		}
 	};
+	this.loadCubeTexture = function(name, arr) {
+		allLoaded = false;
+		var loader = new THREE.CubeTextureLoader(this.global.loadingManager);
+		loader.load(arr,
+			function(texture) {
+				console.log(texture)
+				$$.global.RESOURCE.textures[name] = texture;
+			},
+			function(xhr) {},
+			function(xhr) {
+				console.log(xhr)
+				$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+				console.log(name + " is not found");
+			}
+		);
+	};
 	var soundDecodeNum = 0; //需要解码的音频数量
 	var allLoaded = true;
 	this.loadSound = function(arr) {
@@ -408,13 +424,13 @@ var threeQuery = function() {
 
 		if(intersect) {
 			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid&&!isTouch) {
+				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid && !isTouch) {
 					if($$.global.selectedObj.object.onLeave) {
 						$$.global.selectedObj.object.onLeave($$.global.selectedObj);
 					}
 				}
 				$$.global.selectedObj = intersect;
-				if($$.global.selectedObj.object.onEnter&&!isTouch) {
+				if($$.global.selectedObj.object.onEnter && !isTouch) {
 					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
 				}
 			} else {

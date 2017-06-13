@@ -6,7 +6,7 @@ function createMainScene() {
 		fov: 50
 	});
 	world.camera.position.set(400, 400, 400);
-	var controls = $$.Controls.createOrbitControls(world);
+	var controls = $$.Controls.createOrbitControls({},world);
 	controls.target.set(0, 0, 0);
 	controls.minDistance = 250;
 	controls.maxDistance = 1000;

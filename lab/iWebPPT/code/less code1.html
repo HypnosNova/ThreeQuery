@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+	</head>
+	<body>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.min.js"></script>
+		<script src="../../../lib/StereoEffect.js"></script>
+		<script>
+			$$.global.settings.vr=true;
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+			
+			init();
+			function init() {
+				camera.position.z = 800;
+				
+				geometry = new THREE.BoxGeometry(200, 200, 200);
+				material = new THREE.MeshBasicMaterial({
+					color: 0xff0000,
+					wireframe: true
+				});
+				mesh = new THREE.Mesh(geometry, material);
+				scene.add(mesh);
+
+				$$.actionInjections.push(function() {
+					mesh.rotation.x += 0.01;
+					mesh.rotation.y += 0.02;
+				});
+			}
+		</script>
+	</body>
+
+</html>

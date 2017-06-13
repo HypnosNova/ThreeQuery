@@ -265,6 +265,22 @@ var threeQuery = function() {
 			);
 		}
 	};
+	this.loadCubeTexture = function(name, arr) {
+		allLoaded = false;
+		var loader = new THREE.CubeTextureLoader(this.global.loadingManager);
+		loader.load(arr,
+			function(texture) {
+				console.log(texture)
+				$$.global.RESOURCE.textures[name] = texture;
+			},
+			function(xhr) {},
+			function(xhr) {
+				console.log(xhr)
+				$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+				console.log(name + " is not found");
+			}
+		);
+	};
 	var soundDecodeNum = 0; //需要解码的音频数量
 	var allLoaded = true;
 	this.loadSound = function(arr) {
@@ -408,13 +424,13 @@ var threeQuery = function() {
 
 		if(intersect) {
 			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid&&!isTouch) {
+				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid && !isTouch) {
 					if($$.global.selectedObj.object.onLeave) {
 						$$.global.selectedObj.object.onLeave($$.global.selectedObj);
 					}
 				}
 				$$.global.selectedObj = intersect;
-				if($$.global.selectedObj.object.onEnter&&!isTouch) {
+				if($$.global.selectedObj.object.onEnter && !isTouch) {
 					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
 				}
 			} else {
@@ -996,18 +1012,44 @@ var threeQuery = function() {
 };
 var $$ = new threeQuery();
 $$.Controls = {
-	createOrbitControls: function(world) {
+	createOrbitControls: function(options,world) {
+		options=options?options:{};
+		options=$$.extends({},[{
+			noZoom:true,
+			noPan:true,
+			rotateUp:0,
+			minDistance:0,
+			maxDistance:Infinity,
+			zoomSpeed : 1.0,
+			noRotate : false,
+  			rotateSpeed : 1.0,
+  			keyPanSpeed:7.0,
+  			autoRotate : false,
+  			autoRotateSpeed :2.0,
+  			minPolarAngle : 0,
+  			maxPolarAngle : Math.PI,
+		},options]);
 		var camera = world?world.camera:$$.global.camera;
 		var element = $$.global.canvasDom;
 		var controls = new THREE.OrbitControls(camera, element);
-		controls.rotateUp(Math.PI / 4);
+		controls.rotateUp(options.rotateUp);
 		controls.target.set(
 			camera.position.x + 0.1,
 			camera.position.y,
 			camera.position.z
 		);
-		controls.noZoom = true;
-		controls.noPan = true;
+		controls.noZoom = options.noZoom;
+		controls.noPan = options.noPan;
+		controls.minDistance=options.minDistance;
+		controls.maxDistance=options.maxDistance;
+		controls.zoomSpeed=options.zoomSpeed;
+		controls.noRotate=options.noRotate;
+		controls.rotateSpeed=options.rotateSpeed;
+		controls.keyPanSpeed=options.keyPanSpeed;
+		controls.autoRotate=options.autoRotate;
+		controls.autoRotateSpeed=options.autoRotateSpeed;
+		controls.minPolarAngle=options.minPolarAngle;
+		controls.maxPolarAngle=options.maxPolarAngle;
 		if(world) {
 			world.controls = controls;
 			world.controls.enabledBefore=controls.enabled;
@@ -1166,7 +1208,7 @@ $$.Controls = {
 						break;
 					case 32: // space
 						
-						if($$.global.controls.canJump === true){console.log(options.speed.y); $$.global.controls.velocity.y += options.speed.y};
+						if($$.global.controls.canJump === true){$$.global.controls.velocity.y += options.speed.y};
 						$$.global.controls.canJump = false;
 						break;
 				}
@@ -1195,7 +1237,6 @@ $$.Controls = {
 		controls.prevTime = performance.now();
 		controls.update = function() {
 			if($$.global.controls.enabled) {
-				console.log(controls.velocity)
 				$$.global.controls.time = performance.now();
 				var delta = ($$.global.controls.time - $$.global.controls.prevTime) / 1000;
 				$$.global.controls.velocity.x -= $$.global.controls.velocity.x * options.acceleration.x * delta;
@@ -1205,7 +1246,6 @@ $$.Controls = {
 				if($$.global.controls.moveBackward) $$.global.controls.velocity.z += options.speed.z * delta;
 				if($$.global.controls.moveLeft) $$.global.controls.velocity.x -= options.speed.x * delta;
 				if($$.global.controls.moveRight) $$.global.controls.velocity.x += options.speed.x * delta;
-				console.log($$.global.controls.velocity.y)
 				$$.global.controls.getObject().translateX($$.global.controls.velocity.x * delta);
 				$$.global.controls.getObject().translateY($$.global.controls.velocity.y * delta);
 				$$.global.controls.getObject().translateZ($$.global.controls.velocity.z * delta);

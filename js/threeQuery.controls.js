@@ -1,16 +1,42 @@
 $$.Controls = {
-	createOrbitControls: function(world) {
+	createOrbitControls: function(options,world) {
+		options=options?options:{};
+		options=$$.extends({},[{
+			noZoom:true,
+			noPan:true,
+			rotateUp:0,
+			minDistance:0,
+			maxDistance:Infinity,
+			zoomSpeed : 1.0,
+			noRotate : false,
+  			rotateSpeed : 1.0,
+  			keyPanSpeed:7.0,
+  			autoRotate : false,
+  			autoRotateSpeed :2.0,
+  			minPolarAngle : 0,
+  			maxPolarAngle : Math.PI,
+		},options]);
 		var camera = world?world.camera:$$.global.camera;
 		var element = $$.global.canvasDom;
 		var controls = new THREE.OrbitControls(camera, element);
-		controls.rotateUp(Math.PI / 4);
+		controls.rotateUp(options.rotateUp);
 		controls.target.set(
 			camera.position.x + 0.1,
 			camera.position.y,
 			camera.position.z
 		);
-		controls.noZoom = true;
-		controls.noPan = true;
+		controls.noZoom = options.noZoom;
+		controls.noPan = options.noPan;
+		controls.minDistance=options.minDistance;
+		controls.maxDistance=options.maxDistance;
+		controls.zoomSpeed=options.zoomSpeed;
+		controls.noRotate=options.noRotate;
+		controls.rotateSpeed=options.rotateSpeed;
+		controls.keyPanSpeed=options.keyPanSpeed;
+		controls.autoRotate=options.autoRotate;
+		controls.autoRotateSpeed=options.autoRotateSpeed;
+		controls.minPolarAngle=options.minPolarAngle;
+		controls.maxPolarAngle=options.maxPolarAngle;
 		if(world) {
 			world.controls = controls;
 			world.controls.enabledBefore=controls.enabled;

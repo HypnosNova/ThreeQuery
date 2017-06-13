@@ -6,7 +6,7 @@ function createMainScene() {
 		fov: 50
 	});
 	world.camera.position.set(300, 300, 300);
-	var controls = $$.Controls.createOrbitControls(world);
+	var controls = $$.Controls.createOrbitControls({},world);
 	controls.target.set(0, 0, 0);
 	controls.update();
 	world.camera.lookAt(world.scene.position);
