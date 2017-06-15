@@ -17,7 +17,7 @@
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 			window.URL = window.URL || window.webkitURL;
 
-			var camvideo = document.getElementById('monitor');
+			var camvideo = document.createElement('video');
 
 			if(!navigator.getUserMedia) {
 
@@ -58,8 +58,8 @@
 			// VIDEO //
 			///////////
 
-			video = document.createElement('video');
-			texture = new THREE.VideoTexture(video);
+//			video = document.createElement('video');
+			texture = new THREE.VideoTexture(camvideo);
 			texture.minFilter = THREE.LinearFilter;
 			texture.magFilter = THREE.LinearFilter;
 			texture.format = THREE.RGBFormat;
