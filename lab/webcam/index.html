@@ -18,7 +18,7 @@
 			window.URL = window.URL || window.webkitURL;
 
 			var camvideo = document.createElement('video');
-console.log(camvideo)
+
 			if(!navigator.getUserMedia) {
 
 			} else {
@@ -30,8 +30,7 @@ console.log(camvideo)
 			function gotStream(stream) {
 				if(window.URL) {
 					camvideo.src = window.URL.createObjectURL(stream);
-				} else // Opera
-				{
+				} else {
 					camvideo.src = stream;
 				}
 
@@ -67,11 +66,16 @@ console.log(camvideo)
 			var movieMaterial = new THREE.MeshBasicMaterial({
 				map: texture,
 				overdraw: true,
-				side: THREE.DoubleSide
+//				side: THREE.DoubleSide
 			});
 			// the geometry on which the movie will be displayed;
 			// 		movie image will be scaled to fit these dimensions.
-			var movieGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+//			var movieGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+//			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
+//			movieScreen.position.set(0, 50, 0);
+//			scene.add(movieScreen);
+
+			var movieGeometry = new THREE.BoxBufferGeometry(100, 100, 100);
 			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
 			movieScreen.position.set(0, 50, 0);
 			scene.add(movieScreen);
