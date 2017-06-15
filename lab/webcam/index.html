@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script type="text/javascript">
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+			$$.Controls.createOrbitControls();
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+			window.URL = window.URL || window.webkitURL;
+
+			var camvideo = document.getElementById('monitor');
+
+			if(!navigator.getUserMedia) {
+
+			} else {
+				navigator.getUserMedia({
+					video: true
+				}, gotStream, noStream);
+			}
+
+			function gotStream(stream) {
+				if(window.URL) {
+					camvideo.src = window.URL.createObjectURL(stream);
+				} else // Opera
+				{
+					camvideo.src = stream;
+				}
+
+				camvideo.onerror = function(e) {
+					stream.stop();
+				};
+
+				stream.onended = noStream;
+			}
+
+			function noStream(e) {
+				var msg = 'No camera available.';
+				if(e.code == 1) {
+					msg = 'User denied access to use camera.';
+				}
+				console.log(msg)
+			}
+
+			var light = new THREE.PointLight(0xffffff);
+			light.position.set(0, 250, 0);
+			scene.add(light);
+
+			///////////
+			// VIDEO //
+			///////////
+
+			video = document.createElement('video');
+			texture = new THREE.VideoTexture(video);
+			texture.minFilter = THREE.LinearFilter;
+			texture.magFilter = THREE.LinearFilter;
+			texture.format = THREE.RGBFormat;
+
+			var movieMaterial = new THREE.MeshBasicMaterial({
+				map: texture,
+				overdraw: true,
+				side: THREE.DoubleSide
+			});
+			// the geometry on which the movie will be displayed;
+			// 		movie image will be scaled to fit these dimensions.
+			var movieGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
+			movieScreen.position.set(0, 50, 0);
+			scene.add(movieScreen);
+
+			camera.position.set(0, 150, 300);
+			camera.lookAt(movieScreen.position);
+		</script>
+	</body>
+
+</html>
