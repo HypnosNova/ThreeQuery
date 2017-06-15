@@ -53,11 +53,6 @@
 			light.position.set(0, 250, 0);
 			scene.add(light);
 
-			///////////
-			// VIDEO //
-			///////////
-
-//			video = document.createElement('video');
 			texture = new THREE.VideoTexture(camvideo);
 			texture.minFilter = THREE.LinearFilter;
 			texture.magFilter = THREE.LinearFilter;
@@ -65,22 +60,14 @@
 
 			var movieMaterial = new THREE.MeshBasicMaterial({
 				map: texture,
-				overdraw: true,
-//				side: THREE.DoubleSide
+				overdraw: true
 			});
-			// the geometry on which the movie will be displayed;
-			// 		movie image will be scaled to fit these dimensions.
-//			var movieGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
-//			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
-//			movieScreen.position.set(0, 50, 0);
-//			scene.add(movieScreen);
 
-			var movieGeometry = new THREE.BoxBufferGeometry(100, 100, 100);
+			var movieGeometry = new THREE.BoxBufferGeometry(200, 200, 200);
 			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
-			movieScreen.position.set(0, 50, 0);
 			scene.add(movieScreen);
 
-			camera.position.set(0, 150, 300);
+			camera.position.set(0, 0, 300);
 			camera.lookAt(movieScreen.position);
 		</script>
 	</body>
