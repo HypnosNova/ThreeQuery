@@ -14,14 +14,10 @@
 			var [scene, renderer, camera] = $$.init();
 			$$.animate();
 			$$.Controls.createOrbitControls();
-			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-			window.URL = window.URL || window.webkitURL;
 
 			var camvideo = document.createElement('video');
 
-			if(!navigator.getUserMedia) {
-
-			} else {
+			if(navigator.getUserMedia) {
 				navigator.getUserMedia({
 					video: true
 				}, gotStream, noStream);
@@ -33,7 +29,6 @@
 				} else {
 					camvideo.src = stream;
 				}
-
 				camvideo.onerror = function(e) {
 					stream.stop();
 				};
@@ -49,23 +44,19 @@
 				console.log(msg)
 			}
 
-			var light = new THREE.PointLight(0xffffff);
-			light.position.set(0, 250, 0);
-			scene.add(light);
-
-			texture = new THREE.VideoTexture(camvideo);
+			var texture = new THREE.VideoTexture(camvideo);
 			texture.minFilter = THREE.LinearFilter;
 			texture.magFilter = THREE.LinearFilter;
 			texture.format = THREE.RGBFormat;
 
-			var movieMaterial = new THREE.MeshBasicMaterial({
+			var material = new THREE.MeshBasicMaterial({
 				map: texture,
 				overdraw: true
 			});
 
-			var movieGeometry = new THREE.BoxBufferGeometry(200, 200, 200);
-			var movieScreen = new THREE.Mesh(movieGeometry, movieMaterial);
-			scene.add(movieScreen);
+			var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
+			var mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
 
 			camera.position.set(0, 0, 300);
 			camera.lookAt(movieScreen.position);
