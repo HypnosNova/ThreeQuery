@@ -106,7 +106,7 @@ var threeQuery = function() {
 	this.addEventListener = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
-			//event.preventDefault();
+			event.preventDefault();
 			$$.global.mouse.x = (event.clientX / $$.getWorldWidth()) * 2 - 1;
 			$$.global.mouse.y = -(event.clientY / $$.getWorldHeight()) * 2 + 1;
 			if($$.global.selectedObj && $$.global.selectedObj.object.onDrag && $$.global.isDown) {
@@ -1005,7 +1005,7 @@ var threeQuery = function() {
 			width: 100000,
 			height: 100000
 		},
-		raycaster:true,
+		raycaster:true, //启用射线法
 		resize: true, //如果窗口大小改变则改变渲染大小
 		renderPause: false, //暂停渲染循环
 		vr: false, //显示VR效果,
@@ -1014,6 +1014,316 @@ var threeQuery = function() {
 	};
 };
 var $$ = new threeQuery();
+//九宫格对齐方式：
+//1 2 3
+//4 5 6
+//7 8 9
+$$.Component = {
+	drawTextImage: function(str, options) {
+		var optionDefault = {
+			fontSize: 30,
+			fontFamily: "Courier New",
+			color: "white",
+			textAlign: 5, //九宫格对齐方式，5是居中
+			backgroundColor: "red",
+			//			backgroundImage:"",
+			width: 1,
+			height: 1,
+			lineHeight: 30,
+			x: 0,
+			y: 0
+		};
+		var strArr = str.split("\n");
+
+		var maxLength = 0;
+		for(var i in strArr) {
+			if(maxLength < strArr[i].length) {
+				maxLength = strArr[i].length;
+			}
+		}
+		var optionstmp = $$.extends({}, [optionDefault, options]);
+
+		if(!options.width) {
+			while(optionstmp.width < maxLength * optionstmp.fontSize) {
+				optionstmp.width *= 2;
+			}
+		}
+		if(!options.height) {
+			var tmpheight = strArr.length * optionstmp.lineHeight;
+			while(optionstmp.height < tmpheight) {
+				optionstmp.height *= 2;
+			}
+		}
+
+		var canvas = document.createElement("canvas");
+		canvas.width = optionstmp.width;
+		canvas.height = optionstmp.height;
+		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = optionstmp.backgroundColor;
+		ctx.fillRect(0, 0, optionstmp.width, optionstmp.height);
+		ctx.font = optionstmp.fontSize + "px " + optionstmp.fontFamily;
+		ctx.fillStyle = optionstmp.color;
+
+		var x = 0,
+			y = 0;
+
+		for(var i in strArr) {
+			ctx.fillText(strArr[i], optionstmp.x, optionstmp.y + (optionstmp.lineHeight * i + optionstmp.lineHeight));
+		}
+		return canvas;
+	},
+
+	//创建计时器，计时器的总时间，间隔触发事件时间
+	Timer: function(options,world) {
+		this.actionInjections=world?world.actionInjections:$$.actionInjections;
+		var defaultOptions = {
+			id: "",
+			life: 1000,
+			duration: 1000,
+			onStart: function() {
+				console.log("timer start");
+			},
+			onRepeat: function() {
+				console.log("repeat");
+			},
+			onEnd: function() {
+				console.log("timer end");
+			}
+		};
+		this.options = $$.extends({}, [defaultOptions, options]);
+		this.id = options.id;
+		this.life = options.life;
+		this.duration = options.duration;
+		this.onStart = options.onStart || function() {
+			console.log("timer start");
+		};
+		this.onRepeat = options.onRepeat || function() {
+			console.log("timer repeat");
+		};
+		this.onEnd = options.onEnd || function() {
+			console.log("timer end");
+		};
+		this.lastTime;
+		this.nowTime;
+		this.elapsedTime = 0;
+		this.durationTmp = 0;
+		this.start = function() {
+			this.lastTime = this.nowTime = performance.now();
+			this.onStart();
+			this.actionInjections.push(this.update);
+		};
+		let thisObj = this;
+		this.update = function() {
+			thisObj.lastTime = thisObj.nowTime;
+			thisObj.nowTime = performance.now();
+			thisObj.elapsedTime = thisObj.nowTime - thisObj.lastTime;
+			thisObj.life -= thisObj.elapsedTime;
+
+			if(thisObj.life <= 0) {
+				thisObj.onEnd();
+				for(var i in thisObj.actionInjections) {
+					if(thisObj.update == thisObj.actionInjections[i]) {
+						
+						thisObj.actionInjections.splice(i, 1);
+						break;
+					}
+				}
+				return;
+			}
+			thisObj.durationTmp += thisObj.elapsedTime;
+			if(thisObj.durationTmp >= thisObj.duration) {
+				thisObj.durationTmp -= thisObj.duration;
+				thisObj.onRepeat();
+			}
+		};
+	},
+
+	//创建子弹，它会直线前进，直到生命周期到了
+	createBullet: function(mesh, options) {
+		var position = $$.controls.getObject().position;
+		var direction = $$.global.centerRaycaster.ray.direction;
+		var defOpts = {
+			speed: 3,
+			life: 10000,
+			position: new THREE.Vector3(position.x, position.y, position.z),
+			direction: new THREE.Vector3(direction.x, direction.y, direction.z)
+		};
+		options = $$.extends({}, [defOpts, options]);
+		mesh.lookAt(options.direction);
+		mesh.position.x = options.position.x;
+		mesh.position.y = options.position.y;
+		mesh.position.z = options.position.z;
+		mesh.lifeStart = new Date().getTime();
+		mesh.life = options.life;
+		$$.global.world.add(mesh);
+
+		$$.actionInjections.push(function() {
+			mesh.position.x += options.direction.x * options.speed;
+			mesh.position.y += options.direction.y * options.speed;
+			mesh.position.z += options.direction.z * options.speed;
+			if(mesh.life <= new Date().getTime() - mesh.lifeStart) {
+				$$.global.world.remove(mesh);
+				for(var i in $$.actionInjections) {
+					if($$.actionInjections[i] == arguments.callee) {
+						$$.actionInjections.splice(i, 1);
+					}
+				}
+			}
+		});
+	},
+	createSkydome: function(pic, size, world) {
+		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
+		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
+		var material = new THREE.MeshBasicMaterial({
+			map: texture,
+		});
+		var sky = new THREE.Mesh(skyGeo, material);
+		sky.material.side = THREE.BackSide;
+		if(world) {
+			world.scene.add(sky);
+		} else {
+			$$.global.world.add(sky);
+		}
+
+		return sky;
+	},
+	createSkybox: function(texture, width, world) {
+		var cubeMap = new THREE.CubeTexture([]);
+		cubeMap.format = THREE.RGBFormat;
+
+		var loader = new THREE.ImageLoader();
+		loader.load(texture, function(image) {
+			var getSide = function(x, y) {
+
+				var size = 1024;
+
+				var canvas = document.createElement('canvas');
+				canvas.width = size;
+				canvas.height = size;
+
+				var context = canvas.getContext('2d');
+				context.drawImage(image, -x * size, -y * size);
+				return canvas;
+			};
+
+			cubeMap.images[0] = getSide(2, 1); // px
+			cubeMap.images[1] = getSide(0, 1); // nx
+			cubeMap.images[2] = getSide(1, 0); // py
+			cubeMap.images[3] = getSide(1, 2); // ny
+			cubeMap.images[4] = getSide(1, 1); // pz
+			cubeMap.images[5] = getSide(3, 1); // nz
+			cubeMap.needsUpdate = true;
+
+		});
+
+		var cubeShader = THREE.ShaderLib.cube;
+		cubeShader.uniforms.tCube.value = cubeMap;
+		var skyBoxMaterial = new THREE.ShaderMaterial({
+			fragmentShader: cubeShader.fragmentShader,
+			vertexShader: cubeShader.vertexShader,
+			uniforms: cubeShader.uniforms,
+			depthWrite: false,
+			side: THREE.BackSide
+		});
+
+		var skyBox = new THREE.Mesh(
+			new THREE.BoxGeometry(width || 1000000, width || 1000000, width || 1000000),
+			skyBoxMaterial
+		);
+
+		if(world) {
+			world.scene.add(skyBox);
+		} else {
+			$$.global.world.add(skyBox);
+		}
+		return skyBox;
+	},
+	createSea: function(options, world) {
+		world = world || {
+			scene: $$.global.world,
+			camera: $$.global.camera,
+			renderer: $$.global.renderer
+		};
+		options = $$.extends({}, [$$.global.settings.sea, options]);
+		if($$.global.RESOURCE.textures[options.texture]) {
+			waterNormals = $$.global.RESOURCE.textures[options.texture];
+			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+			water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
+				textureWidth: waterNormals.image.width,
+				textureHeight: waterNormals.image.height,
+				waterNormals: waterNormals,
+				alpha: options.alpha,
+				waterColor: options.color,
+			});
+
+			mirrorMesh = new THREE.Mesh(
+				new THREE.PlaneBufferGeometry(options.width, options.height),
+				water.material
+			);
+
+			mirrorMesh.add(water);
+			mirrorMesh.rotation.x = -Math.PI * 0.5;
+			world.scene.add(mirrorMesh);
+			water.waterMesh = mirrorMesh;
+			if(world) {
+				world.actionInjections.push(function() {
+					water.material.uniforms.time.value += 1.0 / 60.0;
+					water.render();
+				});
+			} else {
+				$$.actionInjections.push(function() {
+					water.material.uniforms.time.value += 1.0 / 60.0;
+					water.render();
+				});
+			}
+			return water;
+		} else {
+			var loader = new THREE.TextureLoader();
+			loader.load(options.texture,
+				function(texture) {
+					$$.global.RESOURCE.textures[options.texture] = texture;
+					waterNormals = texture;
+					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+					water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
+						textureWidth: waterNormals.image.width,
+						textureHeight: waterNormals.image.height,
+						waterNormals: waterNormals,
+						alpha: options.alpha,
+						waterColor: options.color,
+					});
+
+					mirrorMesh = new THREE.Mesh(
+						new THREE.PlaneBufferGeometry(options.width, options.height),
+						water.material
+					);
+
+					mirrorMesh.add(water);
+					mirrorMesh.rotation.x = -Math.PI * 0.5;
+					world.scene.add(mirrorMesh);
+					water.waterMesh = mirrorMesh;
+					if(world) {
+						world.actionInjections.push(function() {
+							water.material.uniforms.time.value += 1.0 / 60.0;
+							water.render();
+						});
+					} else {
+						$$.actionInjections.push(function() {
+							water.material.uniforms.time.value += 1.0 / 60.0;
+							water.render();
+						});
+					}
+
+					return water;
+				},
+				function(xhr) {},
+				function(xhr) {
+					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+					console.log(arr[i] + " is not found");
+				}
+			);
+		}
+	}
+};
 $$.Controls = {
 	createOrbitControls: function(options,world) {
 		options=options?options:{};
@@ -1425,316 +1735,152 @@ $$.unitVector = function(vec) {
 	vec.z /= len;
 	return vec;
 };
-//九宫格对齐方式：
-//1 2 3
-//4 5 6
-//7 8 9
-$$.Component = {
-	drawTextImage: function(str, options) {
-		var optionDefault = {
-			fontSize: 30,
-			fontFamily: "Courier New",
-			color: "white",
-			textAlign: 5, //九宫格对齐方式，5是居中
-			backgroundColor: "red",
-			//			backgroundImage:"",
-			width: 1,
-			height: 1,
-			lineHeight: 30,
-			x: 0,
-			y: 0
-		};
-		var strArr = str.split("\n");
-
-		var maxLength = 0;
-		for(var i in strArr) {
-			if(maxLength < strArr[i].length) {
-				maxLength = strArr[i].length;
-			}
-		}
-		var optionstmp = $$.extends({}, [optionDefault, options]);
-
-		if(!options.width) {
-			while(optionstmp.width < maxLength * optionstmp.fontSize) {
-				optionstmp.width *= 2;
-			}
-		}
-		if(!options.height) {
-			var tmpheight = strArr.length * optionstmp.lineHeight;
-			while(optionstmp.height < tmpheight) {
-				optionstmp.height *= 2;
-			}
-		}
-
-		var canvas = document.createElement("canvas");
-		canvas.width = optionstmp.width;
-		canvas.height = optionstmp.height;
-		var ctx = canvas.getContext("2d");
-		ctx.fillStyle = optionstmp.backgroundColor;
-		ctx.fillRect(0, 0, optionstmp.width, optionstmp.height);
-		ctx.font = optionstmp.fontSize + "px " + optionstmp.fontFamily;
-		ctx.fillStyle = optionstmp.color;
-
-		var x = 0,
-			y = 0;
-
-		for(var i in strArr) {
-			ctx.fillText(strArr[i], optionstmp.x, optionstmp.y + (optionstmp.lineHeight * i + optionstmp.lineHeight));
-		}
-		return canvas;
-	},
-
-	//创建计时器，计时器的总时间，间隔触发事件时间
-	Timer: function(options,world) {
-		this.actionInjections=world?world.actionInjections:$$.actionInjections;
-		var defaultOptions = {
-			id: "",
-			life: 1000,
-			duration: 1000,
-			onStart: function() {
-				console.log("timer start");
-			},
-			onRepeat: function() {
-				console.log("repeat");
-			},
-			onEnd: function() {
-				console.log("timer end");
-			}
-		};
-		this.options = $$.extends({}, [defaultOptions, options]);
-		this.id = options.id;
-		this.life = options.life;
-		this.duration = options.duration;
-		this.onStart = options.onStart || function() {
-			console.log("timer start");
-		};
-		this.onRepeat = options.onRepeat || function() {
-			console.log("timer repeat");
-		};
-		this.onEnd = options.onEnd || function() {
-			console.log("timer end");
-		};
-		this.lastTime;
-		this.nowTime;
-		this.elapsedTime = 0;
-		this.durationTmp = 0;
-		this.start = function() {
-			this.lastTime = this.nowTime = performance.now();
-			this.onStart();
-			this.actionInjections.push(this.update);
-		};
-		let thisObj = this;
-		this.update = function() {
-			thisObj.lastTime = thisObj.nowTime;
-			thisObj.nowTime = performance.now();
-			thisObj.elapsedTime = thisObj.nowTime - thisObj.lastTime;
-			thisObj.life -= thisObj.elapsedTime;
-
-			if(thisObj.life <= 0) {
-				thisObj.onEnd();
-				for(var i in thisObj.actionInjections) {
-					if(thisObj.update == thisObj.actionInjections[i]) {
-						
-						thisObj.actionInjections.splice(i, 1);
-						break;
+$$.Weather = {
+	Snow : function(options, texture) {
+				options = $$.extends({}, [{
+					startSpeed: 2,
+					endSpeed: 10,
+					duration: 50,
+					amount: 2000,
+					startAmount: 500,
+					fallSpeed: 2,
+					scale: [10, 20],
+					wind: {
+						x: 0,
+						y: 0,
+						z: 0
+					},
+					area: {
+						x: [-2000, 2000],
+						y: [-2000, 2000],
+						z: [-2000, 2000],
+					},
+					swing: {
+						x: 2,
+						y: 0,
+						z: 2
 					}
-				}
-				return;
-			}
-			thisObj.durationTmp += thisObj.elapsedTime;
-			if(thisObj.durationTmp >= thisObj.duration) {
-				thisObj.durationTmp -= thisObj.duration;
-				thisObj.onRepeat();
-			}
-		};
-	},
-
-	//创建子弹，它会直线前进，直到生命周期到了
-	createBullet: function(mesh, options) {
-		var position = $$.controls.getObject().position;
-		var direction = $$.global.centerRaycaster.ray.direction;
-		var defOpts = {
-			speed: 3,
-			life: 10000,
-			position: new THREE.Vector3(position.x, position.y, position.z),
-			direction: new THREE.Vector3(direction.x, direction.y, direction.z)
-		};
-		options = $$.extends({}, [defOpts, options]);
-		mesh.lookAt(options.direction);
-		mesh.position.x = options.position.x;
-		mesh.position.y = options.position.y;
-		mesh.position.z = options.position.z;
-		mesh.lifeStart = new Date().getTime();
-		mesh.life = options.life;
-		$$.global.world.add(mesh);
-
-		$$.actionInjections.push(function() {
-			mesh.position.x += options.direction.x * options.speed;
-			mesh.position.y += options.direction.y * options.speed;
-			mesh.position.z += options.direction.z * options.speed;
-			if(mesh.life <= new Date().getTime() - mesh.lifeStart) {
-				$$.global.world.remove(mesh);
-				for(var i in $$.actionInjections) {
-					if($$.actionInjections[i] == arguments.callee) {
-						$$.actionInjections.splice(i, 1);
-					}
-				}
-			}
-		});
-	},
-	createSkydome: function(pic, size, world) {
-		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
-		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
-		var material = new THREE.MeshBasicMaterial({
-			map: texture,
-		});
-		var sky = new THREE.Mesh(skyGeo, material);
-		sky.material.side = THREE.BackSide;
-		if(world) {
-			world.scene.add(sky);
-		} else {
-			$$.global.world.add(sky);
-		}
-
-		return sky;
-	},
-	createSkybox: function(texture, width, world) {
-		var cubeMap = new THREE.CubeTexture([]);
-		cubeMap.format = THREE.RGBFormat;
-
-		var loader = new THREE.ImageLoader();
-		loader.load(texture, function(image) {
-			var getSide = function(x, y) {
-
-				var size = 1024;
-
-				var canvas = document.createElement('canvas');
-				canvas.width = size;
-				canvas.height = size;
-
-				var context = canvas.getContext('2d');
-				context.drawImage(image, -x * size, -y * size);
-				return canvas;
-			};
-
-			cubeMap.images[0] = getSide(2, 1); // px
-			cubeMap.images[1] = getSide(0, 1); // nx
-			cubeMap.images[2] = getSide(1, 0); // py
-			cubeMap.images[3] = getSide(1, 2); // ny
-			cubeMap.images[4] = getSide(1, 1); // pz
-			cubeMap.images[5] = getSide(3, 1); // nz
-			cubeMap.needsUpdate = true;
-
-		});
-
-		var cubeShader = THREE.ShaderLib.cube;
-		cubeShader.uniforms.tCube.value = cubeMap;
-		var skyBoxMaterial = new THREE.ShaderMaterial({
-			fragmentShader: cubeShader.fragmentShader,
-			vertexShader: cubeShader.vertexShader,
-			uniforms: cubeShader.uniforms,
-			depthWrite: false,
-			side: THREE.BackSide
-		});
-
-		var skyBox = new THREE.Mesh(
-			new THREE.BoxGeometry(width || 1000000, width || 1000000, width || 1000000),
-			skyBoxMaterial
-		);
-
-		if(world) {
-			world.scene.add(skyBox);
-		} else {
-			$$.global.world.add(skyBox);
-		}
-		return skyBox;
-	},
-	createSea: function(options, world) {
-		world = world || {
-			scene: $$.global.world,
-			camera: $$.global.camera,
-			renderer: $$.global.renderer
-		};
-		options = $$.extends({}, [$$.global.settings.sea, options]);
-		if($$.global.RESOURCE.textures[options.texture]) {
-			waterNormals = $$.global.RESOURCE.textures[options.texture];
-			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-			water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
-				textureWidth: waterNormals.image.width,
-				textureHeight: waterNormals.image.height,
-				waterNormals: waterNormals,
-				alpha: options.alpha,
-				waterColor: options.color,
-			});
-
-			mirrorMesh = new THREE.Mesh(
-				new THREE.PlaneBufferGeometry(options.width, options.height),
-				water.material
-			);
-
-			mirrorMesh.add(water);
-			mirrorMesh.rotation.x = -Math.PI * 0.5;
-			world.scene.add(mirrorMesh);
-			water.waterMesh = mirrorMesh;
-			if(world) {
-				world.actionInjections.push(function() {
-					water.material.uniforms.time.value += 1.0 / 60.0;
-					water.render();
+				}, options]);
+				this.amount = options.amount;
+				this.startAmount = options.startAmount;
+				this.fallSpeed = options.fallSpeed;
+				this.scale = options.scale;
+				this.wind = options.wind;
+				this.swing = options.swing;
+				this.startSpeed = options.startSpeed;
+				this.endSpeed = options.endSpeed;
+				this.duration = options.duration;
+				this.particles = [];
+				this.material = new THREE.SpriteMaterial({
+					map: texture,
+					color:0xffffff
 				});
-			} else {
-				$$.actionInjections.push(function() {
-					water.material.uniforms.time.value += 1.0 / 60.0;
-					water.render();
-				});
-			}
-			return water;
-		} else {
-			var loader = new THREE.TextureLoader();
-			loader.load(options.texture,
-				function(texture) {
-					$$.global.RESOURCE.textures[options.texture] = texture;
-					waterNormals = texture;
-					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-					water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
-						textureWidth: waterNormals.image.width,
-						textureHeight: waterNormals.image.height,
-						waterNormals: waterNormals,
-						alpha: options.alpha,
-						waterColor: options.color,
+				this.onStartEnd=function(){console.log("snow start end")};
+				this.onEndEnd=function(){console.log("snow end end")};
+				this.area = options.area;
+
+				function randomRange(min, max) {
+					return((Math.random() * (max - min)) + min);
+				}
+
+				function rndInt(n) {
+					return Math.floor(Math.random() * n);
+				}
+
+				for(i = 0; i < this.startAmount; i++) {
+					var particle = new THREE.Sprite(this.material);
+					var randomScale = randomRange(this.scale[0], this.scale[1]);
+					particle.position.x = randomRange(this.area.x[0], this.area.x[1]);
+					particle.position.y = randomRange(this.area.y[0], this.area.y[1]);
+					particle.position.z = randomRange(this.area.z[0], this.area.z[1]);
+					particle.scale.x = particle.scale.y = particle.scale.z = randomScale;
+					particle.v = new THREE.Vector3(0, this.wind.y - this.fallSpeed + randomRange(-this.swing.y, this.swing.y), 0);
+					particle.v.z = (this.wind.z + randomRange(-this.swing.z, this.swing.z));
+					particle.v.x = (this.wind.x + randomRange(-this.swing.x, this.swing.x));
+
+					this.particles.push(particle);
+					$$.global.world.add(particle);
+				}
+
+				this.start = function() {
+					var timer = new $$.Component.Timer({
+						life: (this.amount - this.startAmount) / this.startSpeed * this.duration,
+						duration: this.duration,
+						onRepeat: function() {
+							for(var i = 0; i < this.owner.startSpeed; i++) {
+								if(this.owner.particles.length >= this.owner.amount) {
+									break;
+								}
+								var particle = new THREE.Sprite(this.owner.material);
+								var randomScale = randomRange(this.owner.scale[0], this.owner.scale[1]);
+								particle.position.x = randomRange(this.owner.area.x[0], this.owner.area.x[1]);
+								particle.position.y = this.owner.area.y[1];
+								particle.position.z = randomRange(this.owner.area.z[0], this.owner.area.z[1]);
+								particle.scale.x = particle.scale.y = particle.scale.z = randomScale;
+								particle.v = new THREE.Vector3(0, this.owner.wind.y - this.owner.fallSpeed + randomRange(-this.owner.swing.y, this.owner.swing.y), 0);
+								particle.v.z = (this.owner.wind.z + randomRange(-this.owner.swing.z, this.owner.swing.z));
+								particle.v.x = (this.owner.wind.x + randomRange(-this.owner.swing.x, this.owner.swing.x));
+
+								this.owner.particles.push(particle);
+								$$.global.world.add(particle);
+							}
+						},
+						onEnd: this.onStartEnd
 					});
-
-					mirrorMesh = new THREE.Mesh(
-						new THREE.PlaneBufferGeometry(options.width, options.height),
-						water.material
-					);
-
-					mirrorMesh.add(water);
-					mirrorMesh.rotation.x = -Math.PI * 0.5;
-					world.scene.add(mirrorMesh);
-					water.waterMesh = mirrorMesh;
-					if(world) {
-						world.actionInjections.push(function() {
-							water.material.uniforms.time.value += 1.0 / 60.0;
-							water.render();
-						});
-					} else {
-						$$.actionInjections.push(function() {
-							water.material.uniforms.time.value += 1.0 / 60.0;
-							water.render();
-						});
-					}
-
-					return water;
-				},
-				function(xhr) {},
-				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-					console.log(arr[i] + " is not found");
+					timer.owner = this;
+					timer.start();
+					$$.actionInjections.push(this.update);
 				}
-			);
-		}
-	}
+
+				this.end = function() {
+					var timer = new $$.Component.Timer({
+						life: (this.amount / this.endSpeed+1) * this.duration,
+						duration: this.duration,
+						onRepeat: function() {
+							for(var i = 0; i < this.owner.endSpeed; i++) {
+								if(this.owner.particles.length > 0) {
+									var id = rndInt(this.owner.particles.length);
+									$$.global.world.remove(this.owner.particles[id]);
+									this.owner.particles.splice(id, 1);
+								} else {
+									break;
+								}
+							}
+						},
+						onEnd : function() {
+							while(this.owner.particles.length) {
+								var id = rndInt(this.owner.particles.length);
+								$$.global.world.remove(this.owner.particles[id]);
+								this.owner.particles.splice(id, 1);
+							}
+							onEnd: this.owner.onEndEnd;
+						}
+					});
+					timer.owner = this;
+					timer.start();
+					$$.actionInjections.push(this.update);
+				}
+
+				this.update = function() {
+					var owner = arguments.callee.owner;
+					for(var i = 0; i < owner.particles.length; i++) {
+						var particle = owner.particles[i];
+						var pp = particle.position;
+
+						pp.add(particle.v);
+
+						if(pp.y < owner.area.y[0]) pp.y = owner.area.y[1];
+						if(pp.x > owner.area.x[1]) pp.x = owner.area.x[0];
+						else if(pp.x < owner.area.x[0]) pp.x = owner.area.x[1];
+						if(pp.z > owner.area.z[1]) pp.z = owner.area.z[0];
+						else if(pp.z < owner.area.z[0]) pp.z = owner.area.z[1];
+					}
+				}
+				this.update.owner = this;
+
+			}
 };
+
 $$.Device = {
 	getOSInfo: function() {
 		var ua = navigator.userAgent,
