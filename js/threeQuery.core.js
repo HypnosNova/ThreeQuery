@@ -178,8 +178,9 @@ var threeQuery = function() {
 		}
 		$$.worldActions();
 		for(var i in $$.actionInjections) {
-			if($$.actionInjections[i] instanceof Function == true)
+			if($$.actionInjections[i] instanceof Function == true){
 				$$.actionInjections[i]();
+			}
 		}
 		if($$.global.settings.raycaster){
 			updateRaycaster();
@@ -272,12 +273,10 @@ var threeQuery = function() {
 		var loader = new THREE.CubeTextureLoader(this.global.loadingManager);
 		loader.load(arr,
 			function(texture) {
-				console.log(texture)
 				$$.global.RESOURCE.textures[name] = texture;
 			},
 			function(xhr) {},
 			function(xhr) {
-				console.log(xhr)
 				$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
 				console.log(name + " is not found");
 			}

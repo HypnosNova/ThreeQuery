@@ -39,10 +39,10 @@ $$.Weather = {
 			color: 0xffffff
 		});
 		this.onStartEnd = function() {
-			console.log("snow start end")
+			console.log("snow start end");
 		};
 		this.onEndEnd = function() {
-			console.log("snow end end")
+			console.log("snow end end");
 		};
 		this.area = options.area;
 
@@ -97,7 +97,7 @@ $$.Weather = {
 			timer.owner = this;
 			timer.start();
 			$$.actionInjections.push(this.update);
-		}
+		};
 
 		this.end = function() {
 			var timer = new $$.Component.Timer({
@@ -126,7 +126,7 @@ $$.Weather = {
 			timer.owner = this;
 			timer.start();
 			$$.actionInjections.push(this.update);
-		}
+		};
 
 		this.update = function() {
 			var owner = arguments.callee.owner;
@@ -142,7 +142,7 @@ $$.Weather = {
 				if(pp.z > owner.area.z[1]) pp.z = owner.area.z[0];
 				else if(pp.z < owner.area.z[0]) pp.z = owner.area.z[1];
 			}
-		}
+		};
 		this.update.owner = this;
 	}
 };
