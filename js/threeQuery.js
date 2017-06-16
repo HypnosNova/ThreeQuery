@@ -106,7 +106,7 @@ var threeQuery = function() {
 	this.addEventListener = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
-			event.preventDefault();
+			//event.preventDefault();
 			$$.global.mouse.x = (event.clientX / $$.getWorldWidth()) * 2 - 1;
 			$$.global.mouse.y = -(event.clientY / $$.getWorldHeight()) * 2 + 1;
 			if($$.global.selectedObj && $$.global.selectedObj.object.onDrag && $$.global.isDown) {
@@ -181,7 +181,9 @@ var threeQuery = function() {
 			if($$.actionInjections[i] instanceof Function == true)
 				$$.actionInjections[i]();
 		}
-		updateRaycaster();
+		if($$.global.settings.raycaster){
+			updateRaycaster();
+		}
 		if($$.global.settings.vr) {
 			if(!$$.global.vrEffect) {
 				$$.global.vrEffect = new THREE.StereoEffect($$.global.renderer);
@@ -1003,6 +1005,7 @@ var threeQuery = function() {
 			width: 100000,
 			height: 100000
 		},
+		raycaster:true,
 		resize: true, //如果窗口大小改变则改变渲染大小
 		renderPause: false, //暂停渲染循环
 		vr: false, //显示VR效果,

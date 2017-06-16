@@ -181,7 +181,9 @@ var threeQuery = function() {
 			if($$.actionInjections[i] instanceof Function == true)
 				$$.actionInjections[i]();
 		}
-		updateRaycaster();
+		if($$.global.settings.raycaster){
+			updateRaycaster();
+		}
 		if($$.global.settings.vr) {
 			if(!$$.global.vrEffect) {
 				$$.global.vrEffect = new THREE.StereoEffect($$.global.renderer);
@@ -1003,6 +1005,7 @@ var threeQuery = function() {
 			width: 100000,
 			height: 100000
 		},
+		raycaster:true, //启用射线法
 		resize: true, //如果窗口大小改变则改变渲染大小
 		renderPause: false, //暂停渲染循环
 		vr: false, //显示VR效果,
