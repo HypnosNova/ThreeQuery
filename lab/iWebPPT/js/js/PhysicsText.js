@@ -1,9 +1,5 @@
 function PhysicsText( soulParams , bodyParams ){ 
-
-  console.log( bodyParams );
-
   this.size = Math.ceil( Math.sqrt( bodyParams.string.length ) );
-
 
   this.soul = new PhysicsRenderer( 
     this.size,
@@ -26,10 +22,6 @@ function PhysicsText( soulParams , bodyParams ){
   }
 
   this.bodyUniforms.bodyMatrix = this.bodyMatrix;
-
-  console.log('bs');
-  console.log( this.bodyUniforms );
-  console.log( bodyParams.params.uniforms );
 
   bodyParams.params.uniforms = this.bodyUniforms;
 
@@ -58,9 +50,6 @@ function PhysicsText( soulParams , bodyParams ){
   }
 
   this.soul.resetRand( 5 );
-
-
-
 }
 
 PhysicsText.prototype.update = function(){
@@ -75,8 +64,4 @@ PhysicsText.prototype.updateMatrices = function(){
 
   this.bodyMatrix.value.getInverse( this.body.matrixWorld );
 
-
-
-
 }
-

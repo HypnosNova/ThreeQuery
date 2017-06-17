@@ -706,6 +706,7 @@ var threeQuery = function() {
 			stencilBuffer: false
 		};
 		this.clearColor = optWorld.clearColor;
+		this.alpha=optWorld.alpha==null?1:optWorld.alpha;
 		this.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
 		this.isResize = optWorld.resize == null ? true : optWorld.resize;
 		this.resize = function() {
@@ -744,7 +745,7 @@ var threeQuery = function() {
 			$$.global.world = this.scene;
 			$$.global.camera = this.camera;
 			$$.actionInjections = this.actionInjections;
-			$$.global.renderer.setClearColor(this.clearColor);
+			$$.global.renderer.setClearColor(this.clearColor,this.alpha);
 			$$.global.controls = this.controls;
 
 			for(var i in $$.subWorlds) {

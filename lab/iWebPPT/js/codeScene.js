@@ -16,6 +16,11 @@ function createCodeScene() {
 	var neededToLoad = 0;
 	
 	linkInfo.push({
+		title: '[next page]',
+		file: 'code/less code4.html'
+	});
+	
+	linkInfo.push({
 		title: 'less code4',
 		file: 'code/less code4.html'
 	});
@@ -178,11 +183,18 @@ function createCodeScene() {
 			link = new Link(font, linkInfo[i].title, linkInfo[i].string);
 
 			var p = new THREE.Vector3();
-			p.set(0.20, (i / linkInfo.length) * 0.8 - .325, 0);
+			p.set(0.20, (i / linkInfo.length) * 0.8 - .35, 0);
 
 			link.add(scene, p);
 			links.push(link);
 
+		}
+//		console.log(links[0])
+		links[0].bg.onClick=function(){
+			var mainScene = create2048Scene();
+			worldArr.push(mainScene);
+			var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition4.png"]);
+			$$.actionInjections.push(transition.render);
 		}
 
 		links[links.length - 1].bg.onClick(null, {
