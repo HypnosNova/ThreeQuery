@@ -9,7 +9,7 @@
 	<body>
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/StereoEffect.js"></script>
-		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 		<script>
 			var scene, camera, renderer;
 			[scene, renderer, camera] = $$.init();
@@ -24,7 +24,6 @@
 			$$.onLoadComplete = function() {
 				//加载好的资源可以从resource里面直接拿出来用
 				var texture = $$.global.RESOURCE.textures["../textures/patterns/checker.png"];
-				console.log(texture);
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat = new THREE.Vector2(50, 50);

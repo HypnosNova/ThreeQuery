@@ -9,10 +9,8 @@
 	<body>
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/StereoEffect.js"></script>
-		<script src="../lib/OrbitControls.js"></script>
 		<script src="../lib/DeviceOrientationControls.js"></script>
 		<script src="../js/threeQuery.min.js"></script>
-		<!--<script src="../js/threeQuery.controls.js" type="text/javascript" charset="utf-8"></script>-->
 		<script>
 			//需要引入OrbitControls.js和threeQuery.extend.js文件
 			var scene, camera, renderer;
@@ -20,8 +18,7 @@
 			$$.global.settings.vr = true;
 			camera.position.y = 20;
 			//这个功能只需添加这一行代码即可完成
-			var controls = $$.Controls.createOrbitControls();
-			var controls2 = $$.Controls.createDeviceOrientationControls();
+			var controls = $$.Controls.createDeviceOrientationControls();
 			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.7);
 			scene.add(light);
 
