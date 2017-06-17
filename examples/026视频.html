@@ -6,8 +6,8 @@
 	</head>
 	<body>
 		<img id="btn" src="../video/play.svg" style="width: 30%;position: fixed;top: 50%;left: 50%;transform: translate(-50%,-50%);"/>
-		<audio id="sound" src="../video/sound.mp3"></audio>
-		<video id="video" src="../video/video.mp4" style="display: none;"></video>
+		<!--<audio id="sound" src="../video/cc.mp3"></audio>-->
+		<video id="video" src="../video/cc.mp4" style="display: none;" loop="loop"></video>
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/OrbitControls.js"></script>
 		<script src="../js/threeQuery.min.js"></script>
@@ -23,8 +23,9 @@
 			texture.format = THREE.RGBFormat;
 			
 			var geometry = new THREE.SphereBufferGeometry( 1000, 64, 64 );
-			var material = new THREE.MeshBasicMaterial( {color: 0xffffff,map: texture,side:THREE.BackSide} );
+			var material = new THREE.MeshBasicMaterial( {color: 0xffffff,map: texture} );
 			var sphere = new THREE.Mesh( geometry, material );
+			sphere.scale.x=-1;
 			$$.global.world.add( sphere );
 			
 			document.getElementById("btn").onclick=function(){
