@@ -16,6 +16,16 @@ function createCodeScene() {
 	var neededToLoad = 0;
 	
 	linkInfo.push({
+		title: 'less code4',
+		file: 'code/less code4.html'
+	});
+
+	linkInfo.push({
+		title: 'webcam',
+		file: 'code/webcam.html'
+	});
+	
+	linkInfo.push({
 		title: 'less code3',
 		file: 'code/less code3.html'
 	});

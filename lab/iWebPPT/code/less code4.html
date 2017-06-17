@@ -7,9 +7,9 @@
 	</head>
 
 	<body>
-		<script src="../../lib/three.min.js"></script>
-		<script src="../../js/threeQuery.js"></script>
-		<script src="../../lib/OrbitControls.js"></script>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.js"></script>
+		<script src="../../../lib/OrbitControls.js"></script>
 		<script type="text/javascript">
 			var [scene, renderer, camera] = $$.init();
 			$$.animate();
@@ -21,7 +21,8 @@
 			$$.Device.openWebcam(camvideo);
 
 			var texture = new THREE.VideoTexture(camvideo);
-			texture.minFilter = texture.magFilter = THREE.LinearFilter;
+			texture.minFilter = THREE.LinearFilter;
+			texture.magFilter = THREE.LinearFilter;
 			texture.format = THREE.RGBFormat;
 
 			var material = new THREE.MeshBasicMaterial({
