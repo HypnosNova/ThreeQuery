@@ -303,7 +303,11 @@ function create2048Scene() {
 			moveDown();
 		} else if(event.keyCode == '13 ') {
 			//Enter key
-			init();
+//			init();
+			var mainScene = createWebsocketScene();
+			worldArr.push(mainScene);
+			var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition5.png"]);
+			$$.actionInjections.push(transition.render);
 		}
 
 		UpdateScore();

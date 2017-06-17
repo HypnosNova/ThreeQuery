@@ -31,6 +31,12 @@ function loadSource() {
 		"img/intro4.jpg",
 		"img/intro5.jpg",
 		"img/intro6.jpg",
+		"img/w1.jpg",
+		"img/w2.jpg",
+		"img/w3.jpg",
+		"img/w4.jpg",
+		"img/w5.jpg",
+		"img/w6.jpg",
 	]);
 }
 
