@@ -13,6 +13,7 @@
 		<script type="text/javascript">
 			var [scene, renderer, camera] = $$.init();
 			$$.animate();
+			var streamG;
 			$$.Controls.createOrbitControls();
 
 			var camvideo = document.createElement('video');
@@ -24,6 +25,7 @@
 			}
 
 			function gotStream(stream) {
+				streamG=stream;
 				if(window.URL) {
 					camvideo.src = window.URL.createObjectURL(stream);
 				} else {
@@ -57,6 +59,10 @@
 			var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
 			var mesh = new THREE.Mesh(geometry, material);
 			scene.add(mesh);
+			
+			mesh.onClick=function(){
+				streamG.stop();
+			}
 
 			camera.position.set(0, 0, 300);
 			camera.lookAt(movieScreen.position);
