@@ -31,8 +31,10 @@
 					curveSegments: 50,
 					steps: 1
 				};
+				var geometry=new THREE.TextGeometry("Hello World", options);
+				geometry.center();
 				var word = new THREE.Mesh(
-					new THREE.TextGeometry("Hello World", options),
+					geometry,
 					new THREE.MeshLambertMaterial({
 						color: 0xcccccc
 					})

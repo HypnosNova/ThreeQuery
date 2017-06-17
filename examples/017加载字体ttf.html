@@ -9,14 +9,12 @@
 	<body>
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/opentype.min.js"></script>
-		<script src="../lib/StereoEffect.js"></script>
 		<script src="../lib/trackBallControls.js"></script>
 		<script src="../lib/TTFLoader.js"></script>
 		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
 		<script>
 			var [scene, render, camera] = $$.init();
-			var controls = $$.extend.createTrackBallControls();
+			var controls = $$.Controls.createTrackBallControls();
 			$$.loadFont(["../fonts/fzshj.ttf"]);
 			$$.onLoadComplete = function() {
 				scene.add(new THREE.AmbientLight(0x999999));
@@ -33,8 +31,11 @@
 					curveSegments: 50,
 					steps: 1
 				};
+				
+				var geometry=new THREE.TextGeometry("Hello 大家好", options);
+				geometry.center();
 				var word = new THREE.Mesh(
-					new THREE.TextGeometry("Hello 大家好", options),
+					geometry,
 					new THREE.MeshLambertMaterial({
 						color: 0xcccccc
 					})
