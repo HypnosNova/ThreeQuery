@@ -25,8 +25,9 @@
 			texture.format = THREE.RGBFormat;
 			
 			var geometry = new THREE.SphereBufferGeometry( 1000, 64, 64 );
-			var material = new THREE.MeshBasicMaterial( {color: 0xffffff,map: texture,side:THREE.BackSide} );
+			var material = new THREE.MeshBasicMaterial( {color: 0xffffff,map: texture} );
 			var sphere = new THREE.Mesh( geometry, material );
+			sphere.scale.x=-1;
 			$$.global.world.add( sphere );
 			
 			document.getElementById("btn").onclick=function(){
