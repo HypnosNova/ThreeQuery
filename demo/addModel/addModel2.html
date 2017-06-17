@@ -8,21 +8,19 @@
 
 	<body>
 		<script src="../../lib/three.min.js"></script>
-		<script src="../../lib/StereoEffect.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/threeQuery.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.js"></script>
 		<script src="../../lib/MTLLoader.js"></script>
 		<script src="../../lib/OBJLoader.js"></script>
 		
-		<script src="../../lib/plugins/Mirror.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../lib/plugins/WaterShader.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/plugins/Mirror.js"></script>
+		<script src="../../lib/plugins/WaterShader.js"></script>
+		<script src="../../lib/trackBallControls.js"></script>
 
 		<script>
 			var [scene, renderer,camera]=$$.init(null,null,{far:3000000});
 			renderer.setClearColor(0xffffff);
 			init();
-			var controls=$$.extend.createTrackBallControls();
+			var controls=$$.Controls.createTrackBallControls();
 			controls.minDistance=1000;
 			controls.maxDistance=1000;
 			function init() {
@@ -38,13 +36,13 @@
 				scene.add( directionalLight );
 
 				var mtlLoader = new THREE.MTLLoader();
-				mtlLoader.setPath( 'FlyingCar/' );
-				mtlLoader.load( 'HN_48_Flying_Car.mtl', function( materials ) {
+				mtlLoader.setPath( 'OrganodronCity/' );
+				mtlLoader.load( 'OrganodronCity.mtl', function( materials ) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials( materials );
-					objLoader.setPath( 'FlyingCar/' );
-					objLoader.load( 'HN 48 Flying Car.obj', function ( object ) {
+					objLoader.setPath( 'OrganodronCity/' );
+					objLoader.load( 'OrganodronCity.obj', function ( object ) {
 						scene.add( object );
 						object.scale.x = object.scale.y = object.scale.z = 3;
 						object.position.y=50;

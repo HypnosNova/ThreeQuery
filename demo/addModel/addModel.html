@@ -8,18 +8,17 @@
 
 	<body>
 		<script src="../../lib/three.min.js"></script>
-		<script src="../../lib/StereoEffect.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/threeQuery.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/StereoEffect.js"></script>
+		<script src="../../js/threeQuery.js"></script>
 		<script src="../../lib/MTLLoader.js"></script>
 		<script src="../../lib/OBJLoader.js"></script>
-		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/trackBallControls.js"></script>
 
 		<script>
 			var [scene, renderer,camera]=$$.init();
 			renderer.setClearColor(0xffffff);
 			init();
-			var controls=$$.extend.createTrackBallControls();
+			var controls=$$.Controls.createTrackBallControls();
 			controls.minDistance=500;
 			controls.maxDistance=500;
 			function init() {
