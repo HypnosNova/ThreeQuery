@@ -8,7 +8,6 @@ function createLoadingScene() {
 		letterTimeOffset: 0.075
 	};
 	
-
 	function init() {
 
 		$$.global.renderer.setClearColor(0x000000);
@@ -17,7 +16,7 @@ function createLoadingScene() {
 
 		new THREE.FontLoader().load('font/loadFont.js', function(font) {
 
-			var textAnimationData = createTextAnimation(font);
+			var textAnimationData = createTextAnimation("hello",font);
 
 			var group = new THREE.Group();
 			world.scene.add(group);
@@ -25,8 +24,8 @@ function createLoadingScene() {
 			var textAnimation = new TextAnimation(textAnimationData);
 			group.add(textAnimation);
 
-			var explosionAnimation = new ExplosionAnimation(textAnimationData);
-			group.add(explosionAnimation);
+//			var explosionAnimation = new ExplosionAnimation(textAnimationData);
+//			group.add(explosionAnimation);
 
 			var box = textAnimationData.geometry.boundingBox;
 			group.position.copy(box.getSize()).multiplyScalar(-0.5);
@@ -40,7 +39,7 @@ function createLoadingScene() {
 
 			var lightTl = new TimelineMax();
 
-			var maxTime = Math.max(textAnimation.animationDuration, explosionAnimation.animationDuration);
+			var maxTime = Math.max(textAnimation.animationDuration, 0);//explosionAnimation.animationDuration
 			var duration = 4.0;
 
 			for(var i = 0; i < textAnimationData.info.length; i++) {
@@ -73,19 +72,16 @@ function createLoadingScene() {
 				time: maxTime,
 				ease: Power0.easeIn
 			}, 0);
-			tl.to(explosionAnimation, duration, {
-				time: maxTime,
-				ease: Power0.easeIn
-			}, 0);
+//			tl.to(explosionAnimation, duration, {
+//				time: maxTime,
+//				ease: Power0.easeIn
+//			}, 0);
 			tl.add(lightTl, 0);
 
 		});
 	}
 
-	function createTextAnimation(font) {
-		var hash = window.location.href.split('#')[1];;
-		var text = 'LOADING';
-
+	function createTextAnimation(text,font) {
 		var params = {
 			size: 36,
 			height: 8,
