@@ -115,6 +115,7 @@ var threeQuery = function() {
 		}
 
 		function onDocumentMouseClick(event) {
+			console.log($$.global.selectedObj);
 			if($$.global.selectedObj && $$.global.selectedObj.object.onClick && $$.global.selectedObj.object.isDown == true) {
 				$$.global.selectedObj.object.isDown = false;
 				$$.global.selectedObj.object.onClick($$.global.selectedObj, event);

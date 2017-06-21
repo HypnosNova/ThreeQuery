@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 	<head>
 		<title></title>
 		<meta charset="utf-8">
@@ -15,42 +16,50 @@
 		<script src="../../lib/trackBallControls.js"></script>
 
 		<script>
-			var [scene, renderer,camera]=$$.init();
+			var [scene, renderer, camera] = $$.init();
 			renderer.setClearColor(0xffffff);
 			init();
-			var controls=$$.Controls.createTrackBallControls();
-			controls.minDistance=500;
-			controls.maxDistance=500;
+			var controls = $$.Controls.createTrackBallControls();
+			controls.minDistance = 500;
+			controls.maxDistance = 500;
+
 			function init() {
 
 				camera.position.z = 250;
 
-				var ambient = new THREE.AmbientLight( 0xffffff );
-				scene.add( ambient );
+				var ambient = new THREE.AmbientLight(0xffffff);
+				scene.add(ambient);
 
-				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-				directionalLight.position.set( 0, 0, 1 ).normalize();
-				scene.add( directionalLight );
+				var directionalLight = new THREE.DirectionalLight(0xffeedd);
+				directionalLight.position.set(0, 0, 1).normalize();
+				scene.add(directionalLight);
 
 				var mtlLoader = new THREE.MTLLoader();
-				mtlLoader.setPath( 'spacecar/' );
-				mtlLoader.load( 'Wraith_Raider_Starship.mtl', function( materials ) {
+				mtlLoader.setPath('spacecar/');
+				mtlLoader.load('Wraith_Raider_Starship.mtl', function(materials) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
-					objLoader.setMaterials( materials );
-					objLoader.setPath( 'spacecar/' );
-					objLoader.load( 'Wraith Raider Starship.obj', function ( object ) {
-						scene.add( object );
-
+					objLoader.setMaterials(materials);
+					objLoader.setPath('spacecar/');
+					objLoader.load('Wraith Raider Starship.obj', function(object) {
+						scene.add(object);
+						for(var i in object.children) {
+							object.children[i].onClick = function() {
+								console.log("点击了模型里面的一块部分");
+								object.onClick();
+							}
+						}
+						object.onClick = function() {
+							alert("点击了这个模型");
+						}
 					});
 
 				});
 
 			}
 			$$.animate();
-
-
 		</script>
 
 	</body>
+
 </html>
