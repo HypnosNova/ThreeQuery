@@ -11,7 +11,7 @@
 
 		<script src="../lib/three.min.js"></script>
 		<script src="../lib/OrbitControls.js"></script>
-		<script src="../js/threeQuery.min.js"></script>
+		<script src="../js/threeQuery.js"></script>
 
 		<script>
 			var [scene, renderer, camera] = $$.init(null, null, {
@@ -19,10 +19,7 @@
 				fov:50
 			});
 			var controls = $$.Controls.createOrbitControls();
-			$$.loadTexture(["../textures/patterns/skydome.jpg"]);
-			$$.onLoadComplete = function() {
-				$$.createSkydome("../textures/patterns/skydome.jpg");
-			}
+			$$.Component.createSkydome("../textures/patterns/skydome.jpg");
 			$$.animate();
 
 			

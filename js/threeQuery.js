@@ -115,7 +115,6 @@ var threeQuery = function() {
 		}
 
 		function onDocumentMouseClick(event) {
-			console.log($$.global.selectedObj);
 			if($$.global.selectedObj && $$.global.selectedObj.object.onClick && $$.global.selectedObj.object.isDown == true) {
 				$$.global.selectedObj.object.isDown = false;
 				$$.global.selectedObj.object.onClick($$.global.selectedObj, event);
@@ -227,118 +226,8 @@ var threeQuery = function() {
 		return res;
 	};
 
-	this.global.RESOURCE = {
-		textures: {},
-		models: {},
-		sounds: {},
-		fonts: {},
-		unloadedSource: {
-			textures: [],
-			models: [],
-			sounds: [],
-			fonts: []
-		}
-	};
-	this.global.loadingManager = new THREE.LoadingManager();
-	this.global.loadingManager.onProgress = function(item, loaded, total) {
-		$$.onProgress(item, loaded, total);
-		if(loaded == total) {
-			allLoaded = true;
-			if(allLoaded && soundDecodeNum == 0) {
-				if($$.onLoadComplete) {
-					$$.onLoadComplete();
-				}
-			}
-		}
-	};
-	this.onProgress = function() {};
-	this.onLoadComplete = function() {};
-	this.loadTexture = function(arr) {
-		allLoaded = false;
-		var loader = new THREE.TextureLoader(this.global.loadingManager);
-		for(let i in arr) {
-			loader.load(arr[i],
-				function(texture) {
-					$$.global.RESOURCE.textures[arr[i]] = texture;
-				},
-				function(xhr) {},
-				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-					console.log(arr[i] + " is not found");
-				}
-			);
-		}
-	};
-	this.loadCubeTexture = function(name, arr) {
-		allLoaded = false;
-		var loader = new THREE.CubeTextureLoader(this.global.loadingManager);
-		loader.load(arr,
-			function(texture) {
-				$$.global.RESOURCE.textures[name] = texture;
-			},
-			function(xhr) {},
-			function(xhr) {
-				$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-				console.log(name + " is not found");
-			}
-		);
-	};
-	var soundDecodeNum = 0; //需要解码的音频数量
-	var allLoaded = true;
-	this.loadSound = function(arr) {
-		var loader = new THREE.AudioLoader(this.global.loadingManager);
-		for(let i in arr) {
-			soundDecodeNum++;
-			loader.load(arr[i],
-				function(buffer) {
-					$$.global.RESOURCE.sounds[arr[i]] = buffer;
-					soundDecodeNum--;
-					if(allLoaded && soundDecodeNum == 0) {
-						if($$.onLoadComplete) {
-							$$.onLoadComplete();
-						}
-					}
-				},
-				function(xhr) {},
-				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.sounds.push(arr[i]);
-					console.log(arr[i] + " is not found");
-				}
-			);
-		}
-	};
-	this.loadFont = function(arr) {
-		allLoaded = false;
-		var loader = new THREE.FontLoader(this.global.loadingManager);
-		var loader2 = new THREE.TTFLoader(this.global.loadingManager);
-		for(let i in arr) {
-			var str = arr[i];
-			if(str.lastIndexOf(".json") == str.length - 5) {
-				loader.load(arr[i],
-					function(font) {
-						$$.global.RESOURCE.fonts[arr[i]] = font;
-					},
-					function(xhr) {},
-					function(xhr) {
-						$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-						console.log(arr[i] + " is not found");
-					}
-				);
-			} else {
-				loader2.load(arr[i],
-					function(json) {
-						var font = new THREE.Font(json);
-						$$.global.RESOURCE.fonts[arr[i]] = font;
-					},
-					function(xhr) {},
-					function(xhr) {
-						$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-						console.log(arr[i] + " is not found");
-					}
-				);
-			}
-		}
-	};
+	
+	
 	this.openFullScreen = function() {
 		var container = $$.global.canvasContainerDom;
 		$$.global.settings.isFullScreem = true;
@@ -548,127 +437,6 @@ var threeQuery = function() {
 			}
 		}
 		return [];
-	};
-	this.createSkybox = function(texture, width) {
-		var cubeMap = new THREE.CubeTexture([]);
-		cubeMap.format = THREE.RGBFormat;
-
-		var loader = new THREE.ImageLoader();
-		loader.load(texture, function(image) {
-			var getSide = function(x, y) {
-
-				var size = 1024;
-
-				var canvas = document.createElement('canvas');
-				canvas.width = size;
-				canvas.height = size;
-
-				var context = canvas.getContext('2d');
-				context.drawImage(image, -x * size, -y * size);
-				return canvas;
-			};
-
-			cubeMap.images[0] = getSide(2, 1); // px
-			cubeMap.images[1] = getSide(0, 1); // nx
-			cubeMap.images[2] = getSide(1, 0); // py
-			cubeMap.images[3] = getSide(1, 2); // ny
-			cubeMap.images[4] = getSide(1, 1); // pz
-			cubeMap.images[5] = getSide(3, 1); // nz
-			cubeMap.needsUpdate = true;
-
-		});
-
-		var cubeShader = THREE.ShaderLib.cube;
-		cubeShader.uniforms.tCube.value = cubeMap;
-		var skyBoxMaterial = new THREE.ShaderMaterial({
-			fragmentShader: cubeShader.fragmentShader,
-			vertexShader: cubeShader.vertexShader,
-			uniforms: cubeShader.uniforms,
-			depthWrite: false,
-			side: THREE.BackSide
-		});
-
-		var skyBox = new THREE.Mesh(
-			new THREE.BoxGeometry(width || 1000000, width || 1000000, width || 1000000),
-			skyBoxMaterial
-		);
-
-		scene.add(skyBox);
-		return skyBox;
-	};
-
-	this.createSkydome = function(pic, size) {
-		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
-		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
-		var material = new THREE.MeshBasicMaterial({
-			map: texture,
-		});
-		var sky = new THREE.Mesh(skyGeo, material);
-		sky.material.side = THREE.BackSide;
-		scene.add(sky);
-		return sky;
-	};
-
-	this.createSea = function(options) {
-		options = $$.extends({}, [$$.global.settings.sea, options]);
-		if($$.global.RESOURCE.textures[options.texture]) {
-			waterNormals = $$.global.RESOURCE.textures[options.texture];
-			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-			water = new THREE.Water(renderer, camera, scene, {
-				textureWidth: waterNormals.image.width,
-				textureHeight: waterNormals.image.height,
-				waterNormals: waterNormals,
-				alpha: options.alpha,
-				waterColor: options.color,
-			});
-
-			mirrorMesh = new THREE.Mesh(
-				new THREE.PlaneBufferGeometry(options.width, options.height),
-				water.material
-			);
-
-			mirrorMesh.add(water);
-			mirrorMesh.rotation.x = -Math.PI * 0.5;
-			scene.add(mirrorMesh);
-			water.waterMesh = mirrorMesh;
-			return water;
-		} else {
-			var loader = new THREE.TextureLoader();
-			loader.load(options.texture,
-				function(texture) {
-					$$.global.RESOURCE.textures[options.texture] = texture;
-					waterNormals = texture;
-					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-					water = new THREE.Water(renderer, camera, scene, {
-						textureWidth: waterNormals.image.width,
-						textureHeight: waterNormals.image.height,
-						waterNormals: waterNormals,
-						alpha: options.alpha,
-						waterColor: options.color,
-					});
-
-					mirrorMesh = new THREE.Mesh(
-						new THREE.PlaneBufferGeometry(options.width, options.height),
-						water.material
-					);
-
-					mirrorMesh.add(water);
-					mirrorMesh.rotation.x = -Math.PI * 0.5;
-					scene.add(mirrorMesh);
-					water.waterMesh = mirrorMesh;
-					$$.actionInjections.push(function() {
-						water.material.uniforms.time.value += 1.0 / 60.0;
-						water.render();
-					});
-					return water;
-				},
-				function(xhr) {},
-				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
-					console.log(arr[i] + " is not found");
-				}
-			);
-		}
 	};
 
 	this.subWorlds = {
@@ -1015,6 +783,121 @@ var threeQuery = function() {
 	};
 };
 var $$ = new threeQuery();
+$$.Loader = new (function() {
+	var that=this;
+	this.RESOURCE = {
+		textures: {},
+		models: {},
+		sounds: {},
+		fonts: {},
+		unloadedSource: {
+			textures: [],
+			models: [],
+			sounds: [],
+			fonts: []
+		}
+	};
+	this.loadingManager = new THREE.LoadingManager();
+	this.loadingManager.onProgress = function(item, loaded, total) {
+		that.onProgress(item, loaded, total);
+		if(loaded == total) {
+			allLoaded = true;
+			if(allLoaded && soundDecodeNum == 0) {
+				if(that.onLoadComplete) {
+					that.onLoadComplete();
+				}
+			}
+		}
+	};
+	this.onProgress = function() {};
+	this.onLoadComplete = function() {};
+	this.loadTexture = function(arr) {
+		allLoaded = false;
+		var loader = new THREE.TextureLoader(that.loadingManager);
+		for(let i in arr) {
+			loader.load(arr[i],
+				function(texture) {
+					that.RESOURCE.textures[arr[i]] = texture;
+				},
+				function(xhr) {},
+				function(xhr) {
+					that.RESOURCE.unloadedSource.textures.push(arr[i]);
+					console.log(arr[i] + " is not found");
+				}
+			);
+		}
+	};
+	this.loadCubeTexture = function(name, arr) {
+		allLoaded = false;
+		var loader = new THREE.CubeTextureLoader(that.loadingManager);
+		loader.load(arr,
+			function(texture) {
+				that.RESOURCE.textures[name] = texture;
+			},
+			function(xhr) {},
+			function(xhr) {
+				that.RESOURCE.unloadedSource.textures.push(arr[i]);
+				console.log(name + " is not found");
+			}
+		);
+	};
+	var soundDecodeNum = 0; //需要解码的音频数量
+	var allLoaded = true;
+	this.loadSound = function(arr) {
+		var loader = new THREE.AudioLoader(that.loadingManager);
+		for(let i in arr) {
+			soundDecodeNum++;
+			loader.load(arr[i],
+				function(buffer) {
+					that.RESOURCE.sounds[arr[i]] = buffer;
+					soundDecodeNum--;
+					if(allLoaded && soundDecodeNum == 0) {
+						if($$.onLoadComplete) {
+							$$.onLoadComplete();
+						}
+					}
+				},
+				function(xhr) {},
+				function(xhr) {
+					that.RESOURCE.unloadedSource.sounds.push(arr[i]);
+					console.log(arr[i] + " is not found");
+				}
+			);
+		}
+	};
+	this.loadFont = function(arr) {
+		allLoaded = false;
+		var loader = new THREE.FontLoader(that.loadingManager);
+		var loader2 = new THREE.TTFLoader(that.loadingManager);
+		for(let i in arr) {
+			var str = arr[i];
+			if(str.lastIndexOf(".json") == str.length - 5) {
+				loader.load(arr[i],
+					function(font) {
+						that.RESOURCE.fonts[arr[i]] = font;
+					},
+					function(xhr) {},
+					function(xhr) {
+						that.RESOURCE.unloadedSource.textures.push(arr[i]);
+						console.log(arr[i] + " is not found");
+					}
+				);
+			} else {
+				loader2.load(arr[i],
+					function(json) {
+						var font = new THREE.Font(json);
+						that.RESOURCE.fonts[arr[i]] = font;
+					},
+					function(xhr) {},
+					function(xhr) {
+						that.RESOURCE.unloadedSource.textures.push(arr[i]);
+						console.log(arr[i] + " is not found");
+					}
+				);
+			}
+		}
+	};
+});
 //九宫格对齐方式：
 //1 2 3
 //4 5 6
@@ -1174,7 +1057,7 @@ $$.Component = {
 	},
 	createSkydome: function(pic, size, world) {
 		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
-		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
+		var texture = $$.Loader.RESOURCE.textures[pic] || (new THREE.TextureLoader).load(pic);
 		var material = new THREE.MeshBasicMaterial({
 			map: texture,
 		});
@@ -1246,8 +1129,8 @@ $$.Component = {
 			renderer: $$.global.renderer
 		};
 		options = $$.extends({}, [$$.global.settings.sea, options]);
-		if($$.global.RESOURCE.textures[options.texture]) {
-			waterNormals = $$.global.RESOURCE.textures[options.texture];
+		if($$.Loader.RESOURCE.textures[options.texture]) {
+			waterNormals = $$.Loader.RESOURCE.textures[options.texture];
 			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 			water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
 				textureWidth: waterNormals.image.width,
@@ -1266,7 +1149,7 @@ $$.Component = {
 			mirrorMesh.rotation.x = -Math.PI * 0.5;
 			world.scene.add(mirrorMesh);
 			water.waterMesh = mirrorMesh;
-			if(world) {
+			if(world.actionInjections) {
 				world.actionInjections.push(function() {
 					water.material.uniforms.time.value += 1.0 / 60.0;
 					water.render();
@@ -1282,7 +1165,7 @@ $$.Component = {
 			var loader = new THREE.TextureLoader();
 			loader.load(options.texture,
 				function(texture) {
-					$$.global.RESOURCE.textures[options.texture] = texture;
+					$$.Loader.RESOURCE.textures[options.texture] = texture;
 					waterNormals = texture;
 					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 					water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
@@ -1302,7 +1185,7 @@ $$.Component = {
 					mirrorMesh.rotation.x = -Math.PI * 0.5;
 					world.scene.add(mirrorMesh);
 					water.waterMesh = mirrorMesh;
-					if(world) {
+					if(world.actionInjections) {
 						world.actionInjections.push(function() {
 							water.material.uniforms.time.value += 1.0 / 60.0;
 							water.render();
@@ -1318,7 +1201,7 @@ $$.Component = {
 				},
 				function(xhr) {},
 				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+					$$.Loader.RESOURCE.unloadedSource.textures.push(arr[i]);
 					console.log(arr[i] + " is not found");
 				}
 			);

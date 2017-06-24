@@ -8,15 +8,13 @@
 
 	<body>
 		<script src="../lib/three.min.js"></script>
-		<script src="../lib/StereoEffect.js"></script>
-		<script src="../js/threeQuery.js"></script>
-		<script src="../js/threeQuery.extend.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 		<script src="../lib/trackBallControls.js"></script>
 		<script>
 			var [scene, render, camera] = $$.init();
 			var geometry = new THREE.SphereGeometry( 30, 32, 32 );
 			
-			var controls=$$.extend.createTrackBallControls({maxDistance:50,minDistance:50});
+			var controls=$$.Controls.createTrackBallControls({maxDistance:50,minDistance:50});
 			var spriteMap = new THREE.TextureLoader().load( "../textures/sprite.png" );
 			var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff } );
 			for(var i=0;i<geometry.vertices.length;i++){

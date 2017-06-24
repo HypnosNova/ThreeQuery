@@ -22,10 +22,10 @@
 			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.7);
 			scene.add(light);
 
-			$$.loadTexture(["../textures/patterns/checker.png"]);
+			$$.Loader.loadTexture(["../textures/patterns/checker.png"]);
 
 			$$.onLoadComplete = function() {
-				var texture = $$.global.RESOURCE.textures["../textures/patterns/checker.png"];
+				var texture = $$.Loader.RESOURCE.textures["../textures/patterns/checker.png"];
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat = new THREE.Vector2(50, 50);

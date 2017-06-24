@@ -7,15 +7,27 @@
 	</head>
 
 	<body>
-		<script src="../../lib/three.min.js"></script>
-		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../lib/three.min.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 
 		<script>
 			var [scene, renderer, camera] = $$.init();
 			var transition, sceneA,sceneB;
 			var box, box2;
-			createSceneA();
-			createSceneB();
+			$$.Loader.loadTexture([
+				'../textures/transition/transition1.png',
+				'../textures/transition/transition2.png',
+				'../textures/transition/transition3.png',
+				'../textures/transition/transition4.png',
+				'../textures/transition/transition5.png',
+				'../textures/transition/transition6.png',
+			]);
+			
+			$$.Loader.onLoadComplete=function(){
+				createSceneA();
+				createSceneB();
+				sceneA.toMain();
+			}
 			
 			var index=0;
 			function createSceneA() {
@@ -42,7 +54,7 @@
 					box2.rotation.y -= 0.01;
 				});
 				box2.onClick = function() {
-					transition = new $$.Transition(sceneB, {}, new THREE.TextureLoader().load('transition/transition'+(index++%6+1)+'.png'));
+					transition = new $$.Transition(sceneB, {},$$.Loader.RESOURCE.textures['../textures/transition/transition'+(index++%6+1)+'.png']);
 					$$.actionInjections.push(transition.render);
 				}
 			}
@@ -71,11 +83,11 @@
 					box.rotation.y -= 0.01;
 				});
 				box.onClick = function() {
-					transition = new $$.Transition(sceneA, {}, new THREE.TextureLoader().load('transition/transition'+(index++%6+1)+'.png'));
+					transition = new $$.Transition(sceneA, {},$$.Loader.RESOURCE.textures['../textures/transition/transition'+(index++%6+1)+'.png']);
 					$$.actionInjections.push(transition.render);
 				}
 			}
-			sceneA.toMain();
+			
 
 			$$.animate();
 		</script>

@@ -57,8 +57,8 @@
 	</head>
 
 	<body>
-		<script src="../lib/three.js"></script>
-		<script src="../js/threeQuery.js"></script>
+		<script src="../lib/three.min.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 		<script src="../lib/PointerLockControls.js"></script>
 		<script src="../lib/plugins/Mirror.js"></script>
 		<script src="../lib/plugins/WaterShader.js"></script>
@@ -79,15 +79,15 @@
 			var controls = $$.Controls.createFirstCharacterControls({ keymove: true }, blocker);
 
 			scene.add(new THREE.AmbientLight(0x888888));
-			$$.loadTexture(["../textures/patterns/skybox.png", "../video/tim.jpg", "../video/tim.jpg"]);
-			$$.onLoadComplete = function() {
-				$$.createSkybox("../textures/patterns/skybox.png");
-				water = $$.createSea({ texture: "../textures/patterns/waternormals.jpg", color: 0x999999 });
+			$$.Loader.loadTexture(["../textures/patterns/skybox.png", "../video/tim.jpg", "../video/tim.jpg"]);
+			$$.Loader.onLoadComplete = function() {
+				$$.Component.createSkybox("../textures/patterns/skybox.png");
+				water = $$.Component.createSea({ texture: "../textures/patterns/waternormals.jpg", color: 0x999999 });
 
 				var geometry = new THREE.BoxGeometry(40, 40, 40);
 				var material = new THREE.MeshLambertMaterial({ //这边采用lambert材质
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["../video/tim.jpg"]
+					map: $$.Loader.RESOURCE.textures["../video/tim.jpg"]
 				}); //这边采用basic材质
 				var mesh = new THREE.Mesh(geometry, material);
 				mesh.position.set(-100, 20, -100);
@@ -115,7 +115,7 @@
 				var geometry = new THREE.BoxGeometry(40, 40, 40);
 				var material = new THREE.MeshLambertMaterial({ //这边采用lambert材质
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["../video/tim.jpg"]
+					map: $$.Loader.RESOURCE.textures["../video/tim.jpg"]
 				}); //这边采用basic材质
 				var mesh = new THREE.Mesh(geometry, material);
 				mesh.position.set(100, 20, 100);

@@ -15,15 +15,15 @@
 		<script>
 			var [scene, render, camera] = $$.init();
 			var controls = $$.Controls.createTrackBallControls();
-			$$.loadFont(["../fonts/gentilis_regular.typeface.json"]);
-			$$.onLoadComplete = function() {
+			$$.Loader.loadFont(["../fonts/gentilis_regular.typeface.json"]);
+			$$.Loader.onLoadComplete = function() {
 				scene.add(new THREE.AmbientLight(0x999999));
 
 				var options = {
 					size: 80,
 					height: 30,
 					weight: 'normal',
-					font: $$.global.RESOURCE.fonts["../fonts/gentilis_regular.typeface.json"],
+					font: $$.Loader.RESOURCE.fonts["../fonts/gentilis_regular.typeface.json"],
 					style: 'normal',
 					bevelThickness: 1,
 					bevelSize: 1,

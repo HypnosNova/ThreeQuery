@@ -157,7 +157,7 @@ $$.Component = {
 	},
 	createSkydome: function(pic, size, world) {
 		var skyGeo = new THREE.SphereGeometry(size || 1000000, 25, 25);
-		var texture = $$.global.RESOURCE.textures[pic] || THREE.ImageUtils.loadTexture(pic);
+		var texture = $$.Loader.RESOURCE.textures[pic] || (new THREE.TextureLoader).load(pic);
 		var material = new THREE.MeshBasicMaterial({
 			map: texture,
 		});
@@ -229,8 +229,8 @@ $$.Component = {
 			renderer: $$.global.renderer
 		};
 		options = $$.extends({}, [$$.global.settings.sea, options]);
-		if($$.global.RESOURCE.textures[options.texture]) {
-			waterNormals = $$.global.RESOURCE.textures[options.texture];
+		if($$.Loader.RESOURCE.textures[options.texture]) {
+			waterNormals = $$.Loader.RESOURCE.textures[options.texture];
 			waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 			water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
 				textureWidth: waterNormals.image.width,
@@ -249,7 +249,7 @@ $$.Component = {
 			mirrorMesh.rotation.x = -Math.PI * 0.5;
 			world.scene.add(mirrorMesh);
 			water.waterMesh = mirrorMesh;
-			if(world) {
+			if(world.actionInjections) {
 				world.actionInjections.push(function() {
 					water.material.uniforms.time.value += 1.0 / 60.0;
 					water.render();
@@ -265,7 +265,7 @@ $$.Component = {
 			var loader = new THREE.TextureLoader();
 			loader.load(options.texture,
 				function(texture) {
-					$$.global.RESOURCE.textures[options.texture] = texture;
+					$$.Loader.RESOURCE.textures[options.texture] = texture;
 					waterNormals = texture;
 					waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 					water = new THREE.Water($$.global.renderer, world.camera, world.scene, {
@@ -285,7 +285,7 @@ $$.Component = {
 					mirrorMesh.rotation.x = -Math.PI * 0.5;
 					world.scene.add(mirrorMesh);
 					water.waterMesh = mirrorMesh;
-					if(world) {
+					if(world.actionInjections) {
 						world.actionInjections.push(function() {
 							water.material.uniforms.time.value += 1.0 / 60.0;
 							water.render();
@@ -301,7 +301,7 @@ $$.Component = {
 				},
 				function(xhr) {},
 				function(xhr) {
-					$$.global.RESOURCE.unloadedSource.textures.push(arr[i]);
+					$$.Loader.RESOURCE.unloadedSource.textures.push(arr[i]);
 					console.log(arr[i] + " is not found");
 				}
 			);

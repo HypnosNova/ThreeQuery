@@ -17,13 +17,13 @@
 			camera.position.y = 20;
 			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.7);
 			scene.add(light);
-
+			
 			//需要加载的图片资源写在数组里穿进去
-			$$.loadTexture(["../textures/patterns/checker.png"]);
+			$$.Loader.loadTexture(["../textures/patterns/checker.png"]);
 			//当所有资源都加载好后会调用这个函数
-			$$.onLoadComplete = function() {
+			$$.Loader.onLoadComplete = function() {
 				//加载好的资源可以从resource里面直接拿出来用
-				var texture = $$.global.RESOURCE.textures["../textures/patterns/checker.png"];
+				var texture = $$.Loader.RESOURCE.textures["../textures/patterns/checker.png"];
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat = new THREE.Vector2(50, 50);

@@ -8,13 +8,13 @@
 
 	<body>
 		<script src="../lib/three.min.js"></script>
-		<script src="../js/threeQuery.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
 		<script src="../lib/tween.js"></script>
 		<script>
 			var [scene, render, camera] = $$.init();
 
 			var geometry = new THREE.BoxGeometry(3, 3, 3);
-			var material = new THREE.MeshLambertMaterial({ //这边采用lambert材质
+			var material = new THREE.MeshLambertMaterial({
 				color: 0xff0000
 			});
 			var mesh = new THREE.Mesh(geometry, material);
@@ -23,7 +23,7 @@
 			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
 			directionalLight.position.set(0, 1, 0);
 			scene.add(directionalLight);
-			var light = new THREE.AmbientLight(0x222222); // soft white light
+			var light = new THREE.AmbientLight(0x222222);
 			scene.add(light);
 
 			camera.position.x = 20;
@@ -41,7 +41,7 @@
 			$$.animate();
 			$$.actionInjections.push(function() {
 				TWEEN.update();
-			})
+			});
 		</script>
 	</body>
 
