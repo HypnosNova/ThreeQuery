@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script type="x-shader/x-vertex" id="vs">
+			varying vec2 vUv; 
+			void main()
+			{
+   				vUv = uv;
+
+    			vec4 mvPosition = modelViewMatrix * vec4(position, 1.0 );
+    			gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+		<script type="x-shader/x-vertex" id="fs">
+			uniform float iGlobalTime;
+			uniform sampler2D iChannel0;
+			uniform sampler2D iChannel1;
+
+			varying vec2 vUv;
+			void main(void)
+			{
+    			vec2 p = -1.0 + 2.0 *vUv;
+    			vec2 q = p - vec2(0.5, 0.5);
+
+    			q.x += sin(iGlobalTime* 0.6) * 0.2;
+    			q.y += cos(iGlobalTime* 0.4) * 0.3;
+
+    			float len = length(q);
+
+    			float a = atan(q.y, q.x) + iGlobalTime * 0.3;
+    			float b = atan(q.y, q.x) + iGlobalTime * 0.3;
+    			float r1 = 0.3 / len + iGlobalTime * 0.5;
+    			float r2 = 0.2 / len + iGlobalTime * 0.5;
+
+    			float m = (1.0 + sin(iGlobalTime * 0.5)) / 2.0;
+    			vec4 tex1 = texture2D(iChannel0, vec2(a + 0.1 / len, r1 ));
+    			vec4 tex2 = texture2D(iChannel1, vec2(b + 0.1 / len, r2 ));
+    			vec3 col = vec3(mix(tex1, tex2, m));
+    			gl_FragColor = vec4(col * len * 1.5, 1.0);
+			}
+		</script>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene,renderer,camera]=$$.init();
+			camera.position.z=500;
+			camera.lookAt(scene.position);
+			$$.animate();
+			
+			var tuniform = {
+        		iGlobalTime:    { type: 'f', value: 0.1 },
+        		iChannel0:  { type: 't', value: THREE.ImageUtils.loadTexture( 'tex07.jpg') },
+       			iChannel1:  { type: 't', value: THREE.ImageUtils.loadTexture( 'infi.jpg' ) },
+    		};
+    		
+    		tuniform.iChannel0.value.wrapS = tuniform.iChannel0.value.wrapT = THREE.RepeatWrapping;
+			tuniform.iChannel1.value.wrapS = tuniform.iChannel1.value.wrapT = THREE.RepeatWrapping;
+			
+			var mat = new THREE.ShaderMaterial( {
+            	uniforms: tuniform,
+            	vertexShader: document.getElementById("vs").textContent,
+            	fragmentShader: document.getElementById("fs").textContent,
+            	side:THREE.DoubleSide
+        	});
+
+			var tobject = new THREE.Mesh( new THREE.PlaneGeometry(700, 394,1,1), mat);
+			scene.add(tobject);
+			
+			$$.actionInjections.push(function(){
+				tuniform.iGlobalTime.value+=0.01;
+			});
+		</script>
+	</body>
+</html>
