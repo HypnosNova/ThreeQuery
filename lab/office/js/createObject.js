@@ -94,7 +94,7 @@ function roundRectGeometry(width, height, round) {
 
 function loadChair() {
 	//椅子
-	var objLoader = new THREE.OBJLoader($$.global.loadingManager);
+	var objLoader = new THREE.OBJLoader($$.Loader.loadingManager);
 	objLoader.setPath('model/');
 	objLoader.load('chair.obj', function(object) {
 		chairModel = object;
@@ -110,12 +110,12 @@ var flowerMaterials, flowerModel,sofaMaterials,sofaModel;
 
 function loadFlower() {
 	//椅子
-	var mtlLoader = new THREE.MTLLoader($$.global.loadingManager);
+	var mtlLoader = new THREE.MTLLoader($$.Loader.loadingManager);
 	mtlLoader.setPath('model/');
 	mtlLoader.load('plant/house plant.mtl', function(materials) {
 		materials.preload();
 		flowerMaterials = materials;
-		var objLoader = new THREE.OBJLoader($$.global.loadingManager);
+		var objLoader = new THREE.OBJLoader($$.Loader.loadingManager);
 		objLoader.setMaterials(materials);
 		objLoader.setPath('model/');
 		objLoader.load('plant/house plant.obj', function(object) {
@@ -127,12 +127,12 @@ function loadFlower() {
 }
 function loadSofa() {
 	//椅子
-	var mtlLoader = new THREE.MTLLoader($$.global.loadingManager);
+	var mtlLoader = new THREE.MTLLoader($$.Loader.loadingManager);
 	mtlLoader.setPath('model/');
 	mtlLoader.load('sofa/Sofa.mtl', function(materials) {
 		materials.preload();
 		sofaMaterials = materials;
-		var objLoader = new THREE.OBJLoader($$.global.loadingManager);
+		var objLoader = new THREE.OBJLoader($$.Loader.loadingManager);
 		objLoader.setMaterials(materials);
 		objLoader.setPath('model/');
 		objLoader.load('sofa/Sofa.obj', function(object) {

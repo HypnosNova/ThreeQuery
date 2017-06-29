@@ -77,7 +77,7 @@
 		</div>
 		<script>
 			var progress=document.getElementById("progress");
-			$$.onProgress=function(item, loaded, total){
+			$$.Loader.onProgress=function(item, loaded, total){
 				progress.innerText=Math.floor(loaded/total*100)+"%";
 			}
 			var blocker = document.getElementById('blocker');
@@ -101,31 +101,31 @@
 			loadFlower();
 			//			loadSofa();
 			loadChair();
-			$$.loadTexture(["../../textures/patterns/skybox.png",
+			$$.Loader.loadTexture(["../../textures/patterns/skybox.png",
 				"img/redWood.jpg",
 				"img/mop.jpg",
 				"img/desk.jpg",
 				"img/shelf.jpg",
 			]);
 
-			$$.onLoadComplete = function() {
+			$$.Loader.onLoadComplete = function() {
 				document.body.removeChild(document.getElementById("maskLoading"));
 
 				materialAll.shelfMaterial = new THREE.MeshLambertMaterial({
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["img/shelf.jpg"]
+					map: $$.Loader.RESOURCE.textures["img/shelf.jpg"]
 				});
 				materialAll.deskMaterial = new THREE.MeshLambertMaterial({
 					color: 0xeeeeee,
-					map: $$.global.RESOURCE.textures["img/desk.jpg"]
+					map: $$.Loader.RESOURCE.textures["img/desk.jpg"]
 				});
 				materialAll.redWoodMaterial = new THREE.MeshLambertMaterial({
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["img/redWood.jpg"]
+					map: $$.Loader.RESOURCE.textures["img/redWood.jpg"]
 				});
-				$$.createSkybox("../../textures/patterns/skybox.png");
+				$$.Component.createSkybox("../../textures/patterns/skybox.png");
 				//创建地板
-				var texture = $$.global.RESOURCE.textures["img/mop.jpg"];
+				var texture = $$.Loader.RESOURCE.textures["img/mop.jpg"];
 				var geometry = new THREE.PlaneBufferGeometry(20000, 20000, 1);
 				var material = new THREE.MeshLambertMaterial({
 					color: 0xaaaaaa,
