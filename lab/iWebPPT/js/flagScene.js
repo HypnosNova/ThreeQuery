@@ -442,11 +442,11 @@ function createFlagScene() {
 	for(var i = 0; i < 6; ++i) {
 		if(i == 4) {
 			materials.push(new THREE.MeshLambertMaterial({
-				map: $$.global.RESOURCE.textures["img/rightBox.jpg"]
+				map: $$.Loader.RESOURCE.textures["img/rightBox.jpg"]
 			}));
 		} else {
 			materials.push(new THREE.MeshLambertMaterial({
-				map: $$.global.RESOURCE.textures["img/box.jpg"]
+				map: $$.Loader.RESOURCE.textures["img/box.jpg"]
 			}));
 		}
 	}
@@ -460,12 +460,12 @@ function createFlagScene() {
 	
 	nextBoxMesh.onClick=function(){
 		if(worldArr[2]){
-			var transition = new $$.Transition(worldArr[3], {}, $$.global.RESOURCE.textures["transition/transition2.png"]);
+			var transition = new $$.Transition(worldArr[3], {}, $$.Loader.RESOURCE.textures["transition/transition2.png"]);
 			$$.actionInjections.push(transition.render);
 		}else{
 			var mainScene = createIntroScene();
 			worldArr.push(mainScene);
-			var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition2.png"]);
+			var transition = new $$.Transition(mainScene, {}, $$.Loader.RESOURCE.textures["transition/transition2.png"]);
 			$$.actionInjections.push(transition.render);
 		}
 	}

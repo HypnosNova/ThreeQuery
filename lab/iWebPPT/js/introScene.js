@@ -78,7 +78,7 @@ function createIntroScene() {
 			return glowMaterial;
 		},
 		texture: function(material, property, uri) {
-			material[property] = $$.global.RESOURCE.textures[uri];
+			material[property] = $$.Loader.RESOURCE.textures[uri];
 			material.needsUpdate = true;
 		}
 	};
@@ -182,7 +182,7 @@ function createIntroScene() {
 	var materials = [];
 	for(var i = 0; i < 6; ++i) {
 		materials.push(new THREE.MeshLambertMaterial({
-			map: $$.global.RESOURCE.textures["img/intro" + (i + 1) + ".jpg"]
+			map: $$.Loader.RESOURCE.textures["img/intro" + (i + 1) + ".jpg"]
 		}));
 	}
 	var material = new THREE.MultiMaterial(materials);
@@ -249,7 +249,7 @@ function createIntroScene() {
 		}else{
 			var codeScene=createCodeScene();
 			worldArr.push(codeScene);
-			var transition = new $$.Transition(codeScene, {}, $$.global.RESOURCE.textures["transition/transition3.png"]);
+			var transition = new $$.Transition(codeScene, {}, $$.Loader.RESOURCE.textures["transition/transition3.png"]);
 			$$.actionInjections.push(transition.render);
 		}
 	}

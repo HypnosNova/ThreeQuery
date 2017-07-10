@@ -11,7 +11,6 @@ function createLoadingScene() {
 	function init() {
 
 		$$.global.renderer.setClearColor(0x000000);
-		$$.global.renderer.setPixelRatio(window.devicePixelRatio || 1);
 		world.camera.position.set(0, 0, 250);
 
 		new THREE.FontLoader().load('font/loadFont.js', function(font) {

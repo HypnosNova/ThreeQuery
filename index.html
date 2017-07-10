@@ -9,25 +9,24 @@
 	<body>
 		<script src="lib/three.min.js"></script>
 		<script src="lib/StereoEffect.js"></script>
-		<script src="lib/OrbitControls.js" type="text/javascript" charset="utf-8"></script>
-		<script src="js/threeQuery.js"></script>
-		<script src="js/threeQuery.extend.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/OrbitControls.js"></script>
+		<script src="js/threeQuery.min.js"></script>
 		<script>
 			var scene, camera, renderer;
 			[scene, renderer, camera] = $$.init();
 			$$.global.settings.vr = true;
 			camera.position.y = 20;
-			var controls = $$.extend.createOrbitControls();
+			var controls = $$.Controls.createOrbitControls();
 
 			var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.6);
 			scene.add(light);
 
-			$$.loadTexture(["textures/patterns/checker.png",
+			$$.Loader.loadTexture(["textures/patterns/checker.png",
 				"textures/patterns/aaa.jpg"
 			]);
 
-			$$.onLoadComplete = function() {
-				var texture = $$.global.RESOURCE.textures["textures/patterns/checker.png"];
+			$$.Loader.onLoadComplete = function() {
+				var texture = $$.Loader.RESOURCE.textures["textures/patterns/checker.png"];
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat = new THREE.Vector2(50, 50);

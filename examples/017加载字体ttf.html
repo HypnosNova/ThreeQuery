@@ -18,7 +18,7 @@
 			$$.Loader.loadFont(["../fonts/fzshj.ttf"]);
 			$$.Loader.onLoadComplete = function() {
 				scene.add(new THREE.AmbientLight(0x999999));
-
+				
 				var options = {
 					size: 80,
 					height: 30,
@@ -31,7 +31,6 @@
 					curveSegments: 50,
 					steps: 1
 				};
-				
 				var geometry=new THREE.TextGeometry("Hello 大家好", options);
 				geometry.center();
 				var word = new THREE.Mesh(

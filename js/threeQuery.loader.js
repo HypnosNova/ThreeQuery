@@ -1,5 +1,5 @@
-$$.Loader = new (function() {
-	var that=this;
+$$.Loader = new(function() {
+	var that = this;
 	this.RESOURCE = {
 		textures: {},
 		models: {},
@@ -111,5 +111,19 @@ $$.Loader = new (function() {
 				);
 			}
 		}
+	};
+	this.loadText = function(name, url) {
+		var loader = new THREE.FileLoader(that.loadingManager);
+		loader.load(
+			url,
+			function(data) {
+				that.RESOURCE.text[name] = data;
+			},
+			function(xhr) {},
+			function(xhr) {
+				that.RESOURCE.unloadedSource.textures.push(url);
+				console.log(name + " is not found");
+			}
+		);
 	};
 });

@@ -78,7 +78,7 @@ function createWebsocketScene() {
 			return glowMaterial;
 		},
 		texture: function(material, property, uri) {
-			material[property] = $$.global.RESOURCE.textures[uri];
+			material[property] = $$.Loader.RESOURCE.textures[uri];
 			material.needsUpdate = true;
 		}
 	};
@@ -182,7 +182,7 @@ function createWebsocketScene() {
 	var materials = [];
 	for(var i = 0; i < 6; ++i) {
 		materials.push(new THREE.MeshLambertMaterial({
-			map: $$.global.RESOURCE.textures["img/w" + (i + 1) + ".jpg"]
+			map: $$.Loader.RESOURCE.textures["img/w" + (i + 1) + ".jpg"]
 		}));
 	}
 	var material = new THREE.MultiMaterial(materials);

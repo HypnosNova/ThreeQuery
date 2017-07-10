@@ -193,7 +193,7 @@ function createCodeScene() {
 		links[0].bg.onClick=function(){
 			var mainScene = create2048Scene();
 			worldArr.push(mainScene);
-			var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition4.png"]);
+			var transition = new $$.Transition(mainScene, {}, $$.global.Loader.textures["transition/transition4.png"]);
 			$$.actionInjections.push(transition.render);
 		}
 

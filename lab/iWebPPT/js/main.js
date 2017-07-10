@@ -6,7 +6,7 @@ var worldArr=[];
 worldArr.push(loadScene);
 
 function loadSource() {
-	$$.loadTexture([
+	$$.Loader.loadTexture([
 		"img/h5ground.jpg",
 		"transition/transition1.png",
 		"transition/transition2.png",
@@ -40,10 +40,10 @@ function loadSource() {
 	]);
 }
 
-$$.onLoadComplete = function() {
+$$.Loader.onLoadComplete = function() {
 	var mainScene = createFlagScene();
 	worldArr.push(mainScene);
-	var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition1.png"]);
+	var transition = new $$.Transition(mainScene, {}, $$.Loader.RESOURCE.textures["transition/transition1.png"]);
 	$$.actionInjections.push(transition.render);
 	
 }

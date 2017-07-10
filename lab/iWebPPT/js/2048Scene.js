@@ -306,7 +306,7 @@ function create2048Scene() {
 //			init();
 			var mainScene = createWebsocketScene();
 			worldArr.push(mainScene);
-			var transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition5.png"]);
+			var transition = new $$.Transition(mainScene, {}, $$.Loader.RESOURCE.textures["transition/transition5.png"]);
 			$$.actionInjections.push(transition.render);
 		}
 
