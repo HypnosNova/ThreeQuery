@@ -440,17 +440,18 @@ var threeQuery = function() {
 	};
 
 	this.subWorlds = {
+		children:{},
 		getCurrentSubWorld: function() {
-			for(var i in $$.subWorlds) {
-				if($$.subWorlds[i].isCurrent) {
-					return $$.subWorlds[i];
+			for(var i in $$.subWorlds.children) {
+				if($$.subWorlds.children[i].isCurrent) {
+					return $$.subWorlds.children[i];
 				}
 			}
 		},
 		getSubWorldByName: function(name) {
-			for(var i in $$.subWorlds) {
-				if($$.subWorlds[i].name == name) {
-					return $$.subWorlds[i];
+			for(var i in $$.subWorlds.children) {
+				if($$.subWorlds.children[i].name == name) {
+					return $$.subWorlds.children[i];
 				}
 			}
 		}
@@ -510,6 +511,9 @@ var threeQuery = function() {
 
 		};
 		this.isCurrent = false;
+		this.toTexture=function(){
+			return this.fbo.texture;
+		};
 		this.toMain = function() {
 			$$.global.world = this.scene;
 			$$.global.camera = this.camera;
@@ -531,7 +535,7 @@ var threeQuery = function() {
 				this.controls.enabled = this.controls.enabledBefore;
 			}
 		};
-		$$.subWorlds[this.id] = this;
+		$$.subWorlds.children[this.id] = this;
 	};
 
 	this.Transition = function(sceneA, option, texture) {

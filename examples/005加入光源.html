@@ -14,7 +14,7 @@
 
 			var geometry = new THREE.BoxGeometry(3, 3, 3);
 			var material = new THREE.MeshLambertMaterial({//这边采用lambert材质
-				color: 0xff0000
+				color: 0xffffff
 			}); //这边采用basic材质
 			var mesh = new THREE.Mesh(geometry, material);
 			scene.add(mesh);
@@ -38,7 +38,6 @@
 				mesh.rotation.x += 0.01;
 				mesh.rotation.y += 0.02;
 			};
-
 			$$.animate();
 		</script>
 	</body>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title></title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src="../lib/three.min.js"></script>
+		<script src="../js/threeQuery.min.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+
+			var world = new $$.SubWorld({}, {});
+			$$.Component.createSkybox("../textures/patterns/skybox.png", 10000, world);
+
+			var materialScreen = new THREE.MeshBasicMaterial({
+				map:world.fbo.texture
+
+			});
+			
+			var geometry = new THREE.BoxGeometry(8, 8, 8);
+			var material = materialScreen;
+			var mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
+			
+			var geometry = new THREE.BoxGeometry(5, 5, 5);
+			var material = materialScreen;
+			var mesh2 = new THREE.Mesh(geometry,  new THREE.MeshBasicMaterial( { color: 0xff0000} ));
+			world.scene.add(mesh2);
+			mesh2.position.z=-20;
+			world.camera.lookAt(mesh2.position);
+
+			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+			directionalLight.position.set(0, 1, 0);
+			scene.add(directionalLight);
+
+			var light = new THREE.AmbientLight(0x222222); // soft white light
+			scene.add(light);
+
+			camera.position.x = 10;
+			camera.position.y = 10;
+			camera.position.z = 10;
+			camera.lookAt(mesh.position);
+
+			$$.actionInjections.push(function() {
+				world.update(true);
+				mesh2.rotation.x += 0.01;
+				mesh2.rotation.y += 0.02;
+			});
+		</script>
+	</body>
+
+</html>
