@@ -167,6 +167,24 @@ var threeQuery = function() {
 		$$.global.canvasContainerDom.addEventListener("touchstart", onMouseDownOrTouchStart);
 		$$.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
 	};
+	
+	this.sceneCoordinateToCanvasCoordinate=function(obj,world){
+		var worldVector = obj.position.clone();
+		if(world){
+			var vector = worldVector.project(world.camera);
+		}else{
+			var vector = worldVector.project($$.global.camera);
+		}
+		
+		var halfWidth = $$.getWorldWidth() / 2;
+		var halfHeight = $$.getWorldHeight() / 2;
+
+		var result = {
+			x: Math.round(vector.x * halfWidth + halfWidth),
+			y: Math.round(-vector.y * halfHeight + halfHeight)
+		};
+		return result;
+	};
 
 	this.animate = function() {
 		requestAnimationFrame($$.animate);
