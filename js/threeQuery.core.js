@@ -1,4 +1,5 @@
 var threeQuery = function() {
+	var that=this;
 	this.global = {};
 	this.global.camera;
 	this.global.world;
@@ -27,15 +28,15 @@ var threeQuery = function() {
 	this.resize = function() {
 		var width = this.getWorldWidth();
 		var height = this.getWorldHeight();
-		if(this.global.settings.camera.type == "PerspectiveCamera") {
+		if(this.global.camera.type == "PerspectiveCamera") {
 			this.global.camera.aspect = width / height;
 			this.global.camera.updateProjectionMatrix();
-
 		} else {
 			this.global.camera.left = -width / 2;
 			this.global.camera.right = width / 2;
 			this.global.camera.top = height / 2;
 			this.global.camera.bottom = -height / 2;
+			this.global.camera.updateProjectionMatrix();
 		}
 		this.global.renderer.setSize(width, height);
 		if($$.global.settings.vr && $$.global.vrEffect) {
@@ -52,6 +53,7 @@ var threeQuery = function() {
 		if(!this.global.world) {
 			this.global.world = world;
 		}
+		this.rayCasterEventReceivers=this.global.world.children;
 		return world;
 	};
 
@@ -68,6 +70,7 @@ var threeQuery = function() {
 	this.createRenderer = function(options) {
 		options = this.extends({}, [this.global.settings.render, options]);
 		var renderer = new THREE.WebGLRenderer(options);
+		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setSize(this.getWorldWidth(), this.getWorldHeight());
 		if(!this.global.renderer) {
 			this.global.renderer = renderer;
@@ -167,15 +170,15 @@ var threeQuery = function() {
 		$$.global.canvasContainerDom.addEventListener("touchstart", onMouseDownOrTouchStart);
 		$$.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
 	};
-	
-	this.sceneCoordinateToCanvasCoordinate=function(obj,world){
+
+	this.sceneCoordinateToCanvasCoordinate = function(obj, world) {
 		var worldVector = obj.position.clone();
-		if(world){
+		if(world) {
 			var vector = worldVector.project(world.camera);
-		}else{
+		} else {
 			var vector = worldVector.project($$.global.camera);
 		}
-		
+
 		var halfWidth = $$.getWorldWidth() / 2;
 		var halfHeight = $$.getWorldHeight() / 2;
 
@@ -185,22 +188,25 @@ var threeQuery = function() {
 		};
 		return result;
 	};
+	
+	window.addEventListener("resize",function(){
+		if($$.global.settings.resize) {
+			$$.resize();
+		}
+	},false);
 
 	this.animate = function() {
 		requestAnimationFrame($$.animate);
 		if($$.global.settings.renderPause) {
 			return;
 		}
-		if($$.global.settings.resize) {
-			$$.resize();
-		}
 		$$.worldActions();
 		for(var i in $$.actionInjections) {
-			if($$.actionInjections[i] instanceof Function == true){
+			if($$.actionInjections[i] instanceof Function == true) {
 				$$.actionInjections[i]();
 			}
 		}
-		if($$.global.settings.raycaster){
+		if($$.global.settings.raycaster) {
 			updateRaycaster();
 		}
 		if($$.global.settings.vr) {
@@ -244,8 +250,6 @@ var threeQuery = function() {
 		return res;
 	};
 
-	
-	
 	this.openFullScreen = function() {
 		var container = $$.global.canvasContainerDom;
 		$$.global.settings.isFullScreem = true;
@@ -317,9 +321,11 @@ var threeQuery = function() {
 	this.global.selectedObj = null;
 	this.global.centerSelectedObj = null;
 
+	this.rayCasterEventReceivers = [];
+
 	function updateMouseRaycaster(isTouch) {
 		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
-		var intersects = $$.global.raycaster.intersectObjects($$.global.world.children, true);
+		var intersects = $$.global.raycaster.intersectObjects($$.rayCasterEventReceivers, true);
 
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
@@ -358,7 +364,7 @@ var threeQuery = function() {
 	function updateCenterRaycaster() {
 		var centerV = new THREE.Vector2(0, 0);
 		$$.global.centerRaycaster.setFromCamera(centerV, $$.global.camera);
-		var intersects = $$.global.centerRaycaster.intersectObjects($$.global.world.children);
+		var intersects = $$.global.centerRaycaster.intersectObjects($$.rayCasterEventReceivers);
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
 			if(intersects[i].object.isPenetrated) {
@@ -458,7 +464,7 @@ var threeQuery = function() {
 	};
 
 	this.subWorlds = {
-		children:{},
+		children: {},
 		getCurrentSubWorld: function() {
 			for(var i in $$.subWorlds.children) {
 				if($$.subWorlds.children[i].isCurrent) {
@@ -480,6 +486,7 @@ var threeQuery = function() {
 		this.id = $$.rndString(16);
 		this.scene = new THREE.Scene();
 		this.camera = "";
+		this.rayCasterEventReceivers = this.scene.children;
 		var options = $$.extends({}, [$$.global.settings.camera, optCamera]);
 		if(options.type != "OrthographicCamera") {
 			this.camera = new THREE.PerspectiveCamera(options.fov, options.aspect, options.near, options.far);
@@ -494,7 +501,7 @@ var threeQuery = function() {
 			stencilBuffer: false
 		};
 		this.clearColor = optWorld.clearColor;
-		this.alpha=optWorld.alpha==null?1:optWorld.alpha;
+		this.alpha = optWorld.alpha == null ? 1 : optWorld.alpha;
 		this.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
 		this.isResize = optWorld.resize == null ? true : optWorld.resize;
 		this.resize = function() {
@@ -508,6 +515,7 @@ var threeQuery = function() {
 				this.camera.right = width / 2;
 				this.camera.top = height / 2;
 				this.camera.bottom = -height / 2;
+				this.camera.updateProjectionMatrix();
 			}
 			$$.global.renderer.setSize(width, height);
 			if($$.global.settings.vr && $$.global.vrEffect) {
@@ -529,16 +537,16 @@ var threeQuery = function() {
 
 		};
 		this.isCurrent = false;
-		this.toTexture=function(){
+		this.toTexture = function() {
 			return this.fbo.texture;
 		};
 		this.toMain = function() {
 			$$.global.world = this.scene;
 			$$.global.camera = this.camera;
 			$$.actionInjections = this.actionInjections;
-			$$.global.renderer.setClearColor(this.clearColor,this.alpha);
+			$$.global.renderer.setClearColor(this.clearColor, this.alpha);
 			$$.global.controls = this.controls;
-
+			$$.rayCasterEventReceivers = this.rayCasterEventReceivers;
 			for(var i in $$.subWorlds) {
 				if($$.subWorlds[i].isCurrent) {
 					$$.subWorlds[i].isCurrent = false;
@@ -583,6 +591,7 @@ var threeQuery = function() {
 						subWorld.camera.right = width / 2;
 						subWorld.camera.top = height / 2;
 						subWorld.camera.bottom = -height / 2;
+						subWorld.camera.updateProjectionMatrix();
 					}
 					$$.global.renderer.setSize(width, height);
 				}
@@ -796,7 +805,7 @@ var threeQuery = function() {
 			width: 100000,
 			height: 100000
 		},
-		raycaster:true, //启用射线法
+		raycaster: true, //启用射线法
 		resize: true, //如果窗口大小改变则改变渲染大小
 		renderPause: false, //暂停渲染循环
 		vr: false, //显示VR效果,
