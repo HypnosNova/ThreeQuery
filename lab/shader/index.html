@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Sample Three.js</title>
+		<style>
+			#container {
+				background: #000;
+				width: 400px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		
+	</body>
+	<!-- Shaders -->
+	<script type="x-shader/x-vertex" id="vertexshader">
+		
+		// switch on high precision floats
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+		
+		void main()
+		{
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+		}
+		
+	</script>
+	
+	<script type="x-shader/x-fragment" id="fragmentshader">
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+		
+		void main()
+		{
+			gl_FragColor 	= vec4(1.0,0.0,1.0,0.5);
+		}
+	
+	</script>
+	
+	<!-- End Shaders -->
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<script src="../../lib/three.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/threeQuery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+
+	// set the scene size
+	var WIDTH = 400,
+	    HEIGHT = 300;
+	
+	// set some camera attributes
+	var VIEW_ANGLE = 45,
+	    ASPECT = WIDTH / HEIGHT,
+	    NEAR = 0.1,
+	    FAR = 10000;
+	
+	var [scene,renderer,camera]=$$.init();
+	$$.animate();
+	
+	
+	// the camera starts at 0,0,0 so pull it back
+	camera.position.z = 300;
+	
+	
+	// create the sphere's material
+	var shaderMaterial = new THREE.ShaderMaterial({
+		vertexShader:   $('#vertexshader').text(),
+		fragmentShader: $('#fragmentshader').text()
+	});
+	
+	// set up the sphere vars
+	var radius = 50, segments = 32, rings = 32;
+	
+	// create a new mesh with sphere geometry -
+	// we will cover the sphereMaterial next!
+	var sphere = new THREE.Mesh(
+	   new THREE.SphereGeometry(radius, segments, rings),
+	   shaderMaterial);
+	
+	// add the sphere to the scene
+	scene.add(sphere);
+	
+	</script>
+</html>

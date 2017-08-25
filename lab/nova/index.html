@@ -1,49 +1,13 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>three.js webgl - materials - shaders [noise]</title>
 		<meta charset="utf-8">
-		<style type="text/css">
-			body {
-				color: #ffffff;
-				font-family:Monospace;
-				font-size:13px;
-				text-align:center;
-				font-weight: bold;
-
-				background-color: #000000;
-				margin: 0px;
-				overflow: hidden;
-
-				/*
-				background: -webkit-radial-gradient(circle, #a64a00, #000000);
-				background: -moz-radial-gradient(circle, #a64a00, #000000);
-				*/
-
-			}
-
-			#info {
-				position: absolute;
-				top: 0px; width: 100%;
-				padding: 5px;
-			}
-
-			a {
-
-				color: #ffffff;
-			}
-
-		</style>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 	</head>
 	<body>
-
-		<div id="container"></div>
-		<div id="info"><a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - shader material demo - animated procedural texture using <a href="https://github.com/ashima/webgl-noise" target="_blank">3d simplex noise</a></div>
-
-		<script type="text/javascript" src="https://cdn.bootcss.com/three.js/r83/three.min.js"></script>
-
+		<script src="../../lib/three.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.min.js" type="text/javascript" charset="utf-8"></script>
 		<script id="fragmentShader" type="x-shader/x-fragment">
-
 			uniform float time;
 
 			varying vec3 vTexCoord3D;
@@ -222,29 +186,18 @@
 
 
 		<script type="text/javascript">
-
-			var container;
-
 			var start_time;
-
-			var camera, scene, renderer;
+			var [scene,renderer,camera]=$$.init();
+			$$.animate();
 
 			var uniforms, mesh;
 
 			var oldTime = new Date().getTime();
 
 			init();
-			animate();
 
 			function init() {
-
-				container = document.getElementById( 'container' );
-
-				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
 				camera.position.z = 4;
-
-				scene = new THREE.Scene();
-				scene.add(camera);
 
 				start_time = new Date().getTime();
 
@@ -267,38 +220,9 @@
 				mesh = new THREE.Mesh( new THREE.SphereGeometry( size, 64, 32 ), material );
 				scene.add( mesh );
 
-				renderer = new THREE.WebGLRenderer();
-				renderer.setClearColor( 0x050505, 0 );
-
-				container.appendChild( renderer.domElement );
-
-				onWindowResize();
-
-				window.addEventListener( 'resize', onWindowResize, false );
-
 			}
 
-			function onWindowResize( event ) {
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-			}
-
-			//
-
-			function animate() {
-
-				requestAnimationFrame( animate );
-
-				render();
-
-			}
-
-			function render() {
-
+			$$.actionInjections.push(function(){
 				var time = new Date().getTime();
 				var delta = 0.001 * ( time - oldTime );
 				oldTime = time;
@@ -307,10 +231,7 @@
 
 				mesh.rotation.y += 0.5 * delta;
 				mesh.rotation.x += 0.1 * delta;
-
-				renderer.render( scene, camera );
-
-			}
+			});
 
 		</script>
 
