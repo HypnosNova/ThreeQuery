@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.dom.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+			camera.position.set(0,0,100);
+			
+//			var text="frog";
+//			var canvas = document.createElement("canvas");
+//			canvas.width=256;
+//			canvas.height=32;
+//			let ctx = this.canvas.getContext("2d");
+//			ctx.fillStyle = "rgba(255,255,0,0.5)";
+//			ctx.fillRect(0, 0, 256, 32);
+//			ctx.textAlign = "center";
+//			ctx.font = "bold" + " " + 24  + "px " + "微软雅黑";
+//			ctx.fillStyle = "#0000ff";
+//			let width = ctx.measureText(text).width;
+//			ctx.fillText(text, 256 / 2, (32+12)/2);
+//			var spriteMaterial = new THREE.SpriteMaterial( { map: new THREE.CanvasTexture(canvas), color: 0xffffff } );
+//			var sprite = new THREE.Sprite( spriteMaterial );
+//			sprite.scale.set( 64, 8, 1 );
+
+			var sprite=new $$.Txt("hello",{
+				fontSize:24,
+				width:128,
+				height:32
+			});
+			scene.add(sprite);
+		
+			
+			camera.lookAt(sprite.position);
+		</script>
+	</body>
+
+</html>
