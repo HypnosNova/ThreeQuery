@@ -4,9 +4,53 @@
 		<title></title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+				width: 100%;
+				height: 100%;
+			}
+			body {
+				background-color: #ffffff;
+				margin: 0;
+				overflow: hidden;
+				font-family: arial;
+			}
+			#blocker {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+			}
+			#instructions {
+				width: 100%;
+				height: 100%;
+				display: -webkit-box;
+				display: -moz-box;
+				display: box;
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				box-orient: horizontal;
+				-webkit-box-pack: center;
+				-moz-box-pack: center;
+				box-pack: center;
+				-webkit-box-align: center;
+				-moz-box-align: center;
+				box-align: center;
+				color: #ffffff;
+				text-align: center;
+				cursor: pointer;
+			}
+		</style>
 	</head>
 
 	<body>
+		<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>
 		<script src="../../lib/three.min.js"></script>
 		<script src="../../js/threeQuery.js"></script>
 		<script src="../../lib/MTLLoader.js"></script>
@@ -14,19 +58,24 @@
 		
 		<script src="../../lib/plugins/Mirror.js"></script>
 		<script src="../../lib/plugins/WaterShader.js"></script>
-		<script src="../../lib/trackBallControls.js"></script>
+		<script src="../../lib/PointerLockControls.js"></script>
 
 		<script>
+			var blocker = document.getElementById( 'blocker' );
 			var [scene, renderer,camera]=$$.init(null,null,{far:3000000});
 			renderer.setClearColor(0xffffff);
 			init();
-			var controls=$$.Controls.createTrackBallControls();
-			controls.minDistance=1000;
-			controls.maxDistance=1000;
+			var controls=$$.Controls.createFirstCharacterControls({keymove:true,speed:{
+				x:500,
+				y:1000,
+				z:500
+			}},blocker);
+//			controls.minDistance=0.1;
+//			controls.maxDistance=0.1;
 			function init() {
 
-				camera.position.y = 1000;
-				camera.position.z = 1000;
+				camera.position.y = 100;
+				camera.position.z = 100;
 
 				var ambient = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient );
@@ -36,22 +85,26 @@
 				scene.add( directionalLight );
 
 				var mtlLoader = new THREE.MTLLoader();
-				mtlLoader.setPath( 'OrganodronCity/' );
-				mtlLoader.load( 'OrganodronCity.mtl', function( materials ) {
+				mtlLoader.setPath( 'bow/' );
+				mtlLoader.load( 'indians_bow.mtl', function( materials ) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials( materials );
-					objLoader.setPath( 'OrganodronCity/' );
-					objLoader.load( 'OrganodronCity.obj', function ( object ) {
+					objLoader.setPath( 'bow/' );
+					objLoader.load( 'indians_bow.obj', function ( object ) {
 						scene.add( object );
 						object.scale.x = object.scale.y = object.scale.z = 3;
-						object.position.y=50;
+						object.position.y=200;
+						console.log(object)
+						for(let i =0;i<4;i++){
+							object.remove(object.children[3]);
+						}
 					});
 
 				});
 				
-				$$.createSkybox("../../textures/patterns/skybox.png", 2000000)
-				$$.createSea({texture:"../../textures/patterns/waternormals.jpg",color:0x999999});
+				$$.Component.createSkybox("../../textures/patterns/skybox.png", 2000000)
+				$$.Component.createSea({texture:"../../textures/patterns/waternormals.jpg",color:0x999999});
 			
 
 			}

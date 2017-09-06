@@ -37,17 +37,23 @@
 				
 				ba=box.clone();
 				scene.add(ba);
-				camera.lookAt(box.position);
+				camera.lookAt(ba.position);
 				
 				var controls=$$.Controls.createOrbitControls();
 			}
 			
 			
-
+			var vector;
 			$$.worldActions = function() {
 				box.rotation.x += 0.01;
 				box.rotation.y += 0.01;
 				//console.log($$.global.raycaster.ray.direction)
+				
+				vector = new THREE.Vector3(); // create once and reuse it!
+				camera.getWorldDirection( vector );
+				
+				ba.position.set(vector.x*20,vector.y*20,vector.z*20);
+				ba.lookAt(camera.position);
 			};
 		</script>
 	</body>
