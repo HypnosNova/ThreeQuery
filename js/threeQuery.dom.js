@@ -13,6 +13,44 @@ $$.DOM = function() {
 	$$.DOM.prototype = new Super();
 })();
 
+$$.Body = function(css) {
+	$$.DOM.call(this);
+	var that=this;
+	this.css = $$.extends({}, [this.css, css]);
+	this.canvas = document.createElement("canvas");
+	this.distanceFromCamera=50;
+	var canvas=this.canvas;
+//	this.text=text;
+	this.update=function(){
+		canvas.width=this.css.width;
+		canvas.height=this.css.height;
+		let ctx = this.canvas.getContext("2d");
+		ctx.fillStyle = this.css.backgroundColor;
+		ctx.fillRect(0, 0, this.css.width, this.css.height);
+		var spriteMaterial = new THREE.SpriteMaterial( { map: new THREE.CanvasTexture(canvas), color: 0xffffff } );
+		sprite.material=spriteMaterial;
+		sprite.scale.set( this.css.width/4, this.css.height/4, 1 );
+	}
+	
+	var spriteMaterial = new THREE.SpriteMaterial( { map: canvas, color: 0xffffff } );
+	var sprite = new THREE.Sprite( spriteMaterial );
+	var vector = new THREE.Vector3(); // create once and reuse it!
+	this.lockToScreen=function(){
+		$$.global.camera.getWorldDirection( vector );
+		that.position.set(vector.x*that.distanceFromCamera,vector.y*that.distanceFromCamera,vector.z*that.distanceFromCamera);
+		that.lookAt($$.global.camera.position);
+	}
+	
+	this.update();
+	this.element = sprite;
+	this.add(this.element);
+};
+(function() {
+	var Super = function() {};
+	Super.prototype = $$.DOM.prototype;
+	$$.Body.prototype = new Super();
+})();
+
 $$.Txt = function(text, css) {
 	$$.DOM.call(this);
 	var that=this;
@@ -57,14 +95,31 @@ $$.Txt = function(text, css) {
 $$.Img = function(url,css){
 	$$.DOM.call(this);
 	var that=this;
-	this.css = $$.extends({}, [this.css, {
-		fontSize: 12,
-		fontWeight: "normal",
-		fontFamily: "微软雅黑",
-		color: "#ffffff",
-		textAlign: "center"
-	}, css]);
-}
+	
+	if($$.Loader.RESOURCE.textures[url]){
+		var spriteMaterial = new THREE.SpriteMaterial( { map: $$.Loader.RESOURCE.textures[url], color: 0xffffff } );
+		var sprite = new THREE.Sprite( spriteMaterial );
+		that.element = sprite;
+		that.add(that.element);
+		this.css = $$.extends({}, [this.css, {
+			width:$$.Loader.RESOURCE.textures[url].image.naturalWidth,
+			height:$$.Loader.RESOURCE.textures[url].image.naturalHeight,
+		}, css]);
+		sprite.scale.set( this.css.width/4, this.css.height/4, 1 );
+	}else{
+		$$.Loader.loadTexture([url],function(texture){
+			var spriteMaterial = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+			var sprite = new THREE.Sprite( spriteMaterial );
+			that.element = sprite;
+			that.add(that.element);
+			this.css = $$.extends({}, [this.css, {
+				width:texture.image.naturalWidth,
+				height:texture.image.naturalHeight,
+			}, css]);
+			sprite.scale.set( this.css.width/4, this.css.height/4, 1 );
+		});
+	}
+};
 (function() {
 	var Super = function() {};
 	Super.prototype = $$.DOM.prototype;

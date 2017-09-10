@@ -189,11 +189,11 @@ var threeQuery = function() {
 		return result;
 	};
 	
-	document.addEventListener("resize",function(){
+	window.addEventListener("resize",function(){
 		if($$.global.settings.resize) {
 			$$.resize();
 		}
-	});
+	},false);
 
 	this.animate = function() {
 		requestAnimationFrame($$.animate);
@@ -814,8 +814,8 @@ var threeQuery = function() {
 	};
 };
 var $$ = new threeQuery();
-$$.Loader = new (function() {
-	var that=this;
+$$.Loader = new(function() {
+	var that = this;
 	this.RESOURCE = {
 		textures: {},
 		models: {},
@@ -842,17 +842,27 @@ $$.Loader = new (function() {
 	};
 	this.onProgress = function() {};
 	this.onLoadComplete = function() {};
-	this.loadTexture = function(arr) {
+	this.loadTexture = function(arr,onSuccess,onProgree,onError) {
 		allLoaded = false;
 		var loader = new THREE.TextureLoader(that.loadingManager);
 		for(let i in arr) {
 			loader.load(arr[i],
 				function(texture) {
 					that.RESOURCE.textures[arr[i]] = texture;
+					if(onSuccess){
+						onSuccess(texture)
+					}
 				},
-				function(xhr) {},
+				function(xhr) {
+					if(onProgree){
+						onProgree();
+					}
+				},
 				function(xhr) {
 					that.RESOURCE.unloadedSource.textures.push(arr[i]);
+					if(onError){
+						onError();
+					}
 					console.log(arr[i] + " is not found");
 				}
 			);
@@ -927,6 +937,20 @@ $$.Loader = new (function() {
 				);
 			}
 		}
+	};
+	this.loadText = function(name, url) {
+		var loader = new THREE.FileLoader(that.loadingManager);
+		loader.load(
+			url,
+			function(data) {
+				that.RESOURCE.text[name] = data;
+			},
+			function(xhr) {},
+			function(xhr) {
+				that.RESOURCE.unloadedSource.textures.push(url);
+				console.log(name + " is not found");
+			}
+		);
 	};
 });
 //九宫格对齐方式：

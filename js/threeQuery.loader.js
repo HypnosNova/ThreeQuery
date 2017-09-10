@@ -26,17 +26,27 @@ $$.Loader = new(function() {
 	};
 	this.onProgress = function() {};
 	this.onLoadComplete = function() {};
-	this.loadTexture = function(arr) {
+	this.loadTexture = function(arr,onSuccess,onProgree,onError) {
 		allLoaded = false;
 		var loader = new THREE.TextureLoader(that.loadingManager);
 		for(let i in arr) {
 			loader.load(arr[i],
 				function(texture) {
 					that.RESOURCE.textures[arr[i]] = texture;
+					if(onSuccess){
+						onSuccess(texture);
+					}
 				},
-				function(xhr) {},
+				function(xhr) {
+					if(onProgree){
+						onProgree();
+					}
+				},
 				function(xhr) {
 					that.RESOURCE.unloadedSource.textures.push(arr[i]);
+					if(onError){
+						onError();
+					}
 					console.log(arr[i] + " is not found");
 				}
 			);
