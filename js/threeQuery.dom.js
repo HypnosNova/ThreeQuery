@@ -157,7 +157,6 @@ $$.Video = function(url, css) {
 	var sprite = new THREE.Sprite(spriteMaterial);
 	that.element = sprite;
 	that.add(that.element);
-	console.log(texture)
 	this.css = $$.extends({}, [this.css, {
 		width: texture.image.naturalWidth,
 		height: texture.image.naturalHeight,

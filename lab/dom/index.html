@@ -17,33 +17,41 @@
 			$$.Component.createSkybox("skybox.jpg", 10000);
 			$$.animate();
 			camera.position.set(0,0,150);
+			//上面部分就是传统建立three场景的流程
+			
+			//创建body标签
 			var bodyDom=new $$.Body({
 				width:512,
 				height:512,
 				backgroundColor:"rgba(255,0,0,0.3)"
 			});
-//			bodyDom.position.set(0,0,50);
 			scene.add(bodyDom);
-			var sprite=new $$.Txt("hello",{
+			
+			//创建文本标签
+			var txt=new $$.Txt("hello",{
 				fontSize:64,
 				width:256,
 				height:72
 			});
-			bodyDom.add(sprite);
+			bodyDom.add(txt);
 			
-			var sprite=new $$.Img("home.png",{});
-			bodyDom.add(sprite);
-			sprite.position.x=-100;
+			//创建img标签
+			var img=new $$.Img("home.png",{});
+			bodyDom.add(img);
+			img.position.x=-100;
 			
-			var sprite=new $$.Video("../../video/video.mp4",{
+			//创建video标签
+			var video=new $$.Video("../../video/video.mp4",{
 				width:256,
 				height:128
 			});
-			bodyDom.add(sprite);
-			sprite.position.x=100;
-			sprite.video.play();
-			camera.lookAt(sprite.position);
+			bodyDom.add(video);
+			video.position.x=100;
+			video.video.play();
 			
+			camera.lookAt(bodyDom.position);
+			
+			//让body始终在camera正前方
 			$$.actionInjections.push(bodyDom.lockToScreen);
 		</script>
 	</body>
