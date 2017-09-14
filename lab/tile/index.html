@@ -15,16 +15,12 @@
 	<body>
 
 		<script src="../../lib/three.min.js"></script>
-
+		<script src="../../js/threeQuery.min.js"></script>
 		<!--<script src="js/libs/stats.min.js"></script>-->
 
-		<div id='container1' style='float: left '></div>
-		<div id='container2' style='float: right'></div>
 
 		<script>
-
-			var camera, scene;
-			var canvasRenderer, webglRenderer;
+			var [scene,webglRenderer,camera]=$$.init();
 
 			var mesh;
 			var texture, texture1, texture2, texture3;
@@ -37,10 +33,10 @@
 				var width = window.innerWidth / 2 - 2;
 				var height = window.innerHeight;
 
-				camera = new THREE.PerspectiveCamera( 70, width / height, 1, 4000 );
+				//camera = new THREE.PerspectiveCamera( 70, width / height, 1, 4000 );
 				camera.position.z = 2000;
 
-				scene = new THREE.Scene();
+//				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0xf0f0f0 );
 
 				var textureLoader = new THREE.TextureLoader();
@@ -141,17 +137,17 @@
 
 				}
 
-				webglRenderer = new THREE.WebGLRenderer( { antialias: true } );
-				webglRenderer.setPixelRatio( window.devicePixelRatio );
-				webglRenderer.setSize( width, height );
-				var container2 = document.getElementById( 'container2' );
-				container2.appendChild( webglRenderer.domElement );
+//				webglRenderer = new THREE.WebGLRenderer( { antialias: true } );
+//				webglRenderer.setPixelRatio( window.devicePixelRatio );
+//				webglRenderer.setSize( width, height );
+//				var container2 = document.getElementById( 'container2' );
+//				container2.appendChild( webglRenderer.domElement );
 
 				
 
 				//
 
-				window.addEventListener( 'resize', onWindowResize, false );
+				//window.addEventListener( 'resize', onWindowResize, false );
 
 			}
 

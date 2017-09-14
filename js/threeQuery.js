@@ -1,5 +1,5 @@
 var threeQuery = function() {
-	var that=this;
+	var that=this,$$=that;
 	this.global = {};
 	this.global.camera;
 	this.global.world;
