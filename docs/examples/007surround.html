@@ -34,7 +34,7 @@
 				var geometry = new THREE.SphereBufferGeometry(300, 32, 32);
 				var material = new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["solar/sun.jpg"]
+					map: $$.Loader.RESOURCE.textures["solar/sun.jpg"]
 				});
 				var sphere = new THREE.Mesh(geometry, material);
 				scene.add(sphere);
@@ -45,7 +45,7 @@
 				var geometry = new THREE.SphereBufferGeometry(100, 32, 32);
 				var material = new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["solar/earth.jpg"]
+					map: $$.Loader.RESOURCE.textures["solar/earth.jpg"]
 				});
 				var sphere2 = new THREE.Mesh(geometry, material);
 				sphere2.position.x = 1300;
@@ -56,7 +56,7 @@
 				var geometry = new THREE.SphereBufferGeometry(30, 32, 32);
 				var material = new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: $$.global.RESOURCE.textures["solar/moon.jpg"]
+					map: $$.Loader.RESOURCE.textures["solar/moon.jpg"]
 				});
 				var sphere3 = new THREE.Mesh(geometry, material);
 				sphere3.position.x = 1700;

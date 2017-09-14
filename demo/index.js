@@ -88,7 +88,7 @@ function createLetters() {
 	for(var i = 0; i < len; i++) {
 		var ri=rndInt(textures.length)
 		var letter = textures[ri];
-		var texture = $$.global.RESOURCE.textures["img/" + letter + ".jpg"];
+		var texture = $$.Loader.RESOURCE.textures["img/" + letter + ".jpg"];
 		textures.splice(ri,1);
 		texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 		texture.repeat.set(0.0195, 0.0195);
