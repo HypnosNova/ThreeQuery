@@ -25,7 +25,7 @@
 			var material = new THREE.MeshBasicMaterial( {color: 0xffffff,map: texture} );
 			var sphere = new THREE.Mesh( geometry, material );
 			sphere.scale.x=-1;
-			$$.global.world.add( sphere );
+			$$.global.scene.add( sphere );
 			
 			document.getElementById("btn").onclick=function(){
 				document.getElementById("btn").style.display="none";

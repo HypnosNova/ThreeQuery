@@ -3,6 +3,7 @@ var threeQuery = function() {
 	this.global = {};
 	this.global.camera;
 	this.global.world;
+	this.global.scene;
 	this.global.canvasDom;
 	this.global.canvasContainerDom = document.body;
 	this.global.renderer;
@@ -48,21 +49,21 @@ var threeQuery = function() {
 		document.write("<style>*{margin:0;padding:0} body{overflow:hidden}</style>");
 	};
 
-	this.createWorld = function(options) {
-		var world = new THREE.Scene();
-		if(!this.global.world) {
-			this.global.world = world;
+	this.createScene = function(options) {
+		var scene = new THREE.Scene();
+		if(!this.global.scene) {
+			this.global.scene = scene;
 		}
-		this.rayCasterEventReceivers=this.global.world.children;
-		return world;
+		this.rayCasterEventReceivers=this.global.scene.children;
+		return scene;
 	};
 
-	this.createFog = function(option, world) {
+	this.createFog = function(option, scene) {
 		option = option || {
 			color: 0xffffff,
 			concentration: 0.01
 		};
-		var scene = world || this.global.world;
+		var scene = scene || this.global.scene;
 		scene.fog = new THREE.FogExp2(option.color || 0, option.concentration || 0);
 		return scene.fog;
 	};
@@ -97,13 +98,13 @@ var threeQuery = function() {
 		return camera;
 	};
 
-	this.init = function(worldOpt, renderOpt, cameraOpt) {
+	this.init = function(sceneOpt, renderOpt, cameraOpt) {
 		this.setCommonCSS();
-		this.createWorld(worldOpt);
+		this.createScene(sceneOpt);
 		this.createRenderer(renderOpt);
 		this.createCamera(cameraOpt);
 		this.addEventListener();
-		return [this.global.world, this.global.renderer, this.global.camera];
+		return [this.global.scene, this.global.renderer, this.global.camera];
 	};
 	//添加鼠标事件
 	this.addEventListener = function() {
@@ -171,10 +172,10 @@ var threeQuery = function() {
 		$$.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
 	};
 
-	this.sceneCoordinateToCanvasCoordinate = function(obj, world) {
+	this.sceneCoordinateToCanvasCoordinate = function(obj, scene) {
 		var worldVector = obj.position.clone();
-		if(world) {
-			var vector = worldVector.project(world.camera);
+		if(scene) {
+			var vector = worldVector.project(scene.camera);
 		} else {
 			var vector = worldVector.project($$.global.camera);
 		}
@@ -213,10 +214,10 @@ var threeQuery = function() {
 			if(!$$.global.vrEffect) {
 				$$.global.vrEffect = new THREE.StereoEffect($$.global.renderer);
 			}
-			$$.global.renderer.render($$.global.world, $$.global.camera);
-			$$.global.vrEffect.render($$.global.world, $$.global.camera);
+			$$.global.renderer.render($$.global.scene, $$.global.camera);
+			$$.global.vrEffect.render($$.global.scene, $$.global.camera);
 		} else {
-			$$.global.renderer.render($$.global.world, $$.global.camera);
+			$$.global.renderer.render($$.global.scene, $$.global.camera);
 		}
 		if($$.global.controls) {
 			$$.global.controls.update();
@@ -442,7 +443,7 @@ var threeQuery = function() {
 				arr = group.children;
 			}
 		} else {
-			arr = $$.global.world.children;
+			arr = $$.global.scene.children;
 		}
 		if(arr) {
 			if(key == "id") {
@@ -541,7 +542,7 @@ var threeQuery = function() {
 			return this.fbo.texture;
 		};
 		this.toMain = function() {
-			$$.global.world = this.scene;
+			$$.global.scene = this.scene;
 			$$.global.camera = this.camera;
 			$$.actionInjections = this.actionInjections;
 			$$.global.renderer.setClearColor(this.clearColor, this.alpha);
@@ -614,7 +615,7 @@ var threeQuery = function() {
 			"animateTransition": true,
 			"textureThreshold": 0.3
 		}, option]);
-		var sceneB = makeSubWorld($$.global.world, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
+		var sceneB = makeSubWorld($$.global.scene, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
 
 		this.scene = new THREE.Scene();
 		this.cameraOrtho = $$.createCamera({
@@ -645,16 +646,11 @@ var threeQuery = function() {
 				}
 			},
 			vertexShader: [
-
 				"varying vec2 vUv;",
-
 				"void main() {",
-
 				"vUv = vec2( uv.x, uv.y );",
 				"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
 				"}"
-
 			].join("\n"),
 			fragmentShader: [
 				"uniform float mixRatio;",
@@ -687,7 +683,7 @@ var threeQuery = function() {
 			].join("\n")
 		});
 
-		$$.global.world = this.scene;
+		$$.global.scene = this.scene;
 		$$.global.camera = this.cameraOrtho;
 
 		quadgeometry = new THREE.PlaneBufferGeometry($$.getWorldWidth(), $$.getWorldHeight());

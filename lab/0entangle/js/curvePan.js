@@ -6,11 +6,11 @@ var CurvePanManager = function() {
 	this.stonePanHeight = 40;
 	this.panMaterial = new THREE.MeshLambertMaterial({
 		color: 0xffffff,
-		map: $$.global.RESOURCE.textures["texture/pan.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/pan.jpg"]
 	});
 	this.panCurveMaterial = new THREE.MeshLambertMaterial({
 		color: 0xffffff,
-		map: $$.global.RESOURCE.textures["texture/stone.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/stone.jpg"]
 	});
 	this.panCurveDeepMaterial = new THREE.MeshLambertMaterial({
 		color: 0x66aaff,
@@ -18,21 +18,21 @@ var CurvePanManager = function() {
 	});
 	this.stonePanMaterial = new THREE.MeshLambertMaterial({
 		color: 0xffffff,
-		map: $$.global.RESOURCE.textures["texture/stone.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/stone.jpg"]
 	});
 	this.emptyPanMaterial = new THREE.MeshLambertMaterial({
 		color: 0xdddddd,
-		map: $$.global.RESOURCE.textures["texture/pan.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/pan.jpg"]
 	});
 	this.scorePanMaterial = new THREE.MeshLambertMaterial({
 		color: 0xffffff,
-		map: $$.global.RESOURCE.textures["texture/scorePan.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/scorePan.jpg"]
 	});
 	this.tubeRadius = 1.25;
 	this.tubeMaterial = new THREE.MeshPhongMaterial({
 		color: 0xffffff,
 		side: THREE.DoubleSide,
-		map: $$.global.RESOURCE.textures["texture/stone.jpg"]
+		map: $$.Loader.RESOURCE.textures["texture/stone.jpg"]
 	});
 	this.pointsOut = [
 		new THREE.Vector3(this.panRadius * Math.sqrt(3) / 2, 0, this.panRadius / 4),
@@ -73,7 +73,7 @@ var CurvePanManager = function() {
 		var geometry = new THREE.CylinderBufferGeometry(that.panRadius, that.panRadius, that.panHeight, 6);
 		var cylinder = new THREE.Mesh(geometry, this.panMaterial = new THREE.MeshLambertMaterial({
 			color: 0xffffff,
-			map: $$.global.RESOURCE.textures["texture/pan.jpg"]
+			map: $$.Loader.RESOURCE.textures["texture/pan.jpg"]
 		}));
 		group.add(cylinder);
 		indexArr.sort(function() {

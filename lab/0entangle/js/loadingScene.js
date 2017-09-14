@@ -1,6 +1,6 @@
 function loadSource(){
-	$$.loadSound(soundArr);
-	$$.loadTexture(["texture/skybox.jpg",
+	$$.Loader.loadSound(soundArr);
+	$$.Loader.loadTexture(["texture/skybox.jpg",
 		"texture/waternormals.jpg",
 		"transition/transition1.png",
 		"texture/stone.jpg",
@@ -10,14 +10,14 @@ function loadSource(){
 		"texture/2.jpg",
 		"texture/3.jpg",
 		"texture/pan.jpg"]);
-	$$.loadFont(["font/tahomabd.ttf"]);
+	$$.Loader.loadFont(["font/tahomabd.ttf"]);
 	
 }
 var curvePanManager;
-$$.onLoadComplete=function(){
+$$.Loader.onLoadComplete=function(){
 	curvePanManager=new CurvePanManager();
 	var mainScene=createMainScene();
-	transition = new $$.Transition(mainScene, {}, $$.global.RESOURCE.textures["transition/transition1.png"]);
+	transition = new $$.Transition(mainScene, {}, $$.Loader.RESOURCE.textures["transition/transition1.png"]);
 	$$.actionInjections.push(transition.render);
 }
 

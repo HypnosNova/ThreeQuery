@@ -139,14 +139,14 @@ $$.Component = {
 		mesh.position.z = options.position.z;
 		mesh.lifeStart = new Date().getTime();
 		mesh.life = options.life;
-		$$.global.world.add(mesh);
+		$$.global.scene.add(mesh);
 
 		$$.actionInjections.push(function() {
 			mesh.position.x += options.direction.x * options.speed;
 			mesh.position.y += options.direction.y * options.speed;
 			mesh.position.z += options.direction.z * options.speed;
 			if(mesh.life <= new Date().getTime() - mesh.lifeStart) {
-				$$.global.world.remove(mesh);
+				$$.global.scene.remove(mesh);
 				for(var i in $$.actionInjections) {
 					if($$.actionInjections[i] == arguments.callee) {
 						$$.actionInjections.splice(i, 1);
@@ -166,7 +166,7 @@ $$.Component = {
 		if(world) {
 			world.scene.add(sky);
 		} else {
-			$$.global.world.add(sky);
+			$$.global.scene.add(sky);
 		}
 
 		return sky;
@@ -218,13 +218,13 @@ $$.Component = {
 		if(world) {
 			world.scene.add(skyBox);
 		} else {
-			$$.global.world.add(skyBox);
+			$$.global.scene.add(skyBox);
 		}
 		return skyBox;
 	},
 	createSea: function(options, world) {
 		world = world || {
-			scene: $$.global.world,
+			scene: $$.global.scene,
 			camera: $$.global.camera,
 			renderer: $$.global.renderer
 		};

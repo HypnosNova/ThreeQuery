@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>tile</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+	<body>
+
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+
+		<script>
+			var [scene,renderer,camera]=$$.init();
+
+			var mesh;
+			var texture, texture1, texture2, texture3;
+
+			init();
+
+			function init() {
+
+				camera.position.z = 2000;
+
+				var textureLoader = new THREE.TextureLoader();
+
+				// MESH - Repeat Pattern
+
+				texture = textureLoader.load( 'textures/UV_Grid_Sm.jpg' );
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+
+				var geometry = new THREE.BoxGeometry( 150, 150, 150, 4, 4, 4 );
+				var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+
+//				// SPRITES - from Sprite Sheet
+//
+//				texture1 = textureLoader.load( 'textures/UV_Grid_Sm.jpg', function() {
+//
+//					texture1.wrapS = THREE.ClampToEdgeWrapping;
+//					texture1.wrapT = THREE.ClampToEdgeWrapping;
+//
+//					for ( var i = 0; i < 20; i ++ ) {
+//
+//						var tex = texture1.clone();
+//
+//						tex.needsUpdate = true; // cloning does not set this
+//
+//						tex.offset.x = 0.1 * THREE.Math.randInt( 0, 7 );
+//						tex.offset.y = 0.1 * THREE.Math.randInt( 0, 7 );
+//						tex.repeat.x = 0.1 * THREE.Math.randInt( 1, 3 );
+//						tex.repeat.y = 0.1 * THREE.Math.randInt( 1, 3 );
+//
+//						var material = new THREE.SpriteMaterial( { map: tex } );
+//						material.rotation = 0.5 * Math.PI * ( Math.random() - 0.5 );
+//
+//						var sprite = new THREE.Sprite( material );
+//
+//						sprite.position.x = Math.random() * 1000 - 500;
+//						sprite.position.y = Math.random() * 1000 - 500;
+//						sprite.position.z = Math.random() * 1000 - 500;
+//
+//						sprite.scale.set( 96, 96, 1 );
+//
+//						scene.add( sprite );
+//
+//					}
+//
+//				} );
+//
+//
+//				// SPRITES - Repeat Pattern
+//
+//				texture2 = textureLoader.load( 'textures/sprite0.jpg' );
+//				texture2.wrapS = THREE.RepeatWrapping;
+//				texture2.wrapT = THREE.RepeatWrapping;
+//
+//				for ( var i = 0; i < 20; i ++ ) {
+//
+//					var material = new THREE.SpriteMaterial( { map: texture2, opacity: 0.7 } );
+//					var sprite = new THREE.Sprite( material );
+//
+//					sprite.material.rotation = 0.5 * Math.PI * ( Math.random() - 0.5 );
+//
+//					sprite.position.x = Math.random() * 1000 - 500;
+//					sprite.position.y = Math.random() * 1000 - 500;
+//					sprite.position.z = Math.random() * 1000 - 500;
+//
+//					sprite.scale.set( 64, 64, 1 );
+//
+//					scene.add( sprite );
+//
+//				}
+//
+//
+//				// SPRITES - PNG
+//
+//				texture3 = textureLoader.load( 'textures/sprite1.png' );
+//				texture3.wrapS = THREE.ClampToEdgeWrapping;
+//				texture3.wrapT = THREE.ClampToEdgeWrapping;
+//
+//				for ( var i = 0; i < 20; i ++ ) {
+//
+//					var material = new THREE.SpriteMaterial( { map: texture3 } );
+//					material.rotation = 2 * Math.PI * ( Math.random() - 0.5 );
+//
+//					var sprite = new THREE.Sprite( material );
+//
+//					sprite.position.x = Math.random() * 1000 - 500;
+//					sprite.position.y = Math.random() * 1000 - 500;
+//					sprite.position.z = Math.random() * 1000 - 500;
+//
+//					sprite.scale.set( 64, 64, 1 );
+//
+//					scene.add( sprite );
+//
+//				}
+console.log(scene.children)
+			}
+
+			$$.actionInjections.push(function(){
+				var time = performance.now() * 0.0001;
+
+				camera.position.x = Math.sin( time ) * 500;
+				camera.position.z = Math.cos( time ) * 500;
+				camera.lookAt( scene.position );
+
+				texture.repeat.x = Math.sin( time ) * 0.5 + 1.0;
+				texture.repeat.y = Math.cos( time ) * 0.5 + 1.0;
+
+				texture.offset.x = Math.sin( time ) * 0.5 + 0.5;
+				texture.offset.y = Math.cos( time ) * 0.5 + 0.5;
+
+				mesh.rotation.x = time * 2;
+				mesh.rotation.y = time * 4;
+
+				//
+
+//				texture2.repeat.x = Math.sin( time ) + 1.25;
+//				texture2.repeat.y = Math.sin( time ) + 1.25;
+//
+//				texture2.offset.x = Math.sin( time );
+//				texture2.offset.y = Math.cos( time );
+			});
+
+
+		</script>
+
+	</body>
+
+</html>

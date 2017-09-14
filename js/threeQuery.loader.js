@@ -77,8 +77,8 @@ $$.Loader = new(function() {
 					that.RESOURCE.sounds[arr[i]] = buffer;
 					soundDecodeNum--;
 					if(allLoaded && soundDecodeNum == 0) {
-						if($$.onLoadComplete) {
-							$$.onLoadComplete();
+						if(that.onLoadComplete) {
+							that.onLoadComplete();
 						}
 					}
 				},

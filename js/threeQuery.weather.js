@@ -66,7 +66,7 @@ $$.Weather = {
 			particle.v.x = (this.wind.x + randomRange(-this.swing.x, this.swing.x));
 
 			this.particles.push(particle);
-			$$.global.world.add(particle);
+			$$.global.scene.add(particle);
 		}
 
 		this.start = function() {
@@ -89,7 +89,7 @@ $$.Weather = {
 						particle.v.x = (this.owner.wind.x + randomRange(-this.owner.swing.x, this.owner.swing.x));
 
 						this.owner.particles.push(particle);
-						$$.global.world.add(particle);
+						$$.global.scene.add(particle);
 					}
 				},
 				onEnd: this.onStartEnd
@@ -107,7 +107,7 @@ $$.Weather = {
 					for(var i = 0; i < this.owner.endSpeed; i++) {
 						if(this.owner.particles.length > 0) {
 							var id = rndInt(this.owner.particles.length);
-							$$.global.world.remove(this.owner.particles[id]);
+							$$.global.scene.remove(this.owner.particles[id]);
 							this.owner.particles.splice(id, 1);
 						} else {
 							break;
@@ -117,7 +117,7 @@ $$.Weather = {
 				onEnd: function() {
 					while(this.owner.particles.length) {
 						var id = rndInt(this.owner.particles.length);
-						$$.global.world.remove(this.owner.particles[id]);
+						$$.global.scene.remove(this.owner.particles[id]);
 						this.owner.particles.splice(id, 1);
 					}
 					onEnd: this.owner.onEndEnd;

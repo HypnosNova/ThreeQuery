@@ -33,7 +33,7 @@ function createMainScene() {
 			soundPlayerArr.push([]);
 			for(var j in curveSound[i]) {
 				var sound = new THREE.Audio(listener);
-				sound.setBuffer($$.global.RESOURCE.sounds[soundArr[curveSound[i][j]]]);
+				sound.setBuffer($$.Loader.RESOURCE.sounds[soundArr[curveSound[i][j]]]);
 				sound.setVolume(0.75);
 				soundPlayerArr[i].push(sound);
 			}
@@ -408,7 +408,7 @@ function createMainScene() {
 		var geometry = new THREE.CylinderBufferGeometry(curvePanManager.panRadius * 2, curvePanManager.panRadius * 2, curvePanManager.stonePanHeight, 6);
 		var cylinder = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
 			color: 0xffffff,
-			map: $$.global.RESOURCE.textures["texture/" + index + ".jpg"]
+			map: $$.Loader.RESOURCE.textures["texture/" + index + ".jpg"]
 		}));
 		group.add(cylinder);
 
@@ -447,7 +447,7 @@ function createMainScene() {
 		size: curvePanManager.panRadius * 0.5,
 		height: 0.5,
 		weight: 'normal',
-		font: $$.global.RESOURCE.fonts["font/tahomabd.ttf"],
+		font: $$.Loader.RESOURCE.fonts["font/tahomabd.ttf"],
 		style: 'normal',
 	};
 
@@ -455,7 +455,7 @@ function createMainScene() {
 	var listener = new THREE.AudioListener();
 	world.camera.add(listener);
 	var sound = new THREE.Audio(listener);
-	sound.setBuffer($$.global.RESOURCE.sounds["media/main.ogg"]);
+	sound.setBuffer($$.Loader.RESOURCE.sounds["media/main.ogg"]);
 	sound.setLoop(true);
 	sound.setVolume(0.5);
 	sound.play();
