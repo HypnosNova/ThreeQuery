@@ -40,7 +40,7 @@ var threeQuery = function() {
 			this.global.camera.updateProjectionMatrix();
 		}
 		this.global.renderer.setSize(width, height);
-		if($$.global.settings.vr && $$.global.vrEffect) {
+		if(that.global.settings.vr && that.global.vrEffect) {
 			this.global.vrEffect.setSize(width, height);
 		}
 	};
@@ -76,7 +76,7 @@ var threeQuery = function() {
 		if(!this.global.renderer) {
 			this.global.renderer = renderer;
 			this.global.canvasContainerDom.appendChild(this.global.renderer.domElement);
-			if($$.global.settings.vr) {
+			if(that.global.settings.vr) {
 				this.global.vrEffect = new THREE.StereoEffect(this.global.renderer);
 			}
 			this.global.canvasDom = this.global.renderer.domElement;
@@ -99,77 +99,79 @@ var threeQuery = function() {
 	};
 
 	this.init = function(sceneOpt, renderOpt, cameraOpt) {
-		this.setCommonCSS();
-		this.createScene(sceneOpt);
-		this.createRenderer(renderOpt);
-		this.createCamera(cameraOpt);
-		this.addEventListener();
-		return [this.global.scene, this.global.renderer, this.global.camera];
+		that.setCommonCSS();
+//		this.createScene(sceneOpt);
+		that.createRenderer(renderOpt);
+//		this.createCamera(cameraOpt);
+		that.addEventListener();
+		var world=new that.SubWorld(sceneOpt,cameraOpt);
+		world.toMain();
+		return [that.global.scene, that.global.renderer, that.global.camera];
 	};
 	//添加鼠标事件
 	this.addEventListener = function() {
 		//鼠标移动事件
 		function onDocumentMouseMove(event) {
 			event.preventDefault();
-			$$.global.mouse.x = (event.clientX / $$.getWorldWidth()) * 2 - 1;
-			$$.global.mouse.y = -(event.clientY / $$.getWorldHeight()) * 2 + 1;
-			if($$.global.selectedObj && $$.global.selectedObj.object.onDrag && $$.global.isDown) {
-				$$.global.selectedObj.object.onDrag($$.global.selectedObj);
+			that.global.mouse.x = (event.clientX / that.getWorldWidth()) * 2 - 1;
+			that.global.mouse.y = -(event.clientY / that.getWorldHeight()) * 2 + 1;
+			if(that.global.selectedObj && that.global.selectedObj.object.onDrag && that.global.isDown) {
+				that.global.selectedObj.object.onDrag(that.global.selectedObj);
 			}
 		}
 
 		function onDocumentMouseClick(event) {
-			if($$.global.selectedObj && $$.global.selectedObj.object.onClick && $$.global.selectedObj.object.isDown == true) {
-				$$.global.selectedObj.object.isDown = false;
-				$$.global.selectedObj.object.onClick($$.global.selectedObj, event);
+			if(that.global.selectedObj && that.global.selectedObj.object.onClick && that.global.selectedObj.object.isDown == true) {
+				that.global.selectedObj.object.isDown = false;
+				that.global.selectedObj.object.onClick(that.global.selectedObj, event);
 			}
-			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterClick && $$.global.centerSelectedObj.object.isCenterDown == true) {
-				$$.global.centerSelectedObj.object.isCenterDown = false;
-				$$.global.centerSelectedObj.object.onCenterClick($$.global.centerSelectedObj, event);
+			if(that.global.centerSelectedObj && that.global.centerSelectedObj.object.onCenterClick && that.global.centerSelectedObj.object.isCenterDown == true) {
+				that.global.centerSelectedObj.object.isCenterDown = false;
+				that.global.centerSelectedObj.object.onCenterClick(that.global.centerSelectedObj, event);
 			}
 		}
 
 		function onMouseDownOrTouchStart(event) {
 			if(event.type == "touchstart") {
-				$$.global.mouse.x = (event.targetTouches[0].clientX / $$.getWorldWidth()) * 2 - 1;
-				$$.global.mouse.y = -(event.targetTouches[0].clientY / $$.getWorldHeight()) * 2 + 1;
+				that.global.mouse.x = (event.targetTouches[0].clientX / that.getWorldWidth()) * 2 - 1;
+				that.global.mouse.y = -(event.targetTouches[0].clientY / that.getWorldHeight()) * 2 + 1;
 				updateMouseRaycaster(true);
 			}
 
-			$$.global.isDown = true;
-			if($$.global.selectedObj && $$.global.selectedObj.object) {
-				$$.global.selectedObj.object.isDown = true;
+			that.global.isDown = true;
+			if(that.global.selectedObj && that.global.selectedObj.object) {
+				that.global.selectedObj.object.isDown = true;
 			}
-			if($$.global.selectedObj && $$.global.selectedObj.object.onDown) {
-				$$.global.selectedObj.object.onDown($$.global.selectedObj, event);
+			if(that.global.selectedObj && that.global.selectedObj.object.onDown) {
+				that.global.selectedObj.object.onDown(that.global.selectedObj, event);
 			}
 
-			$$.global.isCenterDown = true;
-			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object) {
-				$$.global.centerSelectedObj.object.isCenterDown = true;
+			that.global.isCenterDown = true;
+			if(that.global.centerSelectedObj && that.global.centerSelectedObj.object) {
+				that.global.centerSelectedObj.object.isCenterDown = true;
 			}
-			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterDown) {
-				$$.global.centerSelectedObj.object.onCenterDown($$.global.centerSelectedObj, event);
+			if(that.global.centerSelectedObj && that.global.centerSelectedObj.object.onCenterDown) {
+				that.global.centerSelectedObj.object.onCenterDown(that.global.centerSelectedObj, event);
 			}
 		}
 
 		function onMouseUpOrTouchEnd(event) {
-			$$.global.isDown = false;
-			if($$.global.selectedObj && $$.global.selectedObj.object.onUp && $$.global.selectedObj.object.isDown == true) {
-				$$.global.selectedObj.object.onUp($$.global.selectedObj, event);
+			that.global.isDown = false;
+			if(that.global.selectedObj && that.global.selectedObj.object.onUp && that.global.selectedObj.object.isDown == true) {
+				that.global.selectedObj.object.onUp(that.global.selectedObj, event);
 			}
 
-			$$.global.isCenterDown = false;
-			if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.onCenterUp && $$.global.centerSelectedObj.object.isCenterDown == true) {
-				$$.global.centerSelectedObj.object.onCenterUp($$.global.centerSelectedObj, event);
+			that.global.isCenterDown = false;
+			if(that.global.centerSelectedObj && that.global.centerSelectedObj.object.onCenterUp && that.global.centerSelectedObj.object.isCenterDown == true) {
+				that.global.centerSelectedObj.object.onCenterUp(that.global.centerSelectedObj, event);
 			}
 		}
-		$$.global.canvasContainerDom.addEventListener("click", onDocumentMouseClick);
-		$$.global.canvasContainerDom.addEventListener("mousemove", onDocumentMouseMove);
-		$$.global.canvasContainerDom.addEventListener("mousedown", onMouseDownOrTouchStart);
-		$$.global.canvasContainerDom.addEventListener("mouseup", onMouseUpOrTouchEnd);
-		$$.global.canvasContainerDom.addEventListener("touchstart", onMouseDownOrTouchStart);
-		$$.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
+		that.global.canvasContainerDom.addEventListener("click", onDocumentMouseClick);
+		that.global.canvasContainerDom.addEventListener("mousemove", onDocumentMouseMove);
+		that.global.canvasContainerDom.addEventListener("mousedown", onMouseDownOrTouchStart);
+		that.global.canvasContainerDom.addEventListener("mouseup", onMouseUpOrTouchEnd);
+		that.global.canvasContainerDom.addEventListener("touchstart", onMouseDownOrTouchStart);
+		that.global.canvasContainerDom.addEventListener("touchend", onMouseUpOrTouchEnd);
 	};
 
 	this.sceneCoordinateToCanvasCoordinate = function(obj, scene) {
@@ -177,11 +179,11 @@ var threeQuery = function() {
 		if(scene) {
 			var vector = worldVector.project(scene.camera);
 		} else {
-			var vector = worldVector.project($$.global.camera);
+			var vector = worldVector.project(that.global.camera);
 		}
 
-		var halfWidth = $$.getWorldWidth() / 2;
-		var halfHeight = $$.getWorldHeight() / 2;
+		var halfWidth = that.getWorldWidth() / 2;
+		var halfHeight = that.getWorldHeight() / 2;
 
 		var result = {
 			x: Math.round(vector.x * halfWidth + halfWidth),
@@ -191,36 +193,36 @@ var threeQuery = function() {
 	};
 	
 	window.addEventListener("resize",function(){
-		if($$.global.settings.resize) {
-			$$.resize();
+		if(that.global.settings.resize) {
+			that.resize();
 		}
 	},false);
 
 	this.animate = function() {
-		requestAnimationFrame($$.animate);
-		if($$.global.settings.renderPause) {
+		requestAnimationFrame(that.animate);
+		if(that.global.settings.renderPause) {
 			return;
 		}
-		$$.worldActions();
-		for(var i in $$.actionInjections) {
-			if($$.actionInjections[i] instanceof Function == true) {
-				$$.actionInjections[i]();
+		that.worldActions();
+		for(var i in that.actionInjections) {
+			if(that.actionInjections[i] instanceof Function == true) {
+				that.actionInjections[i]();
 			}
 		}
-		if($$.global.settings.raycaster) {
+		if(that.global.settings.raycaster) {
 			updateRaycaster();
 		}
-		if($$.global.settings.vr) {
-			if(!$$.global.vrEffect) {
-				$$.global.vrEffect = new THREE.StereoEffect($$.global.renderer);
+		if(that.global.settings.vr) {
+			if(!that.global.vrEffect) {
+				that.global.vrEffect = new THREE.StereoEffect(that.global.renderer);
 			}
-			$$.global.renderer.render($$.global.scene, $$.global.camera);
-			$$.global.vrEffect.render($$.global.scene, $$.global.camera);
+			that.global.renderer.render(that.global.scene, that.global.camera);
+			that.global.vrEffect.render(that.global.scene, that.global.camera);
 		} else {
-			$$.global.renderer.render($$.global.scene, $$.global.camera);
+			that.global.renderer.render(that.global.scene, that.global.camera);
 		}
-		if($$.global.controls) {
-			$$.global.controls.update();
+		if(that.global.controls) {
+			that.global.controls.update();
 		}
 	};
 	this.actionInjections = [];
@@ -252,8 +254,8 @@ var threeQuery = function() {
 	};
 
 	this.openFullScreen = function() {
-		var container = $$.global.canvasContainerDom;
-		$$.global.settings.isFullScreem = true;
+		var container = that.global.canvasContainerDom;
+		that.global.settings.isFullScreem = true;
 		if(container.requestFullscreen) {
 			container.requestFullscreen();
 		} else if(container.msRequestFullscreen) {
@@ -263,13 +265,13 @@ var threeQuery = function() {
 		} else if(container.webkitRequestFullscreen) {
 			container.webkitRequestFullscreen();
 		} else {
-			$$.global.settings.isFullScreem = false;
+			that.global.settings.isFullScreem = false;
 		}
-		return $$.global.settings.isFullScreem;
+		return that.global.settings.isFullScreem;
 	};
 	this.closeFullScreen = function() {
 		var container = document;
-		$$.global.settings.isFullScreem = false;
+		that.global.settings.isFullScreem = false;
 		if(container.exitFullscreen) {
 			container.exitFullscreen();
 		} else if(container.mozCancelFullScreen) {
@@ -284,10 +286,10 @@ var threeQuery = function() {
 		if(container.webkitExitFullScreen) {
 			container.webkitCancelFullScreen();
 		}
-		return $$.global.settings.isFullScreem;
+		return that.global.settings.isFullScreem;
 	};
 	this.toggleFullScreen = function() {
-		if($$.global.settings.isFullScreem) {
+		if(that.global.settings.isFullScreem) {
 			this.closeFullScreen();
 		} else {
 			this.openFullScreen();
@@ -297,18 +299,18 @@ var threeQuery = function() {
 	this.groups = {}; //添加小组，可以把不同的物体放在不同的组里。并且后续的性能优化，操作方式都会用到group。但是这个group只是把里面的物体进行分类，不进行其他任何操作
 	//传入一个group的名称,每个名称的group都是个单例
 	this.createGroup = function(str) {
-		if($$.groups[str]) {
-			return $$.groups[str];
+		if(that.groups[str]) {
+			return that.groups[str];
 		}
-		var g = new $$.ThreeGroup(str);
-		$$.groups[str] = g;
+		var g = new that.ThreeGroup(str);
+		that.groups[str] = g;
 		return g;
 	};
 
 	this.removeGroup = function(str) {
-		if($$.groups[str]) {
-			var arr = $$.groups[str].children;
-			delete $$.groups[str];
+		if(that.groups[str]) {
+			var arr = that.groups[str].children;
+			delete that.groups[str];
 			return arr;
 		}
 		return [];
@@ -325,8 +327,8 @@ var threeQuery = function() {
 	this.rayCasterEventReceivers = [];
 
 	function updateMouseRaycaster(isTouch) {
-		$$.global.raycaster.setFromCamera($$.global.mouse, $$.global.camera);
-		var intersects = $$.global.raycaster.intersectObjects($$.rayCasterEventReceivers, true);
+		that.global.raycaster.setFromCamera(that.global.mouse, that.global.camera);
+		var intersects = that.global.raycaster.intersectObjects(that.rayCasterEventReceivers, true);
 
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
@@ -339,33 +341,33 @@ var threeQuery = function() {
 		}
 
 		if(intersect) {
-			if(($$.global.selectedObj == null) || ($$.global.selectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.selectedObj && $$.global.selectedObj.object.uuid != intersect.object.uuid && !isTouch) {
-					if($$.global.selectedObj.object.onLeave) {
-						$$.global.selectedObj.object.onLeave($$.global.selectedObj);
+			if((that.global.selectedObj == null) || (that.global.selectedObj.object.uuid != intersect.object.uuid)) {
+				if(that.global.selectedObj && that.global.selectedObj.object.uuid != intersect.object.uuid && !isTouch) {
+					if(that.global.selectedObj.object.onLeave) {
+						that.global.selectedObj.object.onLeave(that.global.selectedObj);
 					}
 				}
-				$$.global.selectedObj = intersect;
-				if($$.global.selectedObj.object.onEnter && !isTouch) {
-					$$.global.selectedObj.object.onEnter($$.global.selectedObj);
+				that.global.selectedObj = intersect;
+				if(that.global.selectedObj.object.onEnter && !isTouch) {
+					that.global.selectedObj.object.onEnter(that.global.selectedObj);
 				}
 			} else {
-				$$.global.selectedObj = intersect;
+				that.global.selectedObj = intersect;
 			}
 		} else {
-			if($$.global.selectedObj) {
-				if($$.global.selectedObj.object.onLeave) {
-					$$.global.selectedObj.object.onLeave($$.global.selectedObj);
+			if(that.global.selectedObj) {
+				if(that.global.selectedObj.object.onLeave) {
+					that.global.selectedObj.object.onLeave(that.global.selectedObj);
 				}
-				$$.global.selectedObj = null;
+				that.global.selectedObj = null;
 			}
 		}
 	}
 
 	function updateCenterRaycaster() {
 		var centerV = new THREE.Vector2(0, 0);
-		$$.global.centerRaycaster.setFromCamera(centerV, $$.global.camera);
-		var intersects = $$.global.centerRaycaster.intersectObjects($$.rayCasterEventReceivers);
+		that.global.centerRaycaster.setFromCamera(centerV, that.global.camera);
+		var intersects = that.global.centerRaycaster.intersectObjects(that.rayCasterEventReceivers);
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
 			if(intersects[i].object.isPenetrated) {
@@ -376,25 +378,25 @@ var threeQuery = function() {
 			}
 		}
 		if(intersect) {
-			if(($$.global.centerSelectedObj == null) || ($$.global.centerSelectedObj.object.uuid != intersect.object.uuid)) {
-				if($$.global.centerSelectedObj && $$.global.centerSelectedObj.object.uuid != intersect.object.uuid) {
-					if($$.global.centerSelectedObj.object.onCenterLeave) {
-						$$.global.centerSelectedObj.object.onCenterLeave($$.global.centerSelectedObj);
+			if((that.global.centerSelectedObj == null) || (that.global.centerSelectedObj.object.uuid != intersect.object.uuid)) {
+				if(that.global.centerSelectedObj && that.global.centerSelectedObj.object.uuid != intersect.object.uuid) {
+					if(that.global.centerSelectedObj.object.onCenterLeave) {
+						that.global.centerSelectedObj.object.onCenterLeave(that.global.centerSelectedObj);
 					}
 				}
-				$$.global.centerSelectedObj = intersect;
-				if($$.global.centerSelectedObj.object.onCenterEnter) {
-					$$.global.centerSelectedObj.object.onCenterEnter($$.global.centerSelectedObj);
+				that.global.centerSelectedObj = intersect;
+				if(that.global.centerSelectedObj.object.onCenterEnter) {
+					that.global.centerSelectedObj.object.onCenterEnter(that.global.centerSelectedObj);
 				}
 			} else {
-				$$.global.centerSelectedObj = intersect;
+				that.global.centerSelectedObj = intersect;
 			}
 		} else {
-			if($$.global.centerSelectedObj) {
-				if($$.global.centerSelectedObj.object.onCenterLeave) {
-					$$.global.centerSelectedObj.object.onCenterLeave($$.global.centerSelectedObj);
+			if(that.global.centerSelectedObj) {
+				if(that.global.centerSelectedObj.object.onCenterLeave) {
+					that.global.centerSelectedObj.object.onCenterLeave(that.global.centerSelectedObj);
 				}
-				$$.global.centerSelectedObj = null;
+				that.global.centerSelectedObj = null;
 			}
 		}
 	}
@@ -433,7 +435,7 @@ var threeQuery = function() {
 			res = [];
 		if(group) {
 			if(typeof group == "string") {
-				arr = $$.groups[group];
+				arr = that.groups[group];
 				if(arr) {
 
 				} else {
@@ -443,7 +445,7 @@ var threeQuery = function() {
 				arr = group.children;
 			}
 		} else {
-			arr = $$.global.scene.children;
+			arr = that.global.scene.children;
 		}
 		if(arr) {
 			if(key == "id") {
@@ -467,22 +469,25 @@ var threeQuery = function() {
 	this.subWorlds = {
 		children: {},
 		getCurrentSubWorld: function() {
-			for(var i in $$.subWorlds.children) {
-				if($$.subWorlds.children[i].isCurrent) {
-					return $$.subWorlds.children[i];
+			for(var i in that.subWorlds.children) {
+				if(that.subWorlds.children[i].isCurrent) {
+					return that.subWorlds.children[i];
 				}
 			}
 		},
 		getSubWorldByName: function(name) {
-			for(var i in $$.subWorlds.children) {
-				if($$.subWorlds.children[i].name == name) {
-					return $$.subWorlds.children[i];
+			for(var i in that.subWorlds.children) {
+				if(that.subWorlds.children[i].name == name) {
+					return that.subWorlds.children[i];
 				}
 			}
 		}
 	};
 
 	this.SubWorld = function(optWorld, optCamera) {
+		optWorld=optWorld||{};
+		optCamera=optCamera||{};
+		var that=this;
 		this.name = optWorld.name || "";
 		this.id = $$.rndString(16);
 		this.scene = new THREE.Scene();
@@ -508,15 +513,15 @@ var threeQuery = function() {
 		this.resize = function() {
 			var width = $$.getWorldWidth();
 			var height = $$.getWorldHeight();
-			if(this.camera.type == "PerspectiveCamera") {
-				this.camera.aspect = width / height;
-				this.camera.updateProjectionMatrix();
+			if(that.camera.type == "PerspectiveCamera") {
+				that.camera.aspect = width / height;
+				that.camera.updateProjectionMatrix();
 			} else {
-				this.camera.left = -width / 2;
-				this.camera.right = width / 2;
-				this.camera.top = height / 2;
-				this.camera.bottom = -height / 2;
-				this.camera.updateProjectionMatrix();
+				that.camera.left = -width / 2;
+				that.camera.right = width / 2;
+				that.camera.top = height / 2;
+				that.camera.bottom = -height / 2;
+				that.camera.updateProjectionMatrix();
 			}
 			$$.global.renderer.setSize(width, height);
 			if($$.global.settings.vr && $$.global.vrEffect) {
@@ -524,16 +529,16 @@ var threeQuery = function() {
 			}
 		};
 		this.update = function(rtt) {
-			if(this.isResize) {
-				this.resize();
+			if(that.isResize) {
+				that.resize();
 			}
-			for(var i = 0; i < this.actionInjections.length; i++) {
-				this.actionInjections[i]();
+			for(var i = 0; i < that.actionInjections.length; i++) {
+				that.actionInjections[i]();
 			}
 			if(rtt) {
-				$$.global.renderer.render(this.scene, this.camera, this.fbo, true);
+				$$.global.renderer.render(that.scene, that.camera, that.fbo, true);
 			} else {
-				$$.global.renderer.render(this.scene, this.camera);
+				$$.global.renderer.render(that.scene, that.camera);
 			}
 
 		};
@@ -542,12 +547,13 @@ var threeQuery = function() {
 			return this.fbo.texture;
 		};
 		this.toMain = function() {
-			$$.global.scene = this.scene;
-			$$.global.camera = this.camera;
-			$$.actionInjections = this.actionInjections;
-			$$.global.renderer.setClearColor(this.clearColor, this.alpha);
-			$$.global.controls = this.controls;
-			$$.rayCasterEventReceivers = this.rayCasterEventReceivers;
+			$$.global.world=that;
+			$$.global.scene = that.scene;
+			$$.global.camera = that.camera;
+			$$.actionInjections = that.actionInjections;
+			$$.global.renderer.setClearColor(that.clearColor, that.alpha);
+			$$.global.controls = that.controls;
+			$$.rayCasterEventReceivers = that.rayCasterEventReceivers;
 			for(var i in $$.subWorlds) {
 				if($$.subWorlds[i].isCurrent) {
 					$$.subWorlds[i].isCurrent = false;
@@ -578,7 +584,7 @@ var threeQuery = function() {
 				format: THREE.RGBFormat,
 				stencilBuffer: false
 			};
-			subWorld.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
+			subWorld.fbo = new THREE.WebGLRenderTarget(that.getWorldWidth(), that.getWorldHeight(), renderTargetParameters);
 			subWorld.clearColor = clearColor;
 			subWorld.update = function(rtt) {
 				if($$.global.settings.resize) {
@@ -606,7 +612,7 @@ var threeQuery = function() {
 			return subWorld;
 		};
 
-		var transitionParams = $$.extends({}, [{
+		var transitionParams = that.extends({}, [{
 			"useTexture": true,
 			"transition": 0,
 			"transitionSpeed": 10,
@@ -618,7 +624,7 @@ var threeQuery = function() {
 		var sceneB = makeSubWorld($$.global.scene, $$.global.camera, $$.actionInjections, $$.global.renderer.getClearColor().clone());
 
 		this.scene = new THREE.Scene();
-		this.cameraOrtho = $$.createCamera({
+		this.cameraOrtho = that.createCamera({
 			type: "OrthographicCamera",
 			near: -10,
 			far: 10
