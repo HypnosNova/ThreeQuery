@@ -25,19 +25,23 @@
 //			bodyDom.position.set(0,0,50);
 			scene.add(bodyDom);
 			var sprite=new $$.Txt("hello",{
-				fontSize:24,
-				width:128,
-				height:32
+				fontSize:64,
+				width:256,
+				height:72
 			});
 			bodyDom.add(sprite);
 			
-			var sprite=new $$.Img("home.png",{
-//				width:128,
-//				height:32
+			var sprite=new $$.Img("home.png",{});
+			bodyDom.add(sprite);
+			sprite.position.x=-100;
+			
+			var sprite=new $$.Video("../../video/video.mp4",{
+				width:256,
+				height:128
 			});
 			bodyDom.add(sprite);
-		
-			
+			sprite.position.x=100;
+			sprite.video.play();
 			camera.lookAt(sprite.position);
 			
 			$$.actionInjections.push(bodyDom.lockToScreen);
