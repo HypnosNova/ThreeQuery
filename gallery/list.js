@@ -8,7 +8,7 @@ var list = {
 			[ "纪念碑谷第三关", "games/hypeometry/level3" ],
 		],
 		"工具": [
-			
+			[ "图片轮播", "tool/carousel/index" ],
 		],
 		"其他": [
 			[ "五星红旗", "other/flag/index" ],
