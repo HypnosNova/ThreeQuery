@@ -13,42 +13,8 @@ var show = 4;
 var deltaRotation = 20;
 var half = 0;
 var tweening = false;
-var manifest = [{
-		src: "img/1.jpg",
-		id: "image0"
-	},
-	{
-		src: "img/2.jpg",
-		id: "image1"
-	},
-	{
-		src: "img/3.jpg",
-		id: "image2"
-	},
-	{
-		src: "img/4.jpg",
-		id: "image3"
-	},
-	{
-		src: "img/5.jpg",
-		id: "image4"
-	},
-	{
-		src: "img/0.jpg",
-		id: "image5"
-	},
-	{
-		src: "img/6.jpg",
-		id: "image6"
-	},
-	{
-		src: "img/7.jpg",
-		id: "image7"
-	},
-	{
-		src: "img/8.jpg",
-		id: "image8"
-	},
+var pictureArr = [
+	"img/0.jpg","img/1.jpg","img/2.jpg","img/3.jpg","img/4.jpg","img/5.jpg","img/6.jpg","img/7.jpg","img/8.jpg"
 ];
 
 function init() {
@@ -79,12 +45,7 @@ function init() {
 	preloaderLine.scale.x = 0;
 	preloader.add(preloaderLine);
 
-	// IMAGE PRELOADER
-	var textureArr=[];
-	for(var i in manifest){
-		textureArr.push(manifest[i].src);
-	}
-	$$.Loader.loadTexture(textureArr);
+	$$.Loader.loadTexture(pictureArr);
 	$$.Loader.onProgress=handleImageLoadProgress;
 	$$.Loader.onLoadComplete=handleImageLoadComplete;
 
@@ -111,7 +72,7 @@ function init() {
 
 	// PLANES
 	function createPlanes() {
-		len = manifest.length;
+		len = pictureArr.length;
 		planes = [];
 		slides = [];
 
@@ -133,7 +94,7 @@ function init() {
 				dif: 0,
 				rotation: 0
 			};
-			var img_texture = $$.Loader.RESOURCE.textures[manifest[i].src];
+			var img_texture = $$.Loader.RESOURCE.textures[pictureArr[i]];
 			img_texture.needsUpdate = true;
 			var img_material = new THREE.MeshBasicMaterial({
 				map: img_texture,
