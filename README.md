@@ -72,6 +72,3 @@ https://hypnosnova.github.io/ThreeQuery/examples/018第一人称视角.html
 <br>
 19.中心点事件
 https://hypnosnova.github.io/ThreeQuery/examples/019中心点事件.html
-其他一些混合各种功能的demo
-https://hypnosnova.github.io/ThreeQuery/demo/shoot.html
-https://hypnosnova.github.io/ThreeQuery/demo/index.html
