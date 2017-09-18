@@ -121,6 +121,7 @@ var threeQuery = function() {
 		}
 
 		function onDocumentMouseClick(event) {
+			console.log(that.global.selectedObj)
 			if(that.global.selectedObj && that.global.selectedObj.object.onClick && that.global.selectedObj.object.isDown == true) {
 				that.global.selectedObj.object.isDown = false;
 				that.global.selectedObj.object.onClick(that.global.selectedObj, event);

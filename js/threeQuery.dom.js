@@ -42,9 +42,11 @@ $$.Body = function(css) {
 	var sprite = new THREE.Sprite(spriteMaterial);
 	var vector = new THREE.Vector3(); // create once and reuse it!
 	this.lockToScreen = function() {
-		$$.global.camera.getWorldDirection(vector);
-		that.position.set(vector.x * that.distanceFromCamera, vector.y * that.distanceFromCamera, vector.z * that.distanceFromCamera);
-		that.lookAt($$.global.camera.position);
+		var c=$$.global.camera;
+		c.getWorldDirection(vector);
+		that.rotation.set(c.rotation.x,c.rotation.y,c.rotation.z);
+		that.position.set(c.position.x+vector.x * that.distanceFromCamera, c.position.y+vector.y * that.distanceFromCamera, c.position.z+vector.z * that.distanceFromCamera);
+//		that.lookAt($$.global.camera.position);
 	}
 
 	this.update();
@@ -122,7 +124,9 @@ $$.Img = function(url, css) {
 		}, css]);
 		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
 	} else {
+		that.element={};
 		$$.Loader.loadTexture([url], function(texture) {
+			var tmpProperty=that.element;
 			var spriteMaterial = new THREE.SpriteMaterial({
 				map: texture,
 				color: 0xffffff
@@ -135,6 +139,10 @@ $$.Img = function(url, css) {
 				height: texture.image.naturalHeight,
 			}, css]);
 			sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
+			
+			for(var i in tmpProperty){
+				that.element[i]=tmpProperty[i];
+			}
 		});
 	}
 };

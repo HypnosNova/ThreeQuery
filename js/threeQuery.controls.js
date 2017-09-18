@@ -2,7 +2,7 @@ $$.Controls = {
 	createOrbitControls: function(options,world) {
 		options=options?options:{};
 		options=$$.extends({},[{
-			noZoom:true,
+			noZoom:false,
 			noPan:true,
 			rotateUp:0,
 			minDistance:0,

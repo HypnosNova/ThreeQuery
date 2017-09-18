@@ -135,7 +135,7 @@ void main( void )
         		iGlobalTime:    { type: 'f', value: 0.1 },
         		iChannel1:  { type: 't', value: THREE.ImageUtils.loadTexture( 'sun2.png' ) },
         		iChannel0:  { type: 't', value: THREE.ImageUtils.loadTexture( 'sun.jpg' ) },
-        		iResolution: {x:700,y:700,z:1}
+        		iResolution: new THREE.Vector3(700.0,700.0,1.0)//{x:700.0,y:700.0,z:1.0}
     		};
     		
     		tuniform.iChannel1.value.wrapS = tuniform.iChannel1.value.wrapT = THREE.RepeatWrapping;
@@ -147,7 +147,7 @@ void main( void )
             	side:THREE.DoubleSide
         	});
 
-			var tobject = new THREE.Mesh( new THREE.PlaneGeometry(700, 700,1,1), mat);
+			var tobject = new THREE.Mesh( new THREE.PlaneGeometry(700, 394,1,1), mat);
 			scene.add(tobject);
 			
 			$$.actionInjections.push(function(){

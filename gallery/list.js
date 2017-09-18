@@ -12,7 +12,8 @@ var list = {
 		],
 		"其他": [
 			[ "五星红旗", "other/flag/index" ],
-			[ "iWeb峰会“PPT”", "other/iWebPPT/index" ]
+			[ "iWeb峰会“PPT”", "other/iWebPPT/index" ],
+			[ "元素周期表（非css3d）", "other/table/index" ],
 		]
 	}
 	

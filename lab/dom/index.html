@@ -13,10 +13,13 @@
 		<script src="../../js/threeQuery.dom.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			var [scene, renderer, camera] = $$.init();
-			$$.Controls.createOrbitControls();
+//			var controls=$$.Controls.createOrbitControls();
 			$$.Component.createSkybox("skybox.jpg", 10000);
 			$$.animate();
 			camera.position.set(0,0,150);
+			
+//			controls.minDistance=50;
+//			controls.maxDistance=1000;
 			//上面部分就是传统建立three场景的流程
 			
 			//创建body标签
@@ -25,6 +28,7 @@
 				height:512,
 				backgroundColor:"rgba(255,0,0,0.3)"
 			});
+			bodyDom.distanceFromCamera=100;
 			scene.add(bodyDom);
 			
 			//创建文本标签
@@ -39,7 +43,20 @@
 			var img=new $$.Img("home.png",{});
 			bodyDom.add(img);
 			img.position.x=-100;
+			img.position.z=20;
+			img.onClick=function(){
+				alert()
+			}
 			
+			txt.element.onClick=function(){
+				alert(111)
+			}
+			
+			img.element.onClick=function(){
+				alert(222)
+			}
+			txt.position.z=20;
+			console.log(img)
 			//创建video标签
 			var video=new $$.Video("../../video/video.mp4",{
 				width:256,
