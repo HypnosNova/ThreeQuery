@@ -210,6 +210,13 @@
 					scene.add(object);
 					objects.push(object);
 
+					object.onEnter=function(obj){
+						obj.object.material.color=new THREE.Color(0xffff00)
+					};
+					object.onLeave=function(obj){
+						obj.object.material.color=new THREE.Color(0xffffff)
+					};
+
 					var object = new THREE.Object3D();
 					object.position.x = (table[i + 3] * 140) - 1330;
 					object.position.y = -(table[i + 4] * 180) + 990;
