@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>qrcode</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../js/threeQuery.dom.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init({clearColor:0xffffff},{},{type:"OrthographicCamera"});
+			$$.animate();
+			camera.position.z = 1000;
+			camera.lookAt(scene.position);
+			
+			var body=new $$.Body();
+			scene.add(body);
+			
+			var width=$$.getWorldWidth()*4;
+			var video=new $$.Video("media/header.webm",{
+				width:width,
+				height:width/2
+			});
+			video.video.autoplay="autoplay";
+			video.video.loop="loop";
+			body.add(video);
+			
+			var row=new $$.Set({
+				width:width*2,
+				height:width/34,
+				backgroundColor:"rgba(0,0,128,0.3)"
+			});
+			row.position.set(0,width/17,1);
+			body.add(row);
+			var img=new $$.Img("img/logo.png",{
+				width:width/25,
+				height:width/55
+			});
+			img.position.set(-width/8.9,0,1);
+			row.add(img);
+			
+			var ow=new $$.Img("img/ow.png",{
+				width:width/3.5,
+				height:width/3.5/973*574
+			});
+			ow.position.set(0,width/62,1);
+			body.add(ow);
+			
+			var text1=new $$.Txt("游戏",{
+				fontSize:width/90,
+				width:width/25,
+				height:width/50,
+				fontWeight:"bold"
+			});
+			text1.position.set(-width/10,0,1);
+			row.add(text1);
+			
+			var text1=new $$.Txt("商城",{
+				fontSize:width/90,
+				width:width/25,
+				height:width/50,
+				fontWeight:"bold",
+				color:"rgba(255,255,255,0.7)"
+			});
+			text1.position.set(-width/10+width/70,0,1);
+			row.add(text1);
+			
+			var text1=new $$.Txt("电竞",{
+				fontSize:width/90,
+				width:width/25,
+				height:width/50,
+				fontWeight:"bold",
+				color:"rgba(255,255,255,0.7)"
+			});
+			text1.position.set(-width/10+width/35,0,1);
+			row.add(text1);
+			
+			var row2=new $$.Set({
+				width:width*0.90,
+				height:width/25,
+				backgroundColor:"rgba(40,53,79,.9)"
+			});
+			row2.position.set(0,width/21.7,1);
+			body.add(row2);
+			
+			var owcn=new $$.Img("img/owcn2.png",{
+				width:width/25*203/60,
+				height:width/25,
+			});
+			owcn.position.set(-width/10.91,0,1);
+			row2.add(owcn);
+		</script>
+	</body>
+
+</html>

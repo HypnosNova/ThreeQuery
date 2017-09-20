@@ -59,6 +59,43 @@ $$.Body = function(css) {
 	$$.Body.prototype = new Super();
 })();
 
+$$.Set = function(css) {
+	$$.DOM.call(this);
+	var that = this;
+	this.css = $$.extends({}, [this.css, css]);
+	this.canvas = document.createElement("canvas");
+	this.distanceFromCamera = 50;
+	var canvas = this.canvas;
+	//	this.text=text;
+	this.update = function() {
+		canvas.width = this.css.width;
+		canvas.height = this.css.height;
+		let ctx = this.canvas.getContext("2d");
+		ctx.fillStyle = this.css.backgroundColor;
+		ctx.fillRect(0, 0, this.css.width, this.css.height);
+		var spriteMaterial = new THREE.SpriteMaterial({
+			map: new THREE.CanvasTexture(canvas),
+			color: 0xffffff
+		});
+		sprite.material = spriteMaterial;
+		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
+	}
+
+	var spriteMaterial = new THREE.SpriteMaterial({
+		map: canvas,
+		color: 0xffffff
+	});
+	var sprite = new THREE.Sprite(spriteMaterial);
+	this.update();
+	this.element = sprite;
+	this.add(this.element);
+};
+(function() {
+	var Super = function() {};
+	Super.prototype = $$.DOM.prototype;
+	$$.Set.prototype = new Super();
+})();
+
 $$.Txt = function(text, css) {
 	$$.DOM.call(this);
 	var that = this;
