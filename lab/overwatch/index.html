@@ -92,6 +92,33 @@
 			});
 			owcn.position.set(-width/10.91,0,1);
 			row2.add(owcn);
+			
+			var css={
+				fontSize:width/90,
+				width:width*0.063,
+				height:width/25,
+				fontWeight:"bold",
+				color:"rgba(255,255,255,0.7)",
+//				backgroundColor:"rgba(128,128,255,0.5)"
+			};
+			var dataArr=["游戏","英雄","活动","视频图片","新闻","下载","生涯数据","电子竞技","论坛"];
+			for(var i in dataArr){
+				var text=new $$.Txt(dataArr[i],css);
+				text.position.set(-width/11+width/35+width*0.0158*i,0,2);
+				row2.add(text);
+				text.element.onEnter=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="rgba(255,255,255,.3)";
+					theText.update();
+					console.log(theText);
+				};
+				text.element.onLeave=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="rgba(0,0,0,0)";
+					theText.update();
+				};
+			}
+			
 		</script>
 	</body>
 
