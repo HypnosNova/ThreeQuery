@@ -18,39 +18,39 @@
 			renderer.setClearColor(0xffffff);
 			init();
 			var controls=$$.Controls.createTrackBallControls();
-			controls.minDistance=50;
+			controls.minDistance=20;
 			controls.maxDistance=500;
 			function init() {
 
-				camera.position.z = 50;
+				camera.position.z = 20;
 
 				var ambient = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient );
 
-				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+				var directionalLight = new THREE.DirectionalLight( 0x999999 );
 				directionalLight.position.set( 4, 6, 8 ).normalize();
 				scene.add( directionalLight );
 
-//				var mtlLoader = new THREE.MTLLoader();
-//				mtlLoader.setPath( 'ipad/' );
-//				mtlLoader.load( 'iPhone 6.mtl', function( materials ) {
-//					materials.preload();
-//					var objLoader = new THREE.OBJLoader();
-//					objLoader.setMaterials( materials );
-//					objLoader.setPath( 'ipad/' );
-//					objLoader.load( 'ipad.obj', function ( object ) {
-//						scene.add( object );
-//
-//					});
-//
-//				});
-				var objLoader = new THREE.OBJLoader();
-					//objLoader.setMaterials( [new THREE.Material()] );
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath( 'ipad/' );
+				mtlLoader.load( 'file.mtl', function( materials ) {
+					materials.preload();
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials( materials );
 					objLoader.setPath( 'ipad/' );
-					objLoader.load( 'ipad.obj', function ( object ) {
+					objLoader.load( 'file.obj', function ( object ) {
+						object.position.y=-10;
+						var geometry = new THREE.PlaneBufferGeometry( 8, 6, 1 );
+						var material = new THREE.MeshPhongMaterial( {color: 0x000000, side: THREE.DoubleSide} );
+						var plane = new THREE.Mesh( geometry, material );
+						object.add(plane);
+						plane.position.set(0,0,1)
 						scene.add( object );
 
 					});
+
+				});
+				
 
 			}
 			$$.animate();

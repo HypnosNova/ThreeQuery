@@ -13,13 +13,13 @@
 		<script src="../../js/threeQuery.dom.js" type="text/javascript" charset="utf-8"></script>
 		<script>
 			var [scene, renderer, camera] = $$.init();
-//			var controls=$$.Controls.createOrbitControls();
+			var controls=$$.Controls.createOrbitControls();
 			$$.Component.createSkybox("skybox.jpg", 10000);
 			$$.animate();
 			camera.position.set(0,0,150);
 			
-//			controls.minDistance=50;
-//			controls.maxDistance=1000;
+			controls.minDistance=50;
+			controls.maxDistance=1000;
 			//上面部分就是传统建立three场景的流程
 			
 			//创建body标签
