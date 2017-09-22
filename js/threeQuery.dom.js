@@ -27,8 +27,12 @@ $$.Body = function(css) {
 		let ctx = this.canvas.getContext("2d");
 		ctx.fillStyle = this.css.backgroundColor;
 		ctx.fillRect(0, 0, this.css.width, this.css.height);
+		var texture = new THREE.CanvasTexture(canvas);
+		texture.generateMipmaps = false;
+		texture.minFilter = THREE.LinearFilter;
+		texture.magFilter = THREE.LinearFilter;
 		var spriteMaterial = new THREE.SpriteMaterial({
-			map: new THREE.CanvasTexture(canvas),
+			map: texture,
 			color: 0xffffff
 		});
 		sprite.material = spriteMaterial;
@@ -42,11 +46,11 @@ $$.Body = function(css) {
 	var sprite = new THREE.Sprite(spriteMaterial);
 	var vector = new THREE.Vector3(); // create once and reuse it!
 	this.lockToScreen = function() {
-		var c=$$.global.camera;
+		var c = $$.global.camera;
 		c.getWorldDirection(vector);
-		that.rotation.set(c.rotation.x,c.rotation.y,c.rotation.z);
-		that.position.set(c.position.x+vector.x * that.distanceFromCamera, c.position.y+vector.y * that.distanceFromCamera, c.position.z+vector.z * that.distanceFromCamera);
-//		that.lookAt($$.global.camera.position);
+		that.rotation.set(c.rotation.x, c.rotation.y, c.rotation.z);
+		that.position.set(c.position.x + vector.x * that.distanceFromCamera, c.position.y + vector.y * that.distanceFromCamera, c.position.z + vector.z * that.distanceFromCamera);
+		//		that.lookAt($$.global.camera.position);
 	}
 
 	this.update();
@@ -73,8 +77,12 @@ $$.Set = function(css) {
 		let ctx = this.canvas.getContext("2d");
 		ctx.fillStyle = this.css.backgroundColor;
 		ctx.fillRect(0, 0, this.css.width, this.css.height);
+		var texture = new THREE.CanvasTexture(canvas);
+		texture.generateMipmaps = false;
+		texture.minFilter = THREE.LinearFilter;
+		texture.magFilter = THREE.LinearFilter;
 		var spriteMaterial = new THREE.SpriteMaterial({
-			map: new THREE.CanvasTexture(canvas),
+			map: texture,
 			color: 0xffffff
 		});
 		sprite.material = spriteMaterial;
@@ -120,8 +128,12 @@ $$.Txt = function(text, css) {
 		ctx.fillStyle = this.css.color;
 		let width = ctx.measureText(text).width;
 		ctx.fillText(text, this.css.width / 2, this.css.height / 2 + this.css.fontSize / 4);
+		var texture = new THREE.CanvasTexture(canvas);
+		texture.generateMipmaps = false;
+		texture.minFilter = THREE.LinearFilter;
+		texture.magFilter = THREE.LinearFilter;
 		var spriteMaterial = new THREE.SpriteMaterial({
-			map: new THREE.CanvasTexture(canvas),
+			map: texture,
 			color: 0xffffff
 		});
 		sprite.material = spriteMaterial;
@@ -161,12 +173,12 @@ $$.Img = function(url, css) {
 		}, css]);
 		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
 	} else {
-		that.element={};
+		that.element = {};
 		$$.Loader.loadTexture([url], function(texture) {
 			texture.generateMipmaps = false;
 			texture.minFilter = THREE.LinearFilter;
 			texture.magFilter = THREE.LinearFilter;
-			var tmpProperty=that.element;
+			var tmpProperty = that.element;
 			var spriteMaterial = new THREE.SpriteMaterial({
 				map: texture,
 				color: 0xffffff
@@ -179,9 +191,9 @@ $$.Img = function(url, css) {
 				height: texture.image.naturalHeight,
 			}, css]);
 			sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
-			
-			for(var i in tmpProperty){
-				that.element[i]=tmpProperty[i];
+
+			for(var i in tmpProperty) {
+				that.element[i] = tmpProperty[i];
 			}
 		});
 	}
@@ -195,9 +207,9 @@ $$.Img = function(url, css) {
 $$.Video = function(url, css) {
 	$$.DOM.call(this);
 	var that = this;
-	this.video=document.createElement("video");
-	this.video.src=url;
-	var texture=new THREE.VideoTexture(this.video);
+	this.video = document.createElement("video");
+	this.video.src = url;
+	var texture = new THREE.VideoTexture(this.video);
 	texture.generateMipmaps = false;
 	texture.minFilter = THREE.LinearFilter;
 	texture.magFilter = THREE.LinearFilter;
