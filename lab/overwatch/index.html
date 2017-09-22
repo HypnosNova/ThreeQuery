@@ -43,8 +43,8 @@
 			row.add(img);
 			
 			var ow=new $$.Img("img/ow.png",{
-				width:width/3.5,
-				height:width/3.5/973*574
+				width:width/4,
+				height:width/4/973*574
 			});
 			ow.position.set(0,width/62,1);
 			body.add(ow);
@@ -98,8 +98,7 @@
 				width:width*0.063,
 				height:width/25,
 				fontWeight:"bold",
-				color:"rgba(255,255,255,0.7)",
-//				backgroundColor:"rgba(128,128,255,0.5)"
+				color:"rgba(255,255,255,0.7)"
 			};
 			var dataArr=["游戏","英雄","活动","视频图片","新闻","下载","生涯数据","电子竞技","论坛"];
 			for(var i in dataArr){
@@ -108,17 +107,62 @@
 				row2.add(text);
 				text.element.onEnter=function(obj){
 					var theText=obj.object.parent;
-					theText.css.backgroundColor="rgba(255,255,255,.3)";
+					theText.css.backgroundColor="rgba(255,255,255,.1)";
+					theText.css.color="#ffffff";
 					theText.update();
 					console.log(theText);
 				};
 				text.element.onLeave=function(obj){
 					var theText=obj.object.parent;
 					theText.css.backgroundColor="rgba(0,0,0,0)";
+					theText.css.color="rgba(255,255,255,0.7)";
 					theText.update();
 				};
 			}
-			
+			css={
+				fontSize:width/90,
+				width:width*0.063,
+				height:width/25,
+				fontWeight:"bold",
+				color:"rgba(255,255,255,0.7)",
+				backgroundColor:"#f7931e"
+			};
+			var text=new $$.Txt("购买",css);
+				text.position.set(width*0.1046,0,2);
+				row2.add(text);
+				text.element.onEnter=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="#f7a32e";
+					theText.css.color="#ffffff";
+					theText.update();
+				};
+				text.element.onLeave=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="#f7931e";
+					theText.css.color="rgba(255,255,255,0.7)";
+					theText.update();
+				};
+			css={
+				fontSize:width/90,
+				width:width*0.1,
+				height:width/35,
+				fontWeight:"bold",
+				color:"#333",
+				backgroundColor:"#f7931e"
+			};
+			var text=new $$.Txt("立即购买",css);
+				text.position.set(0,-width*0.006,1);
+				body.add(text);
+				text.element.onEnter=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="#f7a32e";
+					theText.update();
+				};
+				text.element.onLeave=function(obj){
+					var theText=obj.object.parent;
+					theText.css.backgroundColor="#f7931e";
+					theText.update();
+				};
 		</script>
 	</body>
 
