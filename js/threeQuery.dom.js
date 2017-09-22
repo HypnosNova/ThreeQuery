@@ -126,8 +126,8 @@ $$.Txt = function(text, css) {
 		ctx.textAlign = this.css.textAlign;
 		ctx.font = this.css.fontWeight + " " + this.css.fontSize + "px " + this.css.fontFamily;
 		ctx.fillStyle = this.css.color;
-		let width = ctx.measureText(text).width;
-		ctx.fillText(text, this.css.width / 2, this.css.height / 2 + this.css.fontSize / 4);
+		let width = ctx.measureText(this.text).width;
+		ctx.fillText(this.text, this.css.width / 2, this.css.height / 2 + this.css.fontSize / 4);
 		var texture = new THREE.CanvasTexture(canvas);
 		texture.generateMipmaps = false;
 		texture.minFilter = THREE.LinearFilter;

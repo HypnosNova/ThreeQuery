@@ -21,14 +21,16 @@
 			controls.minDistance=20;
 			controls.maxDistance=500;
 			function init() {
-
 				camera.position.z = 20;
-
 				var ambient = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient );
 
 				var directionalLight = new THREE.DirectionalLight( 0x999999 );
 				directionalLight.position.set( 4, 6, 8 ).normalize();
+				scene.add( directionalLight );
+				
+				directionalLight = new THREE.DirectionalLight( 0x444444 );
+				directionalLight.position.set( 12, 16, -8 ).normalize();
 				scene.add( directionalLight );
 
 				var mtlLoader = new THREE.MTLLoader();
@@ -40,18 +42,22 @@
 					objLoader.setPath( 'ipad/' );
 					objLoader.load( 'file.obj', function ( object ) {
 						object.position.y=-10;
-						var geometry = new THREE.PlaneBufferGeometry( 8, 6, 1 );
+						var geometry = new THREE.PlaneBufferGeometry( 15, 20, 1 );
 						var material = new THREE.MeshPhongMaterial( {color: 0x000000, side: THREE.DoubleSide} );
 						var plane = new THREE.Mesh( geometry, material );
 						object.add(plane);
-						plane.position.set(0,0,1)
+						plane.position.set(0,12,0.67)
 						scene.add( object );
-
+						
+						var world=new $$.SubWorld({},{});
+						var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+						var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+						var cube = new THREE.Mesh( geometry, material );
+						world.scene.add( cube );
+						world.camera.position.z=5;
+						world.camera.lookAt(world.scene.position);
 					});
-
 				});
-				
-
 			}
 			$$.animate();
 
