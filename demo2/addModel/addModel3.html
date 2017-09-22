@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 	<head>
 		<title></title>
 		<meta charset="utf-8">
@@ -14,55 +15,72 @@
 		<script src="../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
 
 		<script>
-			var [scene, renderer,camera]=$$.init({},{},{fov:45});
-			renderer.setClearColor(0xffffff);
+			var [scene, renderer, camera] = $$.init({clearColor:0xffffff}, {}, {
+				fov: 45
+			});
+//			renderer.setClearColor(0xffffff);
 			init();
-			var controls=$$.Controls.createTrackBallControls();
-			controls.minDistance=20;
-			controls.maxDistance=500;
+			var controls = $$.Controls.createTrackBallControls();
+			controls.minDistance = 20;
+			controls.maxDistance = 500;
+
 			function init() {
 				camera.position.z = 20;
-				var ambient = new THREE.AmbientLight( 0xffffff );
-				scene.add( ambient );
+				var ambient = new THREE.AmbientLight(0xffffff);
+				scene.add(ambient);
 
-				var directionalLight = new THREE.DirectionalLight( 0x999999 );
-				directionalLight.position.set( 4, 6, 8 ).normalize();
-				scene.add( directionalLight );
-				
-				directionalLight = new THREE.DirectionalLight( 0x444444 );
-				directionalLight.position.set( 12, 16, -8 ).normalize();
-				scene.add( directionalLight );
+				var directionalLight = new THREE.DirectionalLight(0x999999);
+				directionalLight.position.set(4, 6, 8).normalize();
+				scene.add(directionalLight);
+
+				directionalLight = new THREE.DirectionalLight(0x444444);
+				directionalLight.position.set(12, 16, -8).normalize();
+				scene.add(directionalLight);
 
 				var mtlLoader = new THREE.MTLLoader();
-				mtlLoader.setPath( 'ipad/' );
-				mtlLoader.load( 'file.mtl', function( materials ) {
+				mtlLoader.setPath('ipad/');
+				mtlLoader.load('file.mtl', function(materials) {
 					materials.preload();
 					var objLoader = new THREE.OBJLoader();
-					objLoader.setMaterials( materials );
-					objLoader.setPath( 'ipad/' );
-					objLoader.load( 'file.obj', function ( object ) {
-						object.position.y=-10;
-						var geometry = new THREE.PlaneBufferGeometry( 15, 20, 1 );
-						var material = new THREE.MeshPhongMaterial( {color: 0x000000, side: THREE.DoubleSide} );
-						var plane = new THREE.Mesh( geometry, material );
-						object.add(plane);
-						plane.position.set(0,12,0.67)
-						scene.add( object );
+					objLoader.setMaterials(materials);
+					objLoader.setPath('ipad/');
+					objLoader.load('file.obj', function(object) {
+						object.position.y = -10;
 						
-						var world=new $$.SubWorld({},{});
-						var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-						var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-						var cube = new THREE.Mesh( geometry, material );
-						world.scene.add( cube );
-						world.camera.position.z=5;
+						var world = new $$.SubWorld({clearColor:0x000000,resize:false}, {});
+						var geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+						var material = new THREE.MeshBasicMaterial({
+							color: 0x00ff00
+						});
+						var cube = new THREE.Mesh(geometry, material);
+						world.scene.add(cube);
+						world.camera.position.z = 5;
 						world.camera.lookAt(world.scene.position);
+						world.resize=false;
+
+						$$.actionInjections.push(function() {
+							world.update(true);
+							cube.rotation.x += 0.01;
+							cube.rotation.y += 0.02;
+						});
+						
+						
+						var geometry = new THREE.PlaneBufferGeometry(15, 20, 1);
+						var material = new THREE.MeshPhongMaterial({
+							color: 0xffffff,
+							side: THREE.DoubleSide,
+							map:world.fbo.texture
+						});
+						var plane = new THREE.Mesh(geometry, material);
+						object.add(plane);
+						plane.position.set(0, 12, 0.67)
+						scene.add(object);
 					});
 				});
 			}
 			$$.animate();
-
-
 		</script>
 
 	</body>
+
 </html>

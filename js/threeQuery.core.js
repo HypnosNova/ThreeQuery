@@ -203,6 +203,7 @@ var threeQuery = function() {
 		if(that.global.settings.renderPause) {
 			return;
 		}
+		that.global.renderer.setClearColor(that.global.world.clearColor, that.global.world.alpha);
 		that.worldActions();
 		for(var i in that.actionInjections) {
 			if(that.actionInjections[i] instanceof Function == true) {
@@ -506,7 +507,7 @@ var threeQuery = function() {
 			format: THREE.RGBFormat,
 			stencilBuffer: false
 		};
-		this.clearColor = optWorld.clearColor;
+		this.clearColor = optWorld.clearColor== null ?$$.global.renderer.getClearColor():optWorld.clearColor;
 		this.alpha = optWorld.alpha == null ? 1 : optWorld.alpha;
 		this.fbo = new THREE.WebGLRenderTarget($$.getWorldWidth(), $$.getWorldHeight(), renderTargetParameters);
 		this.isResize = optWorld.resize == null ? true : optWorld.resize;
@@ -529,6 +530,7 @@ var threeQuery = function() {
 			}
 		};
 		this.update = function(rtt) {
+			$$.global.renderer.setClearColor(that.clearColor,that.alpha);
 			if(that.isResize) {
 				that.resize();
 			}
@@ -537,10 +539,10 @@ var threeQuery = function() {
 			}
 			if(rtt) {
 				$$.global.renderer.render(that.scene, that.camera, that.fbo, true);
+				$$.global.renderer.setClearColor($$.global.world.clearColor, $$.global.world.alpha);
 			} else {
 				$$.global.renderer.render(that.scene, that.camera);
 			}
-
 		};
 		this.isCurrent = false;
 		this.toTexture = function() {
