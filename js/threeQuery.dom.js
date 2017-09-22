@@ -3,8 +3,8 @@ $$.DOM = function() {
 	this.css = {
 		backgroundColor: "rgba(0,0,0,0)",
 		opacity: 1,
-		width: 0,
-		height: 0
+		width: 1,
+		height: 1
 	};
 };
 (function() {
@@ -163,6 +163,9 @@ $$.Img = function(url, css) {
 	} else {
 		that.element={};
 		$$.Loader.loadTexture([url], function(texture) {
+			texture.generateMipmaps = false;
+			texture.minFilter = THREE.LinearFilter;
+			texture.magFilter = THREE.LinearFilter;
 			var tmpProperty=that.element;
 			var spriteMaterial = new THREE.SpriteMaterial({
 				map: texture,
@@ -195,6 +198,9 @@ $$.Video = function(url, css) {
 	this.video=document.createElement("video");
 	this.video.src=url;
 	var texture=new THREE.VideoTexture(this.video);
+	texture.generateMipmaps = false;
+	texture.minFilter = THREE.LinearFilter;
+	texture.magFilter = THREE.LinearFilter;
 	var spriteMaterial = new THREE.SpriteMaterial({
 		map: texture,
 		color: 0xffffff
