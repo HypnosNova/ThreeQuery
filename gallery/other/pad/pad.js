@@ -18,7 +18,7 @@ var pad = {
 	}
 }
 var emptyWorld = createEmptyWorld();
-var lockWorld;
+var lockWorld=createLockWorld();
 
 function createPad(obj) {
 	obj.position.y = -10;
@@ -51,6 +51,36 @@ function createPad(obj) {
 				lockWorld = createLockWorld();
 			}
 			pad.changeFBO(lockWorld);
+			for(var i in lockWorld.dom){
+				console.log()
+				lockWorld.dom[i].element.material.opacity=0;
+			}
+			var opa={a:0};
+			new TWEEN.Tween(opa).to({a:1},500).start().onUpdate(function(){
+				for(var i in lockWorld.dom){
+					lockWorld.dom[i].element.material.opacity=this.a;
+				}
+			});
 		}
 	}
+	var point,screenDown;
+	pad.screen.onDown=function(obj){
+		point=obj.point;
+		screenDown=true;
+	}
+	pad.screen.onUp=function(obj){
+		var thres=obj.point.y-point.y;
+		if(thres>3){
+			alert(true);
+		}else{
+			alert(false)
+		}
+		screenDown=false;
+	}
+	
+//	document.addEventListener("mousemove",function(){
+//		if(screenDown){
+//			
+//		}
+//	},false);
 }

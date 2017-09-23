@@ -10,10 +10,13 @@
 	<body>
 		<script src="../../../lib/three.min.js"></script>
 		<script src="../../../js/threeQuery.js"></script>
+		<script src="../../../js/threeQuery.dom.js"></script>
 		<script src="../../../lib/MTLLoader.js"></script>
 		<script src="../../../lib/OBJLoader.js"></script>
 		<script src="../../../lib/trackBallControls.js"></script>
+		<script src="../../../lib/tween.js"></script>
 		<script src="lockScene.js"></script>
+		<script src="controls.js"></script>
 		<script src="emptyScene.js"></script>
 		<script src="pad.js"></script>
 		<script>
@@ -22,9 +25,9 @@
 			});
 //			renderer.setClearColor(0xffffff);
 			init();
-			var controls = $$.Controls.createTrackBallControls();
-			controls.minDistance = 20;
-			controls.maxDistance = 80;
+//			var controls = $$.Controls.createTrackBallControls();
+//			controls.minDistance = 20;
+//			controls.maxDistance = 80;
 
 			function init() {
 				camera.position.z = 50;
@@ -52,6 +55,9 @@
 				});
 			}
 			$$.animate();
+			$$.actionInjections.push(TWEEN.update);
+			
+//			addControls();
 		</script>
 
 	</body>

@@ -116,34 +116,42 @@ $$.Txt = function(text, css) {
 		color: "#ffffff",
 		textAlign: "center"
 	}, css]);
+	if(css.opacity!=null){
+		this.css.opacity=css.opacity;
+	}
 	this.canvas = document.createElement("canvas");
 	var canvas = this.canvas;
 	this.text = text;
 	this.update = function() {
-		canvas.width = this.css.width;
-		canvas.height = this.css.height;
-		let ctx = this.canvas.getContext("2d");
-		ctx.fillStyle = this.css.backgroundColor;
-		ctx.fillRect(0, 0, this.css.width, this.css.height);
-		ctx.textAlign = this.css.textAlign;
-		ctx.font = this.css.fontStyle+ " "+this.css.fontVariant+ " " +this.css.fontWeight + " " + this.css.fontSize + "px " + this.css.fontFamily;
-		ctx.fillStyle = this.css.color;
-		let width = ctx.measureText(this.text).width;
-		ctx.fillText(this.text, this.css.width / 2, this.css.height / 2 + this.css.fontSize / 4);
+		canvas.width = that.css.width;
+		canvas.height = that.css.height;
+		let ctx = that.canvas.getContext("2d");
+		ctx.fillStyle = that.css.backgroundColor;
+		ctx.fillRect(0, 0, that.css.width, that.css.height);
+		ctx.textAlign = that.css.textAlign;
+		ctx.font = that.css.fontStyle+ " "+that.css.fontVariant+ " " +that.css.fontWeight + " " + that.css.fontSize + "px " + that.css.fontFamily;
+		ctx.fillStyle = that.css.color;
+		let width = ctx.measureText(that.text).width;
+		ctx.fillText(that.text, that.css.width / 2, that.css.height / 2 + that.css.fontSize / 4);
 		var texture = new THREE.CanvasTexture(canvas);
 		texture.generateMipmaps = false;
 		texture.minFilter = THREE.LinearFilter;
 		texture.magFilter = THREE.LinearFilter;
 		var spriteMaterial = new THREE.SpriteMaterial({
 			map: texture,
+			transparent:true,
+			needsUpdate:false,
 			color: 0xffffff
 		});
 		sprite.material = spriteMaterial;
-		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
+		sprite.scale.set(that.css.width / 4, that.css.height / 4, 1);
+		sprite.material.opacity=that.css.opacity;
 	}
 
 	var spriteMaterial = new THREE.SpriteMaterial({
 		map: canvas,
+		transparent:true,
+		needsUpdate:false,
 		color: 0xffffff
 	});
 	var sprite = new THREE.Sprite(spriteMaterial);
