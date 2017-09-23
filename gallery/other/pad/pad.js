@@ -2,22 +2,34 @@ var pad = {
 	model: null,
 	state: "close",
 	closeBtn: null,
-	screen: null
+	screen: null,
+	screenUpdate: null,
+	changeFBO: function(world) {
+		for(var i = 0; i < $$.actionInjections.length; i++) {
+			if($$.actionInjections[i]==pad.screenUpdate){
+				$$.actionInjections.splice(i, 1);
+				break;
+			}
+			
+		}
+		pad.screenUpdate = world.updateFBO;
+		pad.screen.material.map=world.fbo.texture;
+		$$.actionInjections.push(pad.screenUpdate);
+	}
 }
 var emptyWorld = createEmptyWorld();
-var lockWorld; //=createEmptyWorld();
+var lockWorld;
 
 function createPad(obj) {
 	obj.position.y = -10;
 	var geometry = new THREE.PlaneBufferGeometry(15, 20, 1);
 	var material = new THREE.MeshPhongMaterial({
 		color: 0xffffff,
-		shininess: 100,
-		map: emptyWorld.fbo.texture
+		shininess: 100
 	});
 	var plane = new THREE.Mesh(geometry, material);
 	obj.add(plane);
-	plane.position.set(0, 12, 0.67)
+	plane.position.set(0, 12, 0.67);
 	pad.screen = plane;
 	var geometry = new THREE.PlaneBufferGeometry(1, 1, 1);
 	var material = new THREE.MeshBasicMaterial({
@@ -31,20 +43,14 @@ function createPad(obj) {
 	plane.position.set(0, 1.2, 0.67)
 	scene.add(obj);
 	pad.model = obj;
-
+	pad.changeFBO(emptyWorld);
 	pad.closeBtn.onClick = function() {
-		console.log("?")
 		if(pad.state == "close") {
 			pad.state = "lock";
 			if(!lockWorld) {
-				lockWorld = createEmptyWorld();
+				lockWorld = createLockWorld();
 			}
-			console.log(pad.screen.material.map)
-			pad.screen.material = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				shininess: 100,
-				map: lockWorld.fbo.texture
-			});
+			pad.changeFBO(lockWorld);
 		}
 	}
 }

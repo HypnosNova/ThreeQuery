@@ -544,6 +544,17 @@ var threeQuery = function() {
 				$$.global.renderer.render(that.scene, that.camera);
 			}
 		};
+		this.updateFBO=function(){
+			$$.global.renderer.setClearColor(that.clearColor,that.alpha);
+			if(that.isResize) {
+				that.resize();
+			}
+			for(var i = 0; i < that.actionInjections.length; i++) {
+				that.actionInjections[i]();
+			}
+			$$.global.renderer.render(that.scene, that.camera, that.fbo, true);
+			$$.global.renderer.setClearColor($$.global.world.clearColor, $$.global.world.alpha);
+		};
 		this.isCurrent = false;
 		this.toTexture = function() {
 			return this.fbo.texture;
@@ -2262,7 +2273,7 @@ $$.Controls = {
 	createOrbitControls: function(options,world) {
 		options=options?options:{};
 		options=$$.extends({},[{
-			noZoom:true,
+			noZoom:false,
 			noPan:true,
 			rotateUp:0,
 			minDistance:0,
