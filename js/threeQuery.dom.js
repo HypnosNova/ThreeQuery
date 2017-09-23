@@ -108,6 +108,8 @@ $$.Txt = function(text, css) {
 	$$.DOM.call(this);
 	var that = this;
 	this.css = $$.extends({}, [this.css, {
+		fontStyle:"normal",
+		fontVariant:"normal",
 		fontSize: 12,
 		fontWeight: "normal",
 		fontFamily: "微软雅黑",
@@ -124,7 +126,7 @@ $$.Txt = function(text, css) {
 		ctx.fillStyle = this.css.backgroundColor;
 		ctx.fillRect(0, 0, this.css.width, this.css.height);
 		ctx.textAlign = this.css.textAlign;
-		ctx.font = this.css.fontWeight + " " + this.css.fontSize + "px " + this.css.fontFamily;
+		ctx.font = this.css.fontStyle+ " "+this.css.fontVariant+ " " +this.css.fontWeight + " " + this.css.fontSize + "px " + this.css.fontFamily;
 		ctx.fillStyle = this.css.color;
 		let width = ctx.measureText(this.text).width;
 		ctx.fillText(this.text, this.css.width / 2, this.css.height / 2 + this.css.fontSize / 4);
@@ -158,7 +160,6 @@ $$.Txt = function(text, css) {
 $$.Img = function(url, css) {
 	$$.DOM.call(this);
 	var that = this;
-
 	if($$.Loader.RESOURCE.textures[url]) {
 		var spriteMaterial = new THREE.SpriteMaterial({
 			map: $$.Loader.RESOURCE.textures[url],
@@ -169,9 +170,10 @@ $$.Img = function(url, css) {
 		that.add(that.element);
 		this.css = $$.extends({}, [this.css, {
 			width: $$.Loader.RESOURCE.textures[url].image.naturalWidth,
-			height: $$.Loader.RESOURCE.textures[url].image.naturalHeight,
+			height: $$.Loader.RESOURCE.textures[url].image.naturalHeight
 		}, css]);
 		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
+		sprite.material.opacity=that.css.opacity;
 	} else {
 		that.element = {};
 		$$.Loader.loadTexture([url], function(texture) {
@@ -188,13 +190,17 @@ $$.Img = function(url, css) {
 			that.add(that.element);
 			this.css = $$.extends({}, [this.css, {
 				width: texture.image.naturalWidth,
-				height: texture.image.naturalHeight,
+				height: texture.image.naturalHeight
 			}, css]);
+			if(css.opacity!=null){
+				that.css.opacity=css.opacity;
+			}
 			sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
 
 			for(var i in tmpProperty) {
 				that.element[i] = tmpProperty[i];
 			}
+			sprite.material.opacity=that.css.opacity;
 		});
 	}
 };
