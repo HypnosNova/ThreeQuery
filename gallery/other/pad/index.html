@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title></title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.js"></script>
+		<script src="../../../lib/MTLLoader.js"></script>
+		<script src="../../../lib/OBJLoader.js"></script>
+		<script src="../../../lib/trackBallControls.js"></script>
+		<script src="scene.js"></script>
+		<script src="emptyScene.js"></script>
+		<script src="pad.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init({clearColor:0xffffff}, {}, {
+				fov: 45
+			});
+//			renderer.setClearColor(0xffffff);
+			init();
+			var controls = $$.Controls.createTrackBallControls();
+			controls.minDistance = 20;
+			controls.maxDistance = 80;
+
+			function init() {
+				camera.position.z = 50;
+				var ambient = new THREE.AmbientLight(0xffffff);
+				scene.add(ambient);
+
+				var directionalLight = new THREE.DirectionalLight(0x999999);
+				directionalLight.position.set(4, 6, 8).normalize();
+				scene.add(directionalLight);
+
+				directionalLight = new THREE.DirectionalLight(0x444444);
+				directionalLight.position.set(12, 16, -8).normalize();
+				scene.add(directionalLight);
+
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath('ipad/');
+				mtlLoader.load('file.mtl', function(materials) {
+					materials.preload();
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+					objLoader.setPath('ipad/');
+					objLoader.load('file.obj', function(object) {
+						createPad(object);
+					});
+				});
+			}
+			$$.animate();
+		</script>
+
+	</body>
+
+</html>
