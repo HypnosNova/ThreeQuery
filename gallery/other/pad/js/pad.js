@@ -6,19 +6,20 @@ var pad = {
 	screenUpdate: null,
 	changeFBO: function(world) {
 		for(var i = 0; i < $$.actionInjections.length; i++) {
-			if($$.actionInjections[i]==pad.screenUpdate){
+			if($$.actionInjections[i] == pad.screenUpdate) {
 				$$.actionInjections.splice(i, 1);
 				break;
 			}
-			
+
 		}
 		pad.screenUpdate = world.updateFBO;
-		pad.screen.material.map=world.fbo.texture;
+		pad.screen.material.map = world.fbo.texture;
 		$$.actionInjections.push(pad.screenUpdate);
 	}
 }
 var emptyWorld = createEmptyWorld();
-var lockWorld=createLockWorld();
+var lockWorld = createLockWorld();
+var menuWorld = createMenuWorld();
 
 function createPad(obj) {
 	obj.position.y = -10;
@@ -51,36 +52,39 @@ function createPad(obj) {
 				lockWorld = createLockWorld();
 			}
 			pad.changeFBO(lockWorld);
-			for(var i in lockWorld.dom){
-				console.log()
-				lockWorld.dom[i].element.material.opacity=0;
+			for(var i in lockWorld.dom) {
+				lockWorld.dom[i].element.material.opacity = 0;
 			}
-			var opa={a:0};
-			new TWEEN.Tween(opa).to({a:1},500).start().onUpdate(function(){
-				for(var i in lockWorld.dom){
-					lockWorld.dom[i].element.material.opacity=this.a;
+			var opa = {
+				a: 0
+			};
+			new TWEEN.Tween(opa).to({
+				a: 1
+			}, 500).start().onUpdate(function() {
+				for(var i in lockWorld.dom) {
+					lockWorld.dom[i].element.material.opacity = this.a;
 				}
 			});
 		}
 	}
-	var point,screenDown;
-	pad.screen.onDown=function(obj){
-		point=obj.point;
-		screenDown=true;
+	var point, screenDown;
+	pad.screen.onDown = function(obj) {
+		point = obj.point;
+		screenDown = true;
 	}
-	pad.screen.onUp=function(obj){
-		var thres=obj.point.y-point.y;
-		if(thres>3){
-			alert(true);
-		}else{
-			alert(false)
+	pad.screen.onUp = function(obj) {
+		if(pad.state == "lock") {
+			var thres = obj.point.y - point.y;
+			if(thres > 2.5) {
+				pad.state="menu";
+				var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+					console.log("===")
+				});
+				$$.actionInjections.push(transition.render)
+				pad.changeFBO(tmpWorld);
+			} else {
+			}
+			screenDown = false;
 		}
-		screenDown=false;
 	}
-	
-//	document.addEventListener("mousemove",function(){
-//		if(screenDown){
-//			
-//		}
-//	},false);
 }
