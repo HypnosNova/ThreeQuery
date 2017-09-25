@@ -16,7 +16,7 @@ function createMenuWorld() {
 	var maxLeft = 150,
 		maxRight = -150,
 		icoSize = 128;
-
+	world.range=maxLeft;
 	var body = new $$.Body({});
 	world.scene.add(body);
 	var img = new $$.Img("img/menuBg.jpg", {
@@ -24,6 +24,7 @@ function createMenuWorld() {
 		height: 1600
 	});
 	img.position.x = maxLeft;
+	world.bg=img;
 	body.add(img);
 	var icoArr = [];
 	for(var i in icoData) {
@@ -34,7 +35,7 @@ function createMenuWorld() {
 			});
 			body.add(ico);
 			icoArr.push(ico);
-			ico.position.set(i*300+(j%4)*70-105, Math.floor(j/4)*60+90, 2);
+			ico.position.set(i*300+(j%4)*70-105, 150-Math.floor(j/4)*60, 2);
 		}
 	}
 
@@ -66,5 +67,11 @@ var icoData = [
 	}, {
 		text: "app8",
 		ico: "img/ico2.png"
+	}, {
+		text: "app9",
+		ico: "img/ico3.png"
+	}, {
+		text: "app10",
+		ico: "img/ico1.png"
 	}]
 ]

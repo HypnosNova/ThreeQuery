@@ -78,10 +78,24 @@ function createPad(obj) {
 			if(thres > 2.5) {
 				pad.state="menu";
 				var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
-					console.log("===")
+					$$.actionInjections.push(menuWorld.updateFBO);
 				});
 				$$.actionInjections.push(transition.render)
 				pad.changeFBO(tmpWorld);
+			} else {
+			}
+			screenDown = false;
+		}else if(pad.state == "menu") {
+			var thres = obj.point.x - point.x;
+			console.log(thres)
+			if(thres < -2) {
+				console.log(menuWorld.bg.position.x,menuWorld.range)
+				if(menuWorld.bg.position.x>-menuWorld.range){
+					console.log("??")
+					new TWEEN.Tween(menuWorld.bg.position).to({
+						x:menuWorld.bg.position.x-100
+					},400).start();
+				}
 			} else {
 			}
 			screenDown = false;
