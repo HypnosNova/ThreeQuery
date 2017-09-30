@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>qrcode</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	</head>
+
+	<body>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.min.js"></script>
+		<script src="../../../js/threeQuery.component.js"></script>
+		<script src="../../../lib/trackBallControls.js" type="text/javascript" charset="utf-8"></script>
+		<input value="https://github.com" id="input" placeholder="请输入文字" style="position: fixed;top: 0;font-size: 24px;" />
+		<script>
+			var [scene, renderer, camera] = $$.init({
+				clearColor: 0xffffff
+			}, {}, {
+				type: "OrthographicCamera"
+			});
+			$$.animate();
+			camera.position.z = 400;
+			$$.Controls.createTrackBallControls();
+			
+			//二维码一个方块的宽度
+			var width = 10;
+			//二维码的材质和几何体
+			var geometry = new THREE.BoxBufferGeometry(width, width, width);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0x333333
+			});
+
+			makeQRCode("https://github.com");
+
+			function makeQRCode(str) {
+				clearScene();
+				var qrcode = new $$.Component.QRCode(str);
+				var arr = qrcode._oQRCode.modules;
+
+				var size = arr.length;
+				
+				for(var i = 0; i < size; i++) {
+					for(var j = 0; j < size; j++) {
+						if(arr[i][j]) {
+
+							var cube = new THREE.Mesh(geometry, material);
+							scene.add(cube);
+							cube.position.set((-size / 2 + j) * width, (size / 2 - i) * width, 0);
+						}
+					}
+				}
+			}
+
+			function clearScene() {
+				var len = scene.children.length;
+				for(var i = 0; i < len; i++) {
+					if(scene.children[i].type == "Mesh") {
+						scene.remove(scene.children[i]);
+						len--;
+						i--;
+					}
+				}
+			}
+
+			var input = document.getElementById("input");
+			input.onchange = function() {
+				if(input.value.length) {
+					makeQRCode(input.value);
+				}
+			}
+		</script>
+
+	</body>
+
+</html>

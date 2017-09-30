@@ -51,7 +51,7 @@ $$.Controls = {
 		}
 		var camera = world ? world.camera : $$.global.camera;
 		//		var scene = $$.global.world;
-		controls = new THREE.TrackballControls(camera);
+		controls = new THREE.TrackballControls(camera,$$.global.canvasDom);
 		controls.rotateSpeed = options.rotateSpeed || 1;
 		controls.minDistance = options.minDistance || 1000;
 		controls.maxDistance = options.maxDistance || 1000;
