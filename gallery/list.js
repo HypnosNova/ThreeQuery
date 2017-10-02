@@ -15,6 +15,8 @@ var list = {
 			[ "五星红旗", "other/flag/index" ],
 			[ "iWeb峰会“PPT”", "other/iWebPPT/index" ],
 			[ "元素周期表（非css3d）", "other/table/index" ],
+			[ "守望先锋官网仿制", "other/overwatch/index" ],
+			[ "公司的办公室", "other/office/index" ],
 			[ "平板电脑", "other/pad/index" ]
 		]
 	}
