@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>three.js - pointerlock controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+			
+			body {
+				background-color: #ffffff;
+				margin: 0;
+				overflow: hidden;
+				font-family: arial;
+			}
+			
+			#blocker {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.5);
+			}
+			
+			#instructions {
+				width: 100%;
+				height: 100%;
+				display: -webkit-box;
+				display: -moz-box;
+				display: box;
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				box-orient: horizontal;
+				-webkit-box-pack: center;
+				-moz-box-pack: center;
+				box-pack: center;
+				-webkit-box-align: center;
+				-moz-box-align: center;
+				box-align: center;
+				color: #ffffff;
+				text-align: center;
+				cursor: pointer;
+			}
+			
+			#crosshair {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 3%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.min.js"></script>
+		<script src="../../../lib/PointerLockControls.js"></script>
+		<script src="../../../lib/MTLLoader.js"></script>
+		<script src="../../../lib/OBJLoader.js"></script>
+		<script src="js/material.js"></script>
+		<script src="js/createObject.js"></script>
+		<img src="img/crosshair.svg" id="crosshair" />
+		
+		<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br /> (W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>
+		<div id="maskLoading" style="width: 100%;height:100%;position:fixed;background-color: #333;font-size: 52px;text-align: center;color: #fff;">
+			<p id="progress" style="font-size: 52px;text-align: center;color: #fff;position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);">Loading</p>
+		</div>
+		<script>
+			var progress=document.getElementById("progress");
+			$$.Loader.onProgress=function(item, loaded, total){
+				progress.innerText=Math.floor(loaded/total*100)+"%";
+			}
+			var blocker = document.getElementById('blocker');
+			var [scene, renderer, camera] = $$.init(null, null, {
+				far: 3000000,
+				fov: 50
+			});
+			var water, chairModel;
+			var controls = $$.Controls.createFirstCharacterControls({
+				keymove: true,
+				tall:20
+			}, blocker);
+
+			//环境光
+			scene.add(new THREE.AmbientLight(0x888888));
+			//平行光
+			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
+			directionalLight.position.set(-10000, 40000, -20000)
+			scene.add(directionalLight);
+
+			loadFlower();
+			//			loadSofa();
+			loadChair();
+			$$.Loader.loadTexture(["../../../textures/patterns/skybox.png",
+				"img/redWood.jpg",
+				"img/mop.jpg",
+				"img/desk.jpg",
+				"img/shelf.jpg",
+			]);
+
+			$$.Loader.onLoadComplete = function() {
+				document.body.removeChild(document.getElementById("maskLoading"));
+
+				materialAll.shelfMaterial = new THREE.MeshLambertMaterial({
+					color: 0xffffff,
+					map: $$.Loader.RESOURCE.textures["img/shelf.jpg"]
+				});
+				materialAll.deskMaterial = new THREE.MeshLambertMaterial({
+					color: 0xeeeeee,
+					map: $$.Loader.RESOURCE.textures["img/desk.jpg"]
+				});
+				materialAll.redWoodMaterial = new THREE.MeshLambertMaterial({
+					color: 0xffffff,
+					map: $$.Loader.RESOURCE.textures["img/redWood.jpg"]
+				});
+				$$.Component.createSkybox("../../../textures/patterns/skybox.png");
+				//创建地板
+				var texture = $$.Loader.RESOURCE.textures["img/mop.jpg"];
+				var geometry = new THREE.PlaneBufferGeometry(20000, 20000, 1);
+				var material = new THREE.MeshLambertMaterial({
+					color: 0xaaaaaa,
+					map: texture
+				});
+				texture.wrapS = texture.wrapT = THREE.RepeatWrapping // 贴图的重复方式
+				texture.repeat.set(1500, 1500)
+				var plane = new THREE.Mesh(geometry, material);
+				plane.rotation.x = -Math.PI / 2;
+				scene.add(plane);
+
+				//我前面的墙
+				var geometry = new THREE.BoxBufferGeometry(290, 30, 4);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(20, 0, 30);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(290, 16, 4);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(20, 43, 30);
+				scene.add(cube);
+				//窗栏
+				var geometry = new THREE.BoxBufferGeometry(290, 1, 1);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(20, 15, 30);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(20, 35, 30);
+				scene.add(cube);
+
+				var geometry = new THREE.BoxBufferGeometry(1, 20, 0.5);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(60, 25, 30);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(47, 25, 30);
+				scene.add(cube);
+
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(16, 25, 30);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(3, 25, 30);
+				scene.add(cube);
+
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-28, 25, 30);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-41, 25, 30);
+				scene.add(cube);
+
+				//一排橱
+				var geometry = new THREE.BoxBufferGeometry(10, 23, 6);
+				for(var i = 0; i < 7; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(48.5 - i * 10.1, 0, 25);
+					scene.add(cube);
+				}
+				var geometry = new THREE.BoxBufferGeometry(70.8, 2.5, 6.1);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(18.2, 0, 25);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(70.8, 0.5, 6.1);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(18.2, 11.5, 25);
+				scene.add(cube);
+
+				//厨上3个花
+				var f = flowerModel.clone();
+				f.position.set(-10, 12, 25);
+				scene.add(f);
+				f = flowerModel.clone();
+				f.position.set(18, 12, 25);
+				scene.add(f);
+				f = flowerModel.clone();
+				f.position.set(46, 12, 25);
+				scene.add(f);
+
+				//一排橱右边柱子
+				var geometry = new THREE.BoxBufferGeometry(6, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-20.3, 0, 26);
+				scene.add(cube);
+
+				//创建2排桌子
+				var desk = createDesk(5);
+				desk.position.set(-10, 0, -7);
+				scene.add(desk);
+				var desk = createDesk(5);
+				desk.position.set(-10, 0, -53);
+				scene.add(desk);
+
+				//下面是左侧部分
+				//最左边柱子
+				var geometry = new THREE.BoxBufferGeometry(7, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(83, 0, 26);
+				scene.add(cube);
+
+				var geometry = new THREE.BoxBufferGeometry(4, 100, 120);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(83, 0, -30);
+				scene.add(cube);
+
+				var geometry = new THREE.BoxBufferGeometry(7, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(83, 0, -90);
+				scene.add(cube);
+
+				//左边大厨底座
+				var geometry = new THREE.BoxBufferGeometry(5.8, 4, 108);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, -31.7);
+				scene.add(cube);
+
+				//左边大的橱
+				var geometry = new THREE.BoxBufferGeometry(6, 8, 7.65);
+				for(var i = 0; i < 14; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(77, 6, 18.6 - i * 7.75);
+					scene.add(cube);
+				}
+
+				//左边大厨第一层板
+				var geometry = new THREE.BoxBufferGeometry(6, 0.5, 108.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 10, -31.7);
+				scene.add(cube);
+				//第二层
+
+				var geometry = new THREE.BoxBufferGeometry(6, 11, 7.65);
+				for(var i = 0; i < 3; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(77, 19.5, 18.6 - i * 7.75);
+					scene.add(cube);
+				}
+				var geometry = new THREE.BoxBufferGeometry(6, 14.7, 7.65);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 17.65, 18.6 - 3 * 7.75);
+				scene.add(cube);
+
+				var geometry = new THREE.BoxBufferGeometry(6, 14.7, 7.65);
+				for(var i = 0; i < 10; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(77, 23, 18.6 - (i + 4) * 7.75);
+					scene.add(cube);
+				}
+				//第二层板
+				var geometry = new THREE.BoxBufferGeometry(6, 0.5, 108.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 30.5, -31.7);
+				scene.add(cube);
+
+				//第三层
+				var geometry = new THREE.BoxBufferGeometry(6, 10, 7.65);
+				for(var i = 0; i < 14; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(77, 35.5, 18.6 - i * 7.75);
+					scene.add(cube);
+				}
+				//大厨后背
+				var geometry = new THREE.BoxBufferGeometry(0.5, 80, 108.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(80, 0, -31.7);
+				scene.add(cube);
+				//厨内部挡板
+				var geometry = new THREE.BoxBufferGeometry(5.9, 80, 0.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3 - 6 * 7.73);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3 - 8 * 7.73);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3 - 10 * 7.73);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3 - 12 * 7.73);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(77, 0, 22.3 - 14 * 7.73);
+				scene.add(cube);
+
+				//给橱贴上条子
+				var geometry = new THREE.BoxBufferGeometry(0.1, 0.5, 108.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfBarMaterial);
+				cube.position.set(74, 10, -31.7);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(0.1, 0.5, 108.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfBarMaterial);
+				cube.position.set(74, 30.5, -31.7);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(0.1, 0.5, 77.5);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfBarMaterial);
+				cube.position.set(74, 16, -47.4);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(0.1, 0.5, 7.75 * 4);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfBarMaterial);
+				cube.position.set(74, 14.3, 7);
+				scene.add(cube);
+
+				//右后方柱子
+				var geometry = new THREE.BoxBufferGeometry(6, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-20.3, 0, -90);
+				scene.add(cube);
+				//背后一排橱
+				var geometry = new THREE.BoxBufferGeometry(9.54, 23, 9);
+				for(var i = 0; i < 10; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(74.4 - i * 9.64, 3, -91.1);
+					scene.add(cube);
+				}
+				var geometry = new THREE.BoxBufferGeometry(96.5, 2.5, 9.1);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(31, 0, -91.1);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(96.5, 0.5, 9.1);
+				var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+				cube.position.set(31, 14.5, -91.1);
+				scene.add(cube);
+
+				for(var i = 0; i < 5; i++) {
+					var f = flowerModel.clone();
+					f.position.set(70 - i * 20, 14.5, -91.1);
+					scene.add(f);
+				}
+
+				//下面是老板办公室
+				//外围木头
+				var geometry = new THREE.BoxBufferGeometry(2, 30, 5.75);
+				var cube = new THREE.Mesh(geometry, materialAll.redWoodMaterial);
+				cube.position.set(-51, 0, 27);
+				scene.add(cube);
+				for(var i = 0; i < 10; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.redWoodMaterial);
+					cube.position.set(-51, 0, 9 - i * 5.75);
+					scene.add(cube);
+				}
+
+				var geometry = new THREE.BoxBufferGeometry(1, 30, 1);
+				for(var i = 0; i < 36; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.redWoodMaterial);
+					cube.position.set(-51 - i * 2, 0, -45);
+					scene.add(cube);
+				}
+
+				var geometry = new THREE.BoxBufferGeometry(6, 30, 400);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-125, 0, -168);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(6, 16, 400);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-125, 43, -168);
+				scene.add(cube);
+				//窗栏
+				var geometry = new THREE.BoxBufferGeometry(1, 1, 397);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 15, -168);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 35, -168);
+				scene.add(cube);
+
+				//6排椅子
+				for(var i = 0; i < 6; i++) {
+					var desk = createDesk(4);
+					desk.position.set(-101, 0, -72 - 44 * i);
+					scene.add(desk);
+				}
+
+				//最右侧柱子
+				var geometry = new THREE.BoxBufferGeometry(6, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-125, 0, 30);
+				scene.add(cube);
+
+				//我正后方
+				var desk = createDesk(4);
+				desk.position.set(-10, 0, -132);
+				scene.add(desk);
+				
+				var geometry = new THREE.BoxBufferGeometry(10, 23, 8);
+				for(var i = 0; i < 6; i++) {
+					var cube = new THREE.Mesh(geometry, materialAll.shelfMaterial);
+					cube.position.set(37.2 - i * 10.1, 0, -160);
+					scene.add(cube);
+				}
+
+				//打印机附近
+				var geometry = new THREE.BoxBufferGeometry(3, 100, 105);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(44, 0, -167);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(66, 100, 3);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(10, 0, -191);
+				scene.add(cube);
+
+				var geometry = new THREE.BoxBufferGeometry(66, 85, 0.25);
+				var cube = new THREE.Mesh(geometry, materialAll.glassMaterial);
+				cube.position.set(10, 0, -164.5);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(0.25, 85, 24);
+				var cube = new THREE.Mesh(geometry, materialAll.glassMaterial);
+				cube.position.set(-23, 0, -176.5);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(0.3, 85, 0.3);
+				for(var i =0;i<4;i++){
+					var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+					cube.position.set(26.5-16.5*i, 0, -164.5);
+					scene.add(cube);
+				}
+				var geometry = new THREE.BoxBufferGeometry(0.26, 60, 0.26);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-23, 0, -173);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-23, 0, -188);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(0.26, 0.26, 15.26);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-23, 30, -180.5);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(3, 0.5, 0.5);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-23, 17, -176);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-23, 11, -176);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(0.5, 6.5, 0.5);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-21.5, 14, -176);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-24.5, 14, -176);
+				scene.add(cube);
+				
+				//右边墙的柱子
+				var geometry = new THREE.BoxBufferGeometry(6, 100, 9);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-125, 0, -88.5);
+				scene.add(cube);
+				var geometry = new THREE.BoxBufferGeometry(6, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-121, 0, -90);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(9, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-121, 0, -190);
+				scene.add(cube);
+				
+				//右边各个细节
+				var geometry = new THREE.BoxBufferGeometry(0.5, 20, 1);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -46);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -59);
+				scene.add(cube);
+				
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -94);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -107);
+				scene.add(cube);
+				
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -147);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -160);
+				scene.add(cube);
+				
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -194);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-125, 25, -207);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(11, 100, 7);
+				var cube = new THREE.Mesh(geometry, materialAll.wallMaterial);
+				cube.position.set(-120, 0, -326);
+				scene.add(cube);
+				
+				//会议室12个格子
+				var geometry = new THREE.BoxBufferGeometry(65, 85, 0.25);
+				var cube = new THREE.Mesh(geometry, materialAll.glassMaterial);
+				cube.position.set(-81, 0, -325);
+				scene.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(0.5, 85, 1);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-114, 0, -325);
+				scene.add(cube);
+				var cube = new THREE.Mesh(geometry, materialAll.windowBorderMaterial);
+				cube.position.set(-49, 0, -325);
+				scene.add(cube);
+
+			}
+
+			$$.animate();
+		</script>
+	</body>
+
+</html>
