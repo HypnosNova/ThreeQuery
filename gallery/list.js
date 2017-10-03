@@ -17,6 +17,7 @@ var list = {
 			[ "元素周期表（非css3d）", "other/table/index" ],
 			[ "守望先锋官网仿制", "other/overwatch/index" ],
 			[ "公司的办公室", "other/office/index" ],
+			[ "几何体爆炸", "other/exploration/index" ],
 			[ "平板电脑", "other/pad/index" ]
 		]
 	}
