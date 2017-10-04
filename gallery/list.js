@@ -32,6 +32,11 @@ var list = {
 			[ "场景渲染到纹理", "framework/029场景渲染到纹理" ],
 		]
 	},
+	"Shader为主的例子": {
+		"主要部分是着色器": [
+			[ "万圣节效果的时间特效", "games/shader/clock" ],
+		]
+	}
 	"高级实例": {
 		"游戏": [
 			[ "Entanglement", "games/entanglement/index" ],

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>时钟特效</title>
+	</head>
+
+	<body>
+		<script type="text/template" id="vertex-shader">
+  varying vec2 vUv;
+  
+  void main () {
+    vec3 newPosition = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    
+    vUv = uv;
+  }
+		</script>
+
+		<script type="text/template" id="fragment-shader">
+  uniform sampler2D u_texture1;
+  uniform sampler2D u_texture2;
+  uniform float u_time;
+  uniform float u_mixFactor;
+
+  varying vec2 vUv;
+  
+  <perlin-noise>
+
+  void main () {
+    vec2 newUv = vUv;
+    
+    newUv.x += snoise(vec2(cos(newUv.x * 0.25 + newUv.y * 0.2) * 60.0, 1.0 + u_time)) * (0.02 + u_mixFactor * 0.05);
+    newUv.y += snoise(vec2(sin(newUv.x * 20.0 + newUv.y * 0.6) * 20.0, u_time)) * (0.002 + u_mixFactor * 0.05) * 3.0;
+    
+    vec4 texColor1 = texture2D(u_texture1, newUv);
+    vec4 texColor2 = texture2D(u_texture2, newUv);
+    gl_FragColor = mix(texColor1, texColor2, u_mixFactor);
+  }
+		</script>
+
+
+		<script type="text/template" id="perlin-glsl">
+
+  vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+
+  float snoise(vec2 v){
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+             -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy) );
+    vec2 x0 = v -   i + dot(i, C.xx);
+    vec2 i1;
+    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod(i, 289.0);
+    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+    + i.x + vec3(0.0, i1.x, 1.0 ));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+      dot(x12.zw,x12.zw)), 0.0);
+    m = m*m ;
+    m = m*m ;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+    vec3 g;
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }
+
+		</script>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script src="../../lib/tween.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene,renderer,camera]=$$.init();
+			$$.animate();
+			
+			camera.position.set(0, 0, 150);
+			camera.lookAt(scene.position);
+
+			class ClockTexture {
+				constructor(width, height) {
+					this.canvas = document.createElement('canvas')
+					this.ctx = this.canvas.getContext('2d')
+					this.width = this.canvas.width = width
+					this.height = this.canvas.height = height
+				}
+				getTime() {
+					let date = new Date()
+
+					let hours = date.getHours()
+					let minutes = date.getMinutes()
+					let seconds = date.getSeconds()
+
+					if(hours.toString().length === 1) hours = `0${hours}`
+					if(minutes.toString().length === 1) minutes = `0${minutes}`
+					if(seconds.toString().length === 1) seconds = `0${seconds}`
+
+					return `${hours}:${minutes}:${seconds}`
+				}
+				render() {
+					this.ctx.fillStyle = '#111'
+					this.ctx.fillRect(0, 0, this.width, this.height)
+					this.ctx.fillStyle = '#fff'
+					this.ctx.font = '120px Arial'
+					this.ctx.textAlign = 'center'
+					this.ctx.fillText(this.getTime(), this.width / 2, this.height / 2 + 30)
+					let img = this.ctx.getImageData(0, 0, this.width, this.height)
+					var texture=new THREE.Texture(img);
+					texture.needsUpdate=true;
+					return texture;
+				}
+			}
+
+			const clock = new THREE.Clock()
+
+			let clockTexture = new ClockTexture(1024, 512)
+
+			let uniforms = {
+				u_texture1: {
+					value: clockTexture.render()
+				},
+				u_texture2: {
+					value: clockTexture.render()
+				},
+				u_time: {
+					value: 0
+				},
+				u_mixFactor: {
+					value: 0
+				}
+			}
+			const perlinNoise = document.querySelector('#perlin-glsl').text
+			const vertexShader = document.querySelector('#vertex-shader').text
+			const fragmentShader = document.querySelector('#fragment-shader').text
+
+			const geometry = new THREE.PlaneBufferGeometry(200, 100)
+			const material = new THREE.ShaderMaterial({
+				uniforms,
+				vertexShader,
+				fragmentShader: fragmentShader.replace(/<perlin-noise>/i, perlinNoise)
+			})
+			const mesh = new THREE.Mesh(geometry, material)
+			mesh.position.set(0, 0, 0)
+			scene.add(mesh)
+
+			setInterval(updateClock, 500)
+
+			let clockCount = 0
+
+			function updateClock() {
+				if(clockCount % 2 === 0) {
+					new TWEEN.Tween(uniforms.u_mixFactor).to({
+						value:1
+					},250).start();
+				} else if(clockCount % 2 !== 0) {
+					new TWEEN.Tween(uniforms.u_mixFactor).to({
+						value:0
+					},250).start()
+				}
+				uniforms.u_texture1.value = clockTexture.render();
+				clockCount += 1
+			}
+
+			let time = 0
+
+			$$.actionInjections.push(function(){
+				time += clock.getDelta();
+				uniforms.u_time.value = time;
+				TWEEN.update();
+			});
+		</script>
+	</body>
+
+</html>
