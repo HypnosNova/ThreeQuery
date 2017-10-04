@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>在指定的div里渲染</title>
+		<style type="text/css">
+			#main{
+				position: absolute;
+				width: 50%;
+				height: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		下面是渲染的容器
+		<div id="main"></div>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			//如果指定某个dom为渲染的容器，就要把这代码放在初始化的前面。如果不设置，某认容器就是页面的body
+			$$.global.canvasContainerDom=document.getElementById("main");
+			$$.init();
+			$$.animate();
+		</script>
+	</body>
+</html>

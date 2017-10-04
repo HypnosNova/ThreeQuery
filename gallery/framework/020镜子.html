@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>镜子</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+	</head>
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/StereoEffect.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../lib/plugins/Mirror.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+
+		<script>
+			var WIDTH = window.innerWidth;
+			var HEIGHT = window.innerHeight;
+			var [scene, renderer, camera]=$$.init();
+			$$.Controls.createOrbitControls();
+			camera.position.set( 0, 75, 75 );
+
+			var groundMirror;
+			var smallSphere;
+			function fillScene() {
+				var planeGeo = new THREE.PlaneBufferGeometry( 300, 300 );
+
+				// MIRROR planes
+				groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.0, textureWidth: WIDTH, textureHeight: HEIGHT, color: 0x777777 } );
+				var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
+				mirrorMesh.add( groundMirror );
+				mirrorMesh.rotateX( - Math.PI / 2 );
+				mirrorMesh.position.y = -150;
+				scene.add( mirrorMesh );
+
+				var geometry = new THREE.IcosahedronGeometry( 10, 0 );
+				var material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive: 0x333333, shading: THREE.FlatShading } );
+				smallSphere = new THREE.Mesh( geometry, material );
+				scene.add(smallSphere);
+
+				// walls
+				var planeTop = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xffffff } ) );
+				planeTop.position.y = 150;
+				planeTop.rotateX( Math.PI / 2 );
+				scene.add( planeTop );
+
+				var planeBack = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x7f7fff } ) );
+				planeBack.position.z = -150;
+				scene.add( planeBack );
+
+				var planeFront = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x7f7fff } ) );
+				planeFront.position.z = 150;
+				planeFront.rotateY( Math.PI );
+				scene.add( planeFront );
+
+				var planeRight = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x00ff00 } ) );
+				planeRight.position.x = 150;
+				planeRight.rotateY( - Math.PI / 2 );
+				scene.add( planeRight );
+
+				var planeLeft = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xff0000 } ) );
+				planeLeft.position.x = -150;
+				planeLeft.rotateY( Math.PI / 2 );
+				scene.add( planeLeft );
+
+				//lights
+				var mainLight = new THREE.PointLight( 0xffffff, 1.5, 1000 );
+				scene.add( mainLight );
+
+			}
+
+			fillScene();
+			
+			$$.animate();
+			
+			$$.worldActions=function(){
+				var timer = Date.now() * 0.01;
+
+				smallSphere.position.set(
+					Math.cos( timer * 0.1 ) * 30,
+					Math.cos( timer * 0.2 ) * 20 ,
+					Math.sin( timer * 0.1 ) * 30
+				);
+				smallSphere.rotation.y = ( Math.PI / 2 ) - timer * 0.1;
+				smallSphere.rotation.z = timer * 0.8;
+				groundMirror.render();
+			}
+
+		</script>
+	</body>
+</html>

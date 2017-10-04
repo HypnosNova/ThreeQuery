@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>计时器</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../lib/trackBallControls.js"></script>
+		<script>
+			var [scene, render, camera] = $$.init();
+			var geometry = new THREE.SphereGeometry(30, 32, 32);
+
+			var controls = $$.Controls.createTrackBallControls({
+				maxDistance: 50,
+				minDistance: 50
+			});
+			var spriteMap = new THREE.TextureLoader().load("textures/sprite.png");
+			var spriteMaterial = new THREE.SpriteMaterial({
+				map: spriteMap,
+				color: 0xffffff
+			});
+
+			var spriteIndex=0;
+			var timer = new $$.Component.Timer({
+				life: 100000,
+				duration: 50,
+				onStart: function() {
+					console.log("timer start");
+				},
+				onRepeat: function() {
+					if(spriteIndex<geometry.vertices.length){
+						var sprite = new THREE.Sprite(spriteMaterial);
+						scene.add(sprite);
+						sprite.position.x = geometry.vertices[spriteIndex].x;
+						sprite.position.y = geometry.vertices[spriteIndex].y;
+						sprite.position.z = geometry.vertices[spriteIndex].z;
+						spriteIndex++;
+					}
+					
+				},
+				onEnd: function() {
+					console.log("timer end");
+				}
+			});
+
+			timer.start();
+
+			camera.position.x = 10;
+			camera.position.y = 10;
+			camera.position.z = 10;
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			$$.animate();
+		</script>
+	</body>
+
+</html>

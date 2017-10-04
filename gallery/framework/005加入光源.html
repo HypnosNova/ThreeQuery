@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>加入光源</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene, render, camera] = $$.init();
+			$$.animate();
+
+			var geometry = new THREE.BoxGeometry(3, 3, 3);
+			var material = new THREE.MeshLambertMaterial({//这边采用lambert材质
+				color: 0xffffff
+			}); //这边采用basic材质
+			var mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
+			
+			//加入一个白光
+			var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+			directionalLight.position.set(0, 1, 0);
+			scene.add(directionalLight);
+			//加入环境光
+			var light = new THREE.AmbientLight( 0x222222 ); // soft white light
+			scene.add( light );
+			
+			
+			camera.position.x = 10;
+			camera.position.y = 10;
+			camera.position.z = 10;
+			camera.lookAt(mesh.position);
+
+			$$.worldActions = function() {
+				mesh.rotation.x += 0.01;
+				mesh.rotation.y += 0.02;
+			};
+			
+		</script>
+	</body>
+
+</html>

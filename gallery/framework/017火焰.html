@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>空的框架</title>
+	</head>
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/plugins/Fire.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene,renderer,camera] = $$.init();
+			
+			var tex = THREE.ImageUtils.loadTexture("textures/patterns/Fire.png");
+			var fire = new THREE.Fire( tex );
+			scene.add( fire );
+			camera.position.z=5;
+			camera.lookAt(fire.position)
+			$$.worldActions=function(){
+				fire.update();
+			}
+			$$.animate();
+		</script>
+	</body>
+</html>
