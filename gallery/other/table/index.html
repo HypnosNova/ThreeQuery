@@ -277,7 +277,7 @@
 					targets.grid.push(object);
 				}
 
-				controls = $$.Controls.createTrackBallControls();
+				controls = $$.Controls.createTrackBallControls({dom:document.body});
 				controls.noZoom=false;
 				controls.rotateSpeed = 1;
 				controls.minDistance = 500;

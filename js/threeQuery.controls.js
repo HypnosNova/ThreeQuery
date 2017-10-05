@@ -18,7 +18,7 @@ $$.Controls = {
 		},options]);
 		var camera = world?world.camera:$$.global.camera;
 		var element = $$.global.canvasDom;
-		var controls = new THREE.OrbitControls(camera, element);
+		var controls = new THREE.OrbitControls(camera, options.dom||element);
 		controls.rotateUp(options.rotateUp);
 		controls.target.set(
 			camera.position.x + 0.1,
@@ -51,7 +51,7 @@ $$.Controls = {
 		}
 		var camera = world ? world.camera : $$.global.camera;
 		//		var scene = $$.global.world;
-		controls = new THREE.TrackballControls(camera,$$.global.canvasDom);
+		controls = new THREE.TrackballControls(camera,options.dom||$$.global.canvasDom);
 		controls.rotateSpeed = options.rotateSpeed || 1;
 		controls.minDistance = options.minDistance || 1000;
 		controls.maxDistance = options.maxDistance || 1000;
