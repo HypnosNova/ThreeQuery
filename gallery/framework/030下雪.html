@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Threejs snow</title>
+		<style>
+			body{
+				background-image: url(textures/bg.jpg);
+				background-size: cover;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.js"></script>
+
+		<script>
+			$$.init(null,{alpha:true},null);
+			$$.animate();
+			var textureLoader = new THREE.TextureLoader();
+			var map = textureLoader.load('textures/snow-32.png');
+			var snow = new $$.Weather.Snow({}, map);
+			snow.onStartEnd=function(){
+				//snow.end();
+			}
+			snow.start();
+		</script>
+
+	</body>
+
+</html>

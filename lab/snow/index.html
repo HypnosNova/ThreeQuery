@@ -6,7 +6,7 @@
 		<title>Threejs snow</title>
 		<style>
 			body{
-				background-image: url(timg.jpg);
+				background-image: url(bg.jpg);
 				background-size: cover;
 			}
 		</style>
@@ -14,7 +14,7 @@
 
 	<body>
 		<script src="../../lib/three.min.js" type="text/javascript" charset="utf-8"></script>
-		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../js/threeQuery.js"></script>
 
 		<script>
 			$$.init(null,{alpha:true},null);
@@ -23,7 +23,7 @@
 			var map = textureLoader.load('snow-32.png');
 			var snow = new $$.Weather.Snow({}, map);
 			snow.onStartEnd=function(){
-				snow.end();
+				//snow.end();
 			}
 			snow.start();
 		</script>

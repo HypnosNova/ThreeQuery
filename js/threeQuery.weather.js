@@ -36,6 +36,8 @@ $$.Weather = {
 		this.particles = [];
 		this.material = new THREE.SpriteMaterial({
 			map: texture,
+			transparent:true,
+			needsUpdate:false,
 			color: 0xffffff
 		});
 		this.onStartEnd = function() {

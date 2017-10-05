@@ -30,6 +30,7 @@ var list = {
 			[ "全景VR视频", "framework/027全景VR" ],
 			[ "场景切换过渡效果", "framework/028场景切换过渡效果" ],
 			[ "场景渲染到纹理", "framework/029场景渲染到纹理" ],
+			[ "下雪", "framework/030下雪" ],
 		]
 	},
 	"Shader为主的例子": {

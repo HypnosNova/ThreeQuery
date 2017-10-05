@@ -2474,6 +2474,7 @@ $$.Controls = {
 			options = {};
 		}
 		var camera = world ? world.camera : $$.global.camera;
+		//		var scene = $$.global.world;
 		controls = new THREE.TrackballControls(camera,options.dom||$$.global.canvasDom);
 		controls.rotateSpeed = options.rotateSpeed || 1;
 		controls.minDistance = options.minDistance || 1000;
@@ -2870,6 +2871,8 @@ $$.Weather = {
 		this.particles = [];
 		this.material = new THREE.SpriteMaterial({
 			map: texture,
+			transparent:true,
+			needsUpdate:false,
 			color: 0xffffff
 		});
 		this.onStartEnd = function() {
