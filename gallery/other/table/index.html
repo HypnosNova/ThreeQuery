@@ -195,6 +195,9 @@
 					ctx.fillText(table[i+2], canvasW * 0.5, 365);
 
 					let texture = new THREE.CanvasTexture(canvas);
+					texture.generateMipmaps = false;
+					texture.minFilter = THREE.LinearFilter;
+					texture.magFilter = THREE.LinearFilter;
 					let geometry = new THREE.PlaneBufferGeometry(canvasW * scale, canvasH * scale, 2);
 					let material = new THREE.MeshBasicMaterial({
 						color: 0xffffff,
