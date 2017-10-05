@@ -32,8 +32,6 @@
 
 				var textureLoader = new THREE.TextureLoader();
 
-				// MESH - Repeat Pattern
-
 				texture = textureLoader.load( 'textures/UV_Grid_Sm.jpg' );
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
@@ -64,23 +62,15 @@
 					sprite.scale.set( 64, 64, 1 );
 
 					scene.add( sprite );
-
 				}
-
 			}
-
-
 			
-			$$.actionInjections.push(render)
-			function render() {
-
+			$$.actionInjections.push(function(){
 				var time = performance.now() * 0.0001;
 
 				camera.position.x = Math.sin( time ) * 500;
 				camera.position.z = Math.cos( time ) * 500;
 				camera.lookAt( scene.position );
-
-				//
 
 				texture.repeat.x = Math.sin( time ) * 0.5 + 1.0;
 				texture.repeat.y = Math.cos( time ) * 0.5 + 1.0;
@@ -91,19 +81,12 @@
 				mesh.rotation.x = time * 2;
 				mesh.rotation.y = time * 4;
 
-				//
-
 				texture2.repeat.x = Math.sin( time ) + 1.25;
 				texture2.repeat.y = Math.sin( time ) + 1.25;
 
 				texture2.offset.x = 2*Math.sin( time );
 				texture2.offset.y = 2*Math.cos( time );
-
-				
-//				webglRenderer.render( scene, camera );
-
-			}
-
+			});
 		</script>
 
 	</body>

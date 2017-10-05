@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>隧道效果</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script>
+			var [scene, renderer, camera] = $$.init();
+			$$.animate();
+
+			camera.position.z = -110;
+			camera.lookAt(scene.position);
+
+			// Load texture first
+			var tunnelTexture = new THREE.TextureLoader().load('textures/001_electric.jpg');
+			tunnelTexture.wrapT = tunnelTexture.wrapS = THREE.RepeatWrapping;
+			tunnelTexture.repeat.set(1, 2);
+
+			// Tunnel Mesh
+			var tunnelMesh = new THREE.Mesh(
+				new THREE.CylinderGeometry(10, 10, 1024, 32, 32, true),
+				new THREE.MeshBasicMaterial({
+					color: 0x2222ff,
+					transparent: true,
+					alphaMap: tunnelTexture,
+					side: THREE.BackSide,
+				})
+			);
+			tunnelMesh.rotation.x = Math.PI / 2;
+			tunnelMesh.position.z = 0;
+			scene.add(tunnelMesh);
+
+			// Starfield
+			var geometry = new THREE.Geometry();
+			for(i = 0; i < 5000; i++) {
+				var vertex = new THREE.Vector3();
+				vertex.x = Math.random() * 3000 - 1500;
+				vertex.y = Math.random() * 3000 - 1500;
+				vertex.z = Math.random() * 200 - 100;
+				geometry.vertices.push(vertex);
+			}
+			var starField = new THREE.Points(geometry, new THREE.PointsMaterial({
+				size: 0.5,
+				color: 0xffff99
+			}));
+			scene.add(starField);
+			starField.position.z = 400;
+
+			var time = new THREE.Clock();
+
+			$$.actionInjections.push(function(){
+				starField.rotation.z += 0.003;
+				tunnelMesh.material.color.setHSL(Math.abs(Math.cos((time.getElapsedTime() / 10))), 1, 0.5);
+				tunnelTexture.offset.y = time.getElapsedTime() / 8;
+				tunnelTexture.offset.x = time.getElapsedTime() / 100;
+			});
+
+		</script>
+	</body>
+
+</html>
