@@ -101,7 +101,7 @@
 			loadFlower();
 			//			loadSofa();
 			loadChair();
-			$$.Loader.loadTexture(["../../../textures/patterns/skybox.png",
+			$$.Loader.loadTexture(["../../framework/textures/patterns/skybox.png",
 				"img/redWood.jpg",
 				"img/mop.jpg",
 				"img/desk.jpg",
@@ -123,7 +123,7 @@
 					color: 0xffffff,
 					map: $$.Loader.RESOURCE.textures["img/redWood.jpg"]
 				});
-				$$.Component.createSkybox("../../../textures/patterns/skybox.png");
+				$$.Component.createSkybox("../../framework/textures/patterns/skybox.png");
 				//创建地板
 				var texture = $$.Loader.RESOURCE.textures["img/mop.jpg"];
 				var geometry = new THREE.PlaneBufferGeometry(20000, 20000, 1);
