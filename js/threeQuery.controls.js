@@ -19,7 +19,7 @@ $$.Controls = {
 		var camera = world?world.camera:$$.global.camera;
 		var element = $$.global.canvasDom;
 		var controls = new THREE.OrbitControls(camera, options.dom||element);
-		controls.rotateUp(options.rotateUp);
+		controls.rotateUp=options.rotateUp;
 		controls.target.set(
 			camera.position.x + 0.1,
 			camera.position.y,
