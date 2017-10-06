@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>XXX</title>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+			}
+			
+			canvas {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="view"></canvas>
+		<script src="gl-matrix.js"></script>
+		<script>
+			var vs = `
+				precision mediump float;
+				
+				attribute vec3 vColor;
+				attribute vec3 verPosition;
+				varying vec3 flagColor;
+				
+				uniform mat4 mWorld;
+				uniform mat4 mView;
+				uniform mat4 mProj;
+				
+				void main(){
+					flagColor=vColor;
+					gl_Position= mProj * mView * mWorld * vec4(verPosition,1.0);
+				}
+			`;
+
+			var fs = `
+				precision mediump float;
+				varying vec3 flagColor;
+				void main(){
+					gl_FragColor=vec4(flagColor,1.0);
+				}
+			`;
+
+			var canvas = document.getElementById("view");
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			var gl = canvas.getContext("webgl");
+
+			gl.clearColor(1, 1, 0, 1);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+
+			var vShader = gl.createShader(gl.VERTEX_SHADER);
+			var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+			gl.shaderSource(vShader, vs);
+			gl.shaderSource(fShader, fs);
+
+			gl.compileShader(vShader);
+			if(!gl.getShaderParameter(vShader, gl.COMPILE_STATUS)) {
+				console.error("Error vs:", gl.getShaderInfoLog(vShader));
+			}
+
+			gl.compileShader(fShader);
+			if(!gl.getShaderParameter(fShader, gl.COMPILE_STATUS)) {
+				console.error("Error fs:", gl.getShaderInfoLog(fShader));
+			}
+
+			var program = gl.createProgram();
+			gl.attachShader(program, vShader);
+			gl.attachShader(program, fShader);
+			gl.linkProgram(program);
+
+			if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+				console.error("Error Link:", gl.getProgramInfoLog(program));
+			}
+
+			gl.validateProgram(program);
+			if(!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+				console.error("Error Validate:", gl.getProgramInfoLog(program));
+			}
+
+			var vArr = new Float32Array([
+				0.0, 0.5, 0.0, 1.0, 0.0, 0.0, -0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+				0.5, -0.5, 0.0, 0.0, 0.0, 1.0
+			]);
+			var vBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, vArr, gl.STATIC_DRAW);
+
+			var position = gl.getAttribLocation(program, "verPosition");
+			gl.vertexAttribPointer(position, 3, gl.FLOAT, gl.FALSE, Float32Array.BYTES_PER_ELEMENT * 6, 0);
+			gl.enableVertexAttribArray(position);
+
+			var color = gl.getAttribLocation(program, "vColor");
+			gl.vertexAttribPointer(color, 3, gl.FLOAT, gl.FALSE, Float32Array.BYTES_PER_ELEMENT * 6, Float32Array.BYTES_PER_ELEMENT * 3);
+			gl.enableVertexAttribArray(color);
+
+			gl.useProgram(program);
+
+			var mWorldLocation = gl.getUniformLocation(program, "mWorld");
+			var mViewLocation = gl.getUniformLocation(program, "mView");
+			var mProjLocation = gl.getUniformLocation(program, "mProj");
+			var mWorld = mat4.identity(new Float32Array(16));
+			var mView = mat4.lookAt(new Float32Array(16), [0, 0, -5], [0, 0, 0], [0, 0.01, 0]);
+			var mProj = mat4.perspective(new Float32Array(16), Math.PI / 4, canvas.width / canvas.height, 0.1, 1000.0);
+
+			gl.uniformMatrix4fv(mWorldLocation, gl.FALSE, mWorld);
+			gl.uniformMatrix4fv(mViewLocation, gl.FALSE, mView);
+			gl.uniformMatrix4fv(mProjLocation, gl.FALSE, mProj);
+			
+			var angle = 0;
+			var rotateMatrix = mat4.identity(new Float32Array(16));
+
+			function loop() {
+				angle = performance.now() / 1000;
+				mat4.rotate(mWorld, rotateMatrix, angle, [0, 1, 0]);
+				gl.uniformMatrix4fv(mWorldLocation, gl.FALSE, mWorld);
+
+				gl.clear(gl.COLOR_BUFFER_BIT);
+				gl.drawArrays(gl.TRIANGLES, 0, 3)
+
+				requestAnimationFrame(loop);
+			}
+			requestAnimationFrame(loop);
+		</script>
+	</body>
+
+</html>

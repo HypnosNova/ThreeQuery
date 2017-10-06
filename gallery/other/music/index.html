@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>音乐可视化</title>
+		<style>
+			:root {
+				--bgColor: hsla(242, 86%, 6%, 1);
+				--bgColorLight: hsla(242, 86%, 24%, 1);
+				--textColor: hsla(242, 86%, 88%, 1);
+				--textColorDark: hsla(242, 36%, 0%, 1);
+				--paperColor: hsla(242, 86%, 44%, 1);
+				--paperColorDark: hsla(242, 86%, 34%, 1);
+				--shadowColorFaint: hsla(0, 0%, 0%, 0.2);
+			}
+			
+			::selected {
+				color: var(--textColorDark);
+			}
+			
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				height: 100vh;
+				width: 100vw;
+				background: var(--bgColor);
+				background: linear-gradient(135deg, var(--bgColor), var(--bgColorLight));
+				color: var(--textColor);
+				font-family: 'Saira', sans-serif;
+				position: relative;
+			}
+			
+			* {
+				box-sizing: border-box;
+				transition: all 0.12s cubic-bezier(0.42, 0.54, 0.22, 1.26);
+			}
+			
+			#canvas {
+				position: fixed;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+			}
+			
+			audio {
+				position: fixed;
+				left: 10px;
+				bottom: -10px;
+				width: calc(100% - 20px);
+			}
+			
+			audio.active {
+				bottom: 10px;
+			}
+			
+			#thefile {
+				width: 0.1px;
+				height: 0.1px;
+				opacity: 0;
+				overflow: hidden;
+				position: absolute;
+				z-index: 1;
+			}
+			
+			label.file {
+				display: inline-block;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate3d(-50%, -50%, 0);
+				padding: 1rem 2rem;
+				border-radius: 4px;
+				background: var(--paperColor);
+				color: var(--textColor);
+				font-size: 1.25em;
+				font-weight: 700;
+				box-shadow: 0 20px 60px var(--shadowColorFaint);
+				cursor: pointer;
+			}
+			
+			label.file:hover {
+				background: var(--paperColorDark);
+				transform: translate3d(-50%, -55%, 0);
+			}
+			
+			label.file:active {
+				background: var(--paperColorDark);
+				transform: translate3d(-50%, -45%, 0);
+			}
+			
+			label.file.normal {
+				transform: translate3d(10%, 50%, 0);
+				padding: 0.2rem 2rem;
+				font-size: 1rem;
+				top: 0;
+				left: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="content">
+
+			<label for="thefile" class="file">
+				Choose an audio file
+        		<input type="file" id="thefile" accept="audio/*" />
+    		</label>
+
+			<audio id="audio" controls></audio>
+			<div id="out"></div>
+		</div>
+		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../js/threeQuery.min.js"></script>
+		<script src="../../../lib/OrbitControls.js"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.3.0/simplex-noise.min.js'></script>
+		<script>
+			var [scene,renderer,camera]=$$.init();
+			$$.animate();
+			
+			var noise = new SimplexNoise();
+
+			var vizInit = function() {
+
+				var file = document.getElementById("thefile");
+				var audio = document.getElementById("audio");
+				var fileLabel = document.querySelector("label.file");
+
+				file.onchange = function() {
+					fileLabel.classList.add('normal');
+					audio.classList.add('active');
+					var files = this.files;
+					audio.src = URL.createObjectURL(files[0]);
+					audio.load();
+					audio.play();
+					var context = new AudioContext();
+					var src = context.createMediaElementSource(audio);
+					var analyser = context.createAnalyser();
+					src.connect(analyser);
+					analyser.connect(context.destination);
+					analyser.fftSize = 512;
+					var bufferLength = analyser.frequencyBinCount;
+					var dataArray = new Uint8Array(bufferLength);
+					
+					setTimeout(function(){
+						console.log(dataArray);
+					},500)
+
+					var group = new THREE.Group();
+					camera.position.set(0, 0, 100);
+					camera.lookAt(scene.position);
+					scene.add(camera);
+
+					var planeGeometry = new THREE.PlaneGeometry(1600, 1600, 30, 30);
+					var planeMaterial = new THREE.MeshLambertMaterial({
+						color: 0x4924fe,
+						side: THREE.DoubleSide,
+						wireframe: true
+					});
+
+					var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+					plane.rotation.x = -0.5 * Math.PI;
+					plane.position.set(0, 90, 0);
+					group.add(plane);
+
+					var plane2 = new THREE.Mesh(planeGeometry, planeMaterial);
+					plane2.rotation.x = -0.5 * Math.PI;
+					plane2.position.set(0, -90, 0);
+					group.add(plane2);
+
+					var icosahedronGeometry = new THREE.IcosahedronGeometry(10, 4);
+					var lambertMaterial = new THREE.MeshLambertMaterial({
+						color: 0xff8800,
+						wireframe: true
+					});
+
+					var ball = new THREE.Mesh(icosahedronGeometry, lambertMaterial);
+					ball.position.set(0, 0, 0);
+					group.add(ball);
+
+					var ambientLight = new THREE.AmbientLight(0xaaaaaa);
+					scene.add(ambientLight);
+
+					var spotLight = new THREE.SpotLight(0xffffff);
+					spotLight.intensity = 0.9;
+					spotLight.position.set(-10, 40, 20);
+					spotLight.lookAt(ball);
+					spotLight.castShadow = true;
+					scene.add(spotLight);
+
+					var orbitControls = new THREE.OrbitControls(camera);
+					orbitControls.autoRotate = true;
+
+					// var gui = new dat.GUI();
+					var guiControls = new function() {
+						this.amp = 1.8;
+//						this.wireframe = true;
+					}();
+
+					scene.add(group);
+
+					$$.actionInjections.push(render)
+					function render() {
+						analyser.getByteFrequencyData(dataArray);
+						
+						var lowerHalfArray = dataArray.slice(0, (dataArray.length / 2) - 1);
+						var upperHalfArray = dataArray.slice((dataArray.length / 2) - 1, dataArray.length - 1);
+
+//						var overallAvg = avg(dataArray);
+						var lowerMax = max(lowerHalfArray);
+						var lowerAvg = avg(lowerHalfArray);
+						var upperMax = max(upperHalfArray);
+						var upperAvg = avg(upperHalfArray);
+
+						var lowerMaxFr = lowerMax / lowerHalfArray.length;
+						var lowerAvgFr = lowerAvg / lowerHalfArray.length;
+						var upperMaxFr = upperMax / upperHalfArray.length;
+						var upperAvgFr = upperAvg / upperHalfArray.length;
+
+						makeRoughGround(plane, modulate(upperAvgFr, 0, 1, 0.5, 4));
+						makeRoughGround(plane2, modulate(lowerMaxFr, 0, 1, 0.5, 4));
+						makeRoughBall(ball, modulate(Math.pow(lowerMaxFr, 0.5), 0, 1, 0, 8), modulate(upperAvgFr, 0, 1, 0, 4));
+
+						group.rotation.y += 0.003;
+					}
+
+
+					function makeRoughBall(mesh, bassFr, treFr) {
+						mesh.geometry.vertices.forEach(function(vertex, i) {
+							var offset = mesh.geometry.parameters.radius;
+							var amp = guiControls.amp;
+							var time = Date.now();
+							vertex.normalize();
+							var distance = (offset + bassFr) + noise.noise3D(vertex.x + time * 0.0007, vertex.y + time * 0.0008, vertex.z + time * 0.0009) * amp * treFr;
+							vertex.multiplyScalar(distance);
+						});
+						mesh.geometry.verticesNeedUpdate = true;
+						mesh.geometry.normalsNeedUpdate = true;
+						mesh.geometry.computeVertexNormals();
+						mesh.geometry.computeFaceNormals();
+					}
+
+					function makeRoughGround(mesh, distortionFr) {
+						mesh.geometry.vertices.forEach(function(vertex, i) {
+							var amp = 2;
+							var time = Date.now();
+							var distance = (noise.noise2D(vertex.x + time * 0.0003, vertex.y + time * 0.0001) + 0) * distortionFr * amp;
+							vertex.z = distance;
+						});
+						mesh.geometry.verticesNeedUpdate = true;
+						mesh.geometry.normalsNeedUpdate = true;
+						mesh.geometry.computeVertexNormals();
+						mesh.geometry.computeFaceNormals();
+					}
+
+					audio.play();
+				};
+			}
+
+			window.onload = vizInit();
+
+			//some helper functions here
+			function fractionate(val, minVal, maxVal) {
+				return(val - minVal) / (maxVal - minVal);
+			}
+
+			function modulate(val, minVal, maxVal, outMin, outMax) {
+				var fr = fractionate(val, minVal, maxVal);
+				var delta = outMax - outMin;
+				return outMin + (fr * delta);
+			}
+
+			function avg(arr) {
+				var total = arr.reduce(function(sum, b) {
+					return sum + b;
+				});
+				return(total / arr.length);
+			}
+
+			function max(arr) {
+				return arr.reduce(function(a, b) {
+					return Math.max(a, b);
+				})
+			}
+		</script>
+	</body>
+
+</html>
