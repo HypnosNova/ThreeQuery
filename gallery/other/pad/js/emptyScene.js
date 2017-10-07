@@ -1,9 +1,32 @@
 function createEmptyWorld() {
-	var world = new $$.SubWorld({
+	var world = new PadWorld({
 		clearColor: 0x000000,
 		resize: false
 	}, {});
-	//	$$.actionInjections.push(world.updateFBO);
+
+	world.onBack = function() {
+		if(pad.state == "close") {
+			pad.state = "lock";
+			if(!lockWorld) {
+				lockWorld = createLockWorld();
+			}
+			pad.changeFBO(lockWorld);
+			for(var i in lockWorld.dom) {
+				lockWorld.dom[i].element.material.opacity = 0;
+			}
+			var opa = {
+				a: 0
+			};
+			new TWEEN.Tween(opa).to({
+				a: 1
+			}, 500).start().onUpdate(function() {
+				for(var i in lockWorld.dom) {
+					lockWorld.dom[i].element.material.opacity = this.a;
+				}
+			});
+		}
+	}
+
 	return world;
 }
 
@@ -15,4 +38,3 @@ var tmpWorld = new $$.SubWorld({
 	near: -10,
 	far: 10
 });
-console.log(tmpWorld)

@@ -4,19 +4,34 @@ var pad = {
 	closeBtn: null,
 	screen: null,
 	screenUpdate: null,
+	currentWorld: null,
 	changeFBO: function(world) {
+		//去掉上一个world的所有注入的函数
 		for(var i = 0; i < $$.actionInjections.length; i++) {
 			if($$.actionInjections[i] == pad.screenUpdate) {
 				$$.actionInjections.splice(i, 1);
 				break;
 			}
-
 		}
+		pad.currentWorld = world;
 		pad.screenUpdate = world.updateFBO;
 		pad.screen.material.map = world.fbo.texture;
 		$$.actionInjections.push(pad.screenUpdate);
 	}
 }
+
+class PadWorld extends $$.SubWorld {
+	constructor(sceneOpt,cameraOpt) {
+		super(sceneOpt,cameraOpt);
+		this.state="";
+		this.onClick = function(){console.log("click")};
+		this.onUp = function(){console.log("up")};
+		this.onDown = function(){console.log("down")};
+		this.onMove = function(){console.log("move")};
+		this.onBack = function(){console.log("back")};
+	}
+}
+
 var emptyWorld = createEmptyWorld();
 var lockWorld = createLockWorld();
 var menuWorld = createMenuWorld();
@@ -46,59 +61,40 @@ function createPad(obj) {
 	pad.model = obj;
 	pad.changeFBO(emptyWorld);
 	pad.closeBtn.onClick = function() {
-		if(pad.state == "close") {
-			pad.state = "lock";
-			if(!lockWorld) {
-				lockWorld = createLockWorld();
-			}
-			pad.changeFBO(lockWorld);
-			for(var i in lockWorld.dom) {
-				lockWorld.dom[i].element.material.opacity = 0;
-			}
-			var opa = {
-				a: 0
-			};
-			new TWEEN.Tween(opa).to({
-				a: 1
-			}, 500).start().onUpdate(function() {
-				for(var i in lockWorld.dom) {
-					lockWorld.dom[i].element.material.opacity = this.a;
-				}
-			});
-		}
+		pad.currentWorld.onBack();
 	}
 	var point, screenDown;
-	pad.screen.onDown = function(obj) {
+	pad.screen.onDown = function(obj,event) {
 		point = obj.point;
 		screenDown = true;
+		pad.currentWorld.onDown(obj,event);
 	}
 	pad.screen.onUp = function(obj) {
-		if(pad.state == "lock") {
-			var thres = obj.point.y - point.y;
-			if(thres > 2.5) {
-				pad.state="menu";
-				var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
-					$$.actionInjections.push(menuWorld.updateFBO);
-				});
-				$$.actionInjections.push(transition.render)
-				pad.changeFBO(tmpWorld);
-			} else {
-			}
-			screenDown = false;
-		}else if(pad.state == "menu") {
-			var thres = obj.point.x - point.x;
-			console.log(thres)
-			if(thres < -2) {
-				console.log(menuWorld.bg.position.x,menuWorld.range)
-				if(menuWorld.bg.position.x>-menuWorld.range){
-					console.log("??")
-					new TWEEN.Tween(menuWorld.bg.position).to({
-						x:menuWorld.bg.position.x-100
-					},400).start();
-				}
-			} else {
-			}
-			screenDown = false;
-		}
+		pad.currentWorld.onUp(obj,event);
+//		if(pad.state == "lock") {
+//			var thres = obj.point.y - point.y;
+//			if(thres > 2.5) {
+//				pad.state = "menu";
+//				var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+//					$$.actionInjections.push(menuWorld.updateFBO);
+//				});
+//				$$.actionInjections.push(transition.render)
+//				pad.changeFBO(tmpWorld);
+//			} else {}
+//			screenDown = false;
+//		} else if(pad.state == "menu") {
+//			var thres = obj.point.x - point.x;
+//			console.log(thres)
+//			if(thres < -2) {
+//				console.log(menuWorld.bg.position.x, menuWorld.range)
+//				if(menuWorld.bg.position.x > -menuWorld.range) {
+//					console.log("??")
+//					new TWEEN.Tween(menuWorld.bg.position).to({
+//						x: menuWorld.bg.position.x - 100
+//					}, 400).start();
+//				}
+//			} else {}
+//			screenDown = false;
+//		}
 	}
 }

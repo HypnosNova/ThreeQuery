@@ -1,5 +1,5 @@
 function createMenuWorld() {
-	var world = new $$.SubWorld({
+	var world = new PadWorld({
 		clearColor: 0x000000,
 		resize: false
 	}, {
