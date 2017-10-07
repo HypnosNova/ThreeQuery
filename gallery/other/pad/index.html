@@ -21,14 +21,14 @@
 		<script src="js/menuScene.js"></script>
 		<script src="js/pad.js"></script>
 		<script>
-			var [scene, renderer, camera] = $$.init({clearColor:0xffffff}, {}, {
+			var [scene, renderer, camera] = $$.init({clearColor:0x000000}, {}, {
 				fov: 45
 			});
 //			renderer.setClearColor(0xffffff);
 			init();
-//			var controls = $$.Controls.createTrackBallControls();
-//			controls.minDistance = 20;
-//			controls.maxDistance = 80;
+			var controls = $$.Controls.createTrackBallControls({dom:document.body});
+			controls.minDistance = 20;
+			controls.maxDistance = 80;
 
 			function init() {
 				camera.position.z = 50;

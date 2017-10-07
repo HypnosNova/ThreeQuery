@@ -1,7 +1,8 @@
 function createLockWorld() {
 	var world = new PadWorld({
 		clearColor: 0x000000,
-		resize: false
+		resize: false,
+		name: "lock"
 	}, {
 		type: "OrthographicCamera"
 	});
@@ -105,7 +106,8 @@ function createLockWorld() {
 		if(thres > 2.5) {
 			pad.state = "menu";
 			var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
-				$$.actionInjections.push(menuWorld.updateFBO);
+				//$$.actionInjections.push(menuWorld.updateFBO);
+				pad.changeFBO(menuWorld);
 			});
 			$$.actionInjections.push(transition.render)
 			pad.changeFBO(tmpWorld);

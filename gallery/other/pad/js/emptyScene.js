@@ -1,7 +1,20 @@
+class PadWorld extends $$.SubWorld {
+	constructor(sceneOpt,cameraOpt) {
+		super(sceneOpt,cameraOpt);
+		this.state="";
+		this.onClick = function(){console.log("click")};
+		this.onUp = function(){console.log("up")};
+		this.onDown = function(){console.log("down")};
+		this.onMove = function(){console.log("move")};
+		this.onBack = function(){console.log("back")};
+	}
+}
+
 function createEmptyWorld() {
 	var world = new PadWorld({
 		clearColor: 0x000000,
-		resize: false
+		resize: false,
+		name: "empty"
 	}, {});
 
 	world.onBack = function() {
@@ -30,9 +43,10 @@ function createEmptyWorld() {
 	return world;
 }
 
-var tmpWorld = new $$.SubWorld({
+var tmpWorld = new PadWorld({
 	clearColor: 0x000000,
-	resize: false
+	resize: false,
+	name: "transistion"
 }, {
 	type: "OrthographicCamera",
 	near: -10,

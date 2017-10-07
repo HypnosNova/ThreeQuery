@@ -20,18 +20,6 @@ var pad = {
 	}
 }
 
-class PadWorld extends $$.SubWorld {
-	constructor(sceneOpt,cameraOpt) {
-		super(sceneOpt,cameraOpt);
-		this.state="";
-		this.onClick = function(){console.log("click")};
-		this.onUp = function(){console.log("up")};
-		this.onDown = function(){console.log("down")};
-		this.onMove = function(){console.log("move")};
-		this.onBack = function(){console.log("back")};
-	}
-}
-
 var emptyWorld = createEmptyWorld();
 var lockWorld = createLockWorld();
 var menuWorld = createMenuWorld();
@@ -60,41 +48,22 @@ function createPad(obj) {
 	scene.add(obj);
 	pad.model = obj;
 	pad.changeFBO(emptyWorld);
-	pad.closeBtn.onClick = function() {
-		pad.currentWorld.onBack();
+	pad.closeBtn.onClick = function(obj,event) {
+		pad.currentWorld.onBack(obj,event);
 	}
-	var point, screenDown;
 	pad.screen.onDown = function(obj,event) {
-		point = obj.point;
-		screenDown = true;
 		pad.currentWorld.onDown(obj,event);
 	}
-	pad.screen.onUp = function(obj) {
+	pad.screen.onUp = function(obj,event) {
 		pad.currentWorld.onUp(obj,event);
-//		if(pad.state == "lock") {
-//			var thres = obj.point.y - point.y;
-//			if(thres > 2.5) {
-//				pad.state = "menu";
-//				var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
-//					$$.actionInjections.push(menuWorld.updateFBO);
-//				});
-//				$$.actionInjections.push(transition.render)
-//				pad.changeFBO(tmpWorld);
-//			} else {}
-//			screenDown = false;
-//		} else if(pad.state == "menu") {
-//			var thres = obj.point.x - point.x;
-//			console.log(thres)
-//			if(thres < -2) {
-//				console.log(menuWorld.bg.position.x, menuWorld.range)
-//				if(menuWorld.bg.position.x > -menuWorld.range) {
-//					console.log("??")
-//					new TWEEN.Tween(menuWorld.bg.position).to({
-//						x: menuWorld.bg.position.x - 100
-//					}, 400).start();
-//				}
-//			} else {}
-//			screenDown = false;
-//		}
 	}
+	pad.screen.onMove = function(obj,event) {
+		if(pad.currentWorld.onMove){
+			pad.currentWorld.onMove(obj,event);
+		}
+	}
+	
+	document.addEventListener("touchmove",function(){
+		pad.screen.onMove(event);
+	});
 }
