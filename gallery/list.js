@@ -48,6 +48,7 @@ var list = {
 			[ "纪念碑谷第一关", "games/hypeometry/level1" ],
 			[ "纪念碑谷第二关", "games/hypeometry/level2" ],
 			[ "纪念碑谷第三关", "games/hypeometry/level3" ],
+			[ "Flappy Bird", "games/flappy/index" ],
 		],
 		"工具": [
 			[ "图片轮播", "tool/carousel/index" ],

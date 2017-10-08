@@ -1243,6 +1243,15 @@ $$.Component = {
 				thisObj.onRepeat();
 			}
 		};
+		this.stop = function() {
+			thisObj.onEnd();
+			for(var i in thisObj.actionInjections) {
+				if(thisObj.update == thisObj.actionInjections[i]) {
+					thisObj.actionInjections.splice(i, 1);
+					break;
+				}
+			}
+		};
 	},
 
 	//创建子弹，它会直线前进，直到生命周期到了
