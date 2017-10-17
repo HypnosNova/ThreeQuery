@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>空的框架</title>
+		<style>
+			HTML CSS JS Result Edit on body {
+				margin: 0;
+				background: #f1f1f1;
+			}
+			
+			#container {
+				width: 615px;
+				height: 332px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				margin: auto;
+				background: #101010;
+				line-height: 0;
+			}
+			
+			#container img {
+				visibility: hidden;
+			}
+			
+			#three {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container">
+			<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/subway.gif">
+			<div id="three"></div>
+		</div>
+		<script src="../../lib/three.min.js"></script>
+		<script src="EffectComposer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="CopyShader.js" type="text/javascript" charset="utf-8"></script>
+		<script src="ShaderPass.js" type="text/javascript" charset="utf-8"></script>
+		<script src="LuminosityHighPassShader.js" type="text/javascript" charset="utf-8"></script>
+		<script src="UnrealBloomPass.js" type="text/javascript" charset="utf-8"></script>
+		<script src="RenderPass.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/bas.js" type="text/javascript" charset="utf-8"></script>
+		<!--<script src="../../js/threeQuery.min.js"></script>-->
+		<script>
+			//			//three.js是threeQuery的依赖，必须要在threeQuery之前引入。
+			//			$$.init();
+			//			$$.animate();
+			var mainContainer = document.querySelector('#container');
+
+			var viewWidth = mainContainer.clientWidth;
+			var viewHeight = mainContainer.clientHeight;
+
+			var renderer = new THREE.WebGLRenderer({
+				alpha: true
+				//premultipliedAlpha: false
+			});
+			renderer.setSize(viewWidth, viewHeight);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0x000000, 0);
+			renderer.autoClear = false;
+			//renderer.sortObjects = false;
+			document.querySelector('#three').appendChild(renderer.domElement);
+
+			var scene = new THREE.Scene();
+
+			var camera = new THREE.PerspectiveCamera(60, viewWidth / viewHeight, 1, 10000);
+			camera.position.set(2, 0, 10);
+			camera.lookAt(scene.position);
+			//camera.rotation.z = Math.PI * 0.015;
+
+			//var controls = new THREE.OrbitControls(camera, renderer.domElement);
+			var controls = false;
+
+			//var grid = new THREE.GridHelper(20, 40, 0xff0000, 0xff0000);
+			//grid.rotation.x = Math.PI * -0.5;
+			//scene.add(grid);
+
+			var light = new THREE.DirectionalLight(0xffffff, 2.0);
+			light.position.set(0, 0, 1);
+			scene.add(light);
+
+			var prefab = new THREE.TetrahedronGeometry(0.1);
+			var prefabCount = 1000;
+			var geometry = new THREE.BAS.PrefabBufferGeometry(prefab, prefabCount);
+
+			geometry.createAttribute('aOffset', 1, function(data, i, count) {
+				data[0] = i / count;
+			});
+
+			geometry.createAttribute('aStartPosition', 3, function(data, i) {
+				data[0] = THREE.Math.randFloat(16, 20);
+				data[1] = THREE.Math.mapLinear(i % (prefabCount / 5), 0, prefabCount / 5, -2, 10);
+				data[2] = THREE.Math.randFloat(-10, 0);
+			});
+
+			geometry.createAttribute('aEndPosition', 3, function(data, i) {
+				data[0] = THREE.Math.randFloat(0, 0);
+				data[1] = THREE.Math.mapLinear(i % (prefabCount / 5), 0, prefabCount / 5, -2, 10);
+				data[2] = THREE.Math.randFloat(-10, 0);
+			});
+
+			var axis = new THREE.Vector3();
+			geometry.createAttribute('aRotation', 4, function(data) {
+				THREE.BAS.Utils.randomAxis(axis).toArray(data);
+				data[3] = Math.PI * 2 * THREE.Math.randInt(-2, 2);
+			});
+
+			geometry.createAttribute('aScale', 1, function(data) {
+				data[0] = THREE.Math.randFloat(0.001, 4.0);
+			});
+
+			var color = new THREE.Color();
+			var hue, s, l;
+			geometry.createAttribute('color', 3, function(data, i, count) {
+				// modulate the hue
+				hue = i / count * 0.1;
+				s = THREE.Math.randFloat(0.4, 0.6);
+				l = THREE.Math.randFloat(0.4, 0.6);
+				color.setHSL(hue, s, l);
+				color.toArray(data);
+			});
+
+			var material = new THREE.BAS.StandardAnimationMaterial({
+				shading: THREE.FlatShading,
+				vertexColors: THREE.VertexColors,
+				wireframe: false,
+				uniformValues: {
+					metalness: 0.5,
+					roughness: 0.5
+				},
+				uniforms: {
+					uTime: {
+						value: 0
+					},
+					uDuration: {
+						value: 1
+					}
+				},
+				vertexFunctions: [
+					THREE.BAS.ShaderChunk['quaternion_rotation']
+				],
+				vertexParameters: [
+					'uniform float uTime;',
+					'uniform float uDuration;',
+					'attribute float aOffset;',
+					'attribute vec3 aStartPosition;',
+					'attribute vec3 aEndPosition;',
+					'attribute vec4 aRotation;',
+					'attribute float aScale;'
+				],
+				vertexPosition: [
+					'float tProgress = mod((uTime + aOffset), uDuration) / uDuration;',
+
+					'transformed *= aScale;',
+					'transformed = rotateVector(quatFromAxisAngle(aRotation.xyz, aRotation.w * tProgress), transformed);',
+					'transformed += mix(aStartPosition, aEndPosition, tProgress);',
+				]
+			});
+
+			var stars = new THREE.Mesh(geometry, material);
+			stars.position.x = 1.25;
+			stars.position.y = -0.25;
+			scene.add(stars);
+
+			var compWidth = viewWidth * window.devicePixelRatio;
+			var compHeight = viewHeight * window.devicePixelRatio;
+
+			var composer = new THREE.EffectComposer(renderer, new THREE.WebGLRenderTarget(compWidth, compHeight, {
+				minFilter: THREE.LinearFilter,
+				magFilter: THREE.LinearFilter,
+				format: THREE.RGBAFormat,
+				stencilBuffer: false
+			}));
+
+			var strength = 4; // 0 - x
+			var radius = 1.0; // 0 - 1
+			var threshold = 0.1; // 0 - 1
+			var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), strength, radius, threshold);
+
+			var renderPass = new THREE.RenderPass(scene, camera);
+			var maskPass = new THREE.ShaderPass({
+				uniforms: {
+					// the underlying image
+					"tDiffuse": {
+						value: null
+					},
+					// the alpha mask
+					"tMask": {
+						value: null
+					}
+				},
+				vertexShader: [
+					"varying vec2 vUv;",
+
+					"void main() {",
+					"vUv = uv;",
+					"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+					"}"
+				].join("\n"),
+				fragmentShader: [
+					"uniform sampler2D tDiffuse;",
+					"uniform sampler2D tMask;",
+					"varying vec2 vUv;",
+
+					"void main() {",
+					// get the current pixel color
+					"vec4 texel = texture2D(tDiffuse, vUv);",
+					// get alpha based on the color of the mask image
+					"float alpha = texture2D(tMask, vUv).r;",
+					// apply the alpha to the current pixel
+					"gl_FragColor = texel * alpha;",
+					"}"
+				].join("\n")
+			});
+
+			var loader = new THREE.TextureLoader();
+			loader.crossOrigin = 'anonymous';
+			loader.load('//s3-us-west-2.amazonaws.com/s.cdpn.io/175711/subway_mask.jpg', function(t) {
+				t.minFilter = THREE.LinearFilter;
+				t.magFilter = THREE.LinearFilter;
+				maskPass.uniforms.tMask.value = t;
+			});
+
+			composer.addPass(renderPass);
+			composer.addPass(bloomPass);
+			composer.addPass(maskPass);
+
+			maskPass.renderToScreen = true;
+
+			var img = document.querySelector('#container img');
+
+			function update() {
+				img.style.visibility = 'visible';
+				material.uniforms.uTime.value += (1 / 80);
+				controls && controls.update();
+			}
+
+			function render() {
+				composer.render();
+			}
+
+			function tick() {
+
+				update();
+				render();
+
+				requestAnimationFrame(tick);
+			}
+			
+			tick();
+		</script>
+	</body>
+
+</html>
