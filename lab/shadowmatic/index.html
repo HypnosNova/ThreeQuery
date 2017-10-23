@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>shadowmatic</title>
+	</head>
+
+	<body>
+		<script src="../../lib/three.min.js"></script>
+		<script src="../../lib/OrbitControls.js"></script>
+		<script src="../../lib/plugins/TrackballControls.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/threeQuery.min.js"></script>
+		<script src="../../lib/OBJLoader.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../lib/MTLLoader.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			//three.js是threeQuery的依赖，必须要在threeQuery之前引入。
+			var [scene, renderer, camera] = $$.init({}, {}, {
+				fov: 45
+			});
+			renderer.shadowMap.enabled = true;
+			//			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+			//			renderer.gammaInput = true;
+			//			renderer.gammaOutput = true;
+
+			camera.position.z = 10;
+			camera.position.x = 5;
+			camera.position.y = 0;
+
+			//			$$.Controls.createOrbitControls({
+			//				minDistance: 200
+			//			});
+			$$.animate();
+			initScene();
+
+			function initScene() {
+				initLight();
+
+				var geometry = new THREE.PlaneBufferGeometry(10, 10, 1);
+				var material = new THREE.MeshLambertMaterial({
+					color: 0xffffff,
+					side: THREE.DoubleSide
+				});
+				var plane = new THREE.Mesh(geometry, material);
+				plane.castShadow = true;
+				plane.receiveShadow = true;
+				plane.position.z = -5;
+				scene.add(plane);
+
+				//				var geometry = new THREE.BoxBufferGeometry(10, 10, 10);
+				//				var material = new THREE.MeshLambertMaterial({
+				//					color: 0x00ffff
+				//				});
+				//				var cube = new THREE.Mesh(geometry, material);
+				//				cube.position.z = 30;
+				//				cube.castShadow = true;
+				//				cube.receiveShadow = true;
+				//				scene.add(cube);
+				loadObj();
+
+				camera.lookAt(plane.position);
+
+			}
+
+			function initLight() {
+				scene.add(new THREE.AmbientLight(0x333333));
+				//				var spotLight = new THREE.SpotLight(0xffffff);
+				//				spotLight.position.set(100, 100, 300);
+				//				spotLight.castShadow = true;
+				//				spotLight.shadow.mapSize.width = 1024;
+				//				spotLight.shadow.mapSize.height = 1024;
+				//				spotLight.shadow.camera.near = 1;
+				//				spotLight.shadow.camera.far = 1000;
+				//				spotLight.shadow.camera.fov = 30;
+				//				scene.add(spotLight);
+				//
+				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
+				directionalLight.position.set(0, 0, 30);
+				directionalLight.castShadow = true;
+				directionalLight.shadow.mapSize.width = 1024; // default
+				directionalLight.shadow.mapSize.height = 1024; // default
+				directionalLight.shadow.camera.near = 0.5; // default
+				directionalLight.shadow.camera.far = 500 // default
+				scene.add(directionalLight);
+
+				//				var width = 100;
+				//				var height = 100;
+				//				var rectLight = new THREE.RectAreaLight(0xffffff, undefined, width, height);
+				//				rectLight.intensity = 70.0;
+				//				rectLight.position.set(0, 0, 399);
+				//				scene.add(rectLight);
+				//				rectLight.castShadow = true;
+				//				rectLight.shadow.mapSize.width = 1024; // default
+				//				rectLight.shadow.mapSize.height = 1024; // default
+				//				rectLight.shadow.camera.near = 0.5; // default
+				//				rectLight.shadow.camera.far = 500 // default
+			}
+
+			function loadObj() {
+				var mtlLoader = new THREE.MTLLoader();
+				//				mtlLoader.setPath('ipad/');
+				mtlLoader.load('SA_LD_Reaper_SMG.mtl', function(materials) {
+					materials.preload();
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+					objLoader.load('SA_LD_Reaper_SMG.obj', function(object) {
+						scene.add(object);
+						object.castShadow = true;
+						object.scale.set(0.1,0.1,0.1);
+						object.receiveShadow = true;
+						object.position.z = 0.1;
+						for(var i in object.children) {
+							object.children[i].castShadow = true;
+							//							object.children[i].receiveShadow = true;
+						}
+
+						var controls = new THREE.OrbitControls(object);
+						console.log(controls)
+					});
+				});
+			}
+		</script>
+	</body>
+
+</html>

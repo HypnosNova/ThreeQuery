@@ -108,16 +108,16 @@ $$.Txt = function(text, css) {
 	$$.DOM.call(this);
 	var that = this;
 	this.css = $$.extends({}, [this.css, {
-		fontStyle:"normal",
-		fontVariant:"normal",
+		fontStyle: "normal",
+		fontVariant: "normal",
 		fontSize: 12,
 		fontWeight: "normal",
 		fontFamily: "微软雅黑",
 		color: "#ffffff",
 		textAlign: "center"
 	}, css]);
-	if(css.opacity!=null){
-		this.css.opacity=css.opacity;
+	if(css.opacity != null) {
+		this.css.opacity = css.opacity;
 	}
 	this.canvas = document.createElement("canvas");
 	var canvas = this.canvas;
@@ -129,7 +129,7 @@ $$.Txt = function(text, css) {
 		ctx.fillStyle = that.css.backgroundColor;
 		ctx.fillRect(0, 0, that.css.width, that.css.height);
 		ctx.textAlign = that.css.textAlign;
-		ctx.font = that.css.fontStyle+ " "+that.css.fontVariant+ " " +that.css.fontWeight + " " + that.css.fontSize + "px " + that.css.fontFamily;
+		ctx.font = that.css.fontStyle + " " + that.css.fontVariant + " " + that.css.fontWeight + " " + that.css.fontSize + "px " + that.css.fontFamily;
 		ctx.fillStyle = that.css.color;
 		let width = ctx.measureText(that.text).width;
 		ctx.fillText(that.text, that.css.width / 2, that.css.height / 2 + that.css.fontSize / 4);
@@ -139,19 +139,19 @@ $$.Txt = function(text, css) {
 		texture.magFilter = THREE.LinearFilter;
 		var spriteMaterial = new THREE.SpriteMaterial({
 			map: texture,
-			transparent:true,
-			needsUpdate:false,
+			transparent: true,
+			needsUpdate: false,
 			color: 0xffffff
 		});
 		sprite.material = spriteMaterial;
 		sprite.scale.set(that.css.width / 4, that.css.height / 4, 1);
-		sprite.material.opacity=that.css.opacity;
+		sprite.material.opacity = that.css.opacity;
 	}
 
 	var spriteMaterial = new THREE.SpriteMaterial({
 		map: canvas,
-		transparent:true,
-		needsUpdate:false,
+		transparent: true,
+		needsUpdate: false,
 		color: 0xffffff
 	});
 	var sprite = new THREE.Sprite(spriteMaterial);
@@ -165,7 +165,7 @@ $$.Txt = function(text, css) {
 	$$.Txt.prototype = new Super();
 })();
 
-$$.Img = function(url, css) {
+$$.Img = function(url, css, callback) {
 	$$.DOM.call(this);
 	var that = this;
 	if($$.Loader.RESOURCE.textures[url]) {
@@ -181,7 +181,10 @@ $$.Img = function(url, css) {
 			height: $$.Loader.RESOURCE.textures[url].image.naturalHeight
 		}, css]);
 		sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
-		sprite.material.opacity=that.css.opacity;
+		sprite.material.opacity = that.css.opacity;
+		if(callback) {
+			callback();
+		}
 	} else {
 		that.element = {};
 		$$.Loader.loadTexture([url], function(texture) {
@@ -200,15 +203,18 @@ $$.Img = function(url, css) {
 				width: texture.image.naturalWidth,
 				height: texture.image.naturalHeight
 			}, css]);
-			if(css.opacity!=null){
-				that.css.opacity=css.opacity;
+			if(css.opacity != null) {
+				that.css.opacity = css.opacity;
 			}
 			sprite.scale.set(this.css.width / 4, this.css.height / 4, 1);
 
 			for(var i in tmpProperty) {
 				that.element[i] = tmpProperty[i];
 			}
-			sprite.material.opacity=that.css.opacity;
+			sprite.material.opacity = that.css.opacity;
+			if(callback) {
+				callback();
+			}
 		});
 	}
 };
