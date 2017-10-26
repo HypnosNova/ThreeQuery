@@ -38,12 +38,12 @@ function createMenuWorld() {
 				icoArr.push(ico);
 				ico.element.position.set(i * 300 + (j % 4) * 70 - 105, 150 - Math.floor(j / 4) * 60, 2);
 				ico.element.onClick = function() {
-					appIconClick(icoData[i][j].app);
+					appIconClick(icoData[i][j]);
 				}
 			});
 
 			let text = new $$.Txt(icoData[i][j].text, {
-				width: icoSize*1.4,
+				width: icoSize * 1.4,
 				height: 32,
 				fontSize: 28,
 				fontFamily: "微软雅黑"
@@ -87,8 +87,8 @@ function createMenuWorld() {
 	world.onClick = function(obj, event) {
 		var raycaster = new THREE.Raycaster();
 		var point = new THREE.Vector2();
-		point.x=obj.point.x;
-		point.y=obj.point.y-2;
+		point.x = obj.point.x;
+		point.y = obj.point.y - 2;
 		point.x /= 7.5;
 		point.y /= 10;
 		raycaster.setFromCamera(point, world.camera);
@@ -97,23 +97,34 @@ function createMenuWorld() {
 		if(intersects.length) {
 			intersect = intersects[0];
 		}
-		if(intersect&&intersect.object.onClick) {
-			intersect.object.onClick(intersect,event);
+		if(intersect && intersect.object.onClick) {
+			intersect.object.onClick(intersect, event);
 		}
 	}
-	
-	function appIconClick(appStr){
-		if(appStr){
-			var app=window[appStr]();
-			
-			pad.state = "app";
-			var transition = new $$.TransitionFBO(app, menuWorld, tmpWorld, {
-				"transitionSpeed":40
-			}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
-				pad.changeFBO(app);
-			});
-			$$.actionInjections.push(transition.render)
-			pad.changeFBO(tmpWorld);
+
+	function appIconClick(appId) {
+		if(appId) {
+			if(appId.world) {
+				pad.state = "app";
+				var transition = new $$.TransitionFBO(appId.world, menuWorld, tmpWorld, {
+					"transitionSpeed": 40
+				}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+					pad.changeFBO(appId.world);
+				});
+				$$.actionInjections.push(transition.render)
+				pad.changeFBO(tmpWorld);
+			} else {
+				var app = window[appId.app]();
+				appId.world=app;
+				pad.state = "app";
+				var transition = new $$.TransitionFBO(app, menuWorld, tmpWorld, {
+					"transitionSpeed": 40
+				}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+					pad.changeFBO(app);
+				});
+				$$.actionInjections.push(transition.render)
+				pad.changeFBO(tmpWorld);
+			}
 		}
 	}
 	return world;
@@ -123,12 +134,14 @@ var icoData = [
 	[{
 		text: "我是谁",
 		ico: "img/me.png",
-		app: "createMeWorld"
+		app: "createMeWorld",
+		world: null
 	}],
 	[{
 		text: "flappy bird",
 		ico: "img/flappy.png",
-		app:"createFlappyWorld"
+		app: "createFlappyWorld",
+		world: null
 	}],
 	[{
 		text: "app1",
