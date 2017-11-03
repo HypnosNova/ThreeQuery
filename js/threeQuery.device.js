@@ -21,12 +21,18 @@ $$.Device = {
 		window.URL = window.URL || window.webkitURL;
 		if(navigator.getUserMedia) {
 			navigator.getUserMedia({
-				video: true
+				video: {
+					optional: [{
+						sourceId: exArray[1] //0为前置摄像头，1为后置  
+					}]
+				},
+				audio: true
 			}, gotStream, noStream);
 		}
 		var stream;
+
 		function gotStream(s) {
-			$$.global.webCamSteam=s;
+			$$.global.webCamSteam = s;
 			stream = s;
 			if(window.URL) {
 				video.src = window.URL.createObjectURL(stream);
@@ -47,23 +53,23 @@ $$.Device = {
 			console.log(msg)
 		}
 	},
-	closeWebcam:function(){
-		if($$.global.webCamSteam){
-			var tracks=$$.global.webCamSteam.getVideoTracks();
-			for(var i =0;i<tracks.length;i++){
+	closeWebcam: function() {
+		if($$.global.webCamSteam) {
+			var tracks = $$.global.webCamSteam.getVideoTracks();
+			for(var i = 0; i < tracks.length; i++) {
 				tracks[i].stop();
 			}
-			tracks=$$.global.webCamSteam.getAudioTracks();
-			for(var i =0;i<tracks.length;i++){
+			tracks = $$.global.webCamSteam.getAudioTracks();
+			for(var i = 0; i < tracks.length; i++) {
 				tracks[i].stop();
 			}
-			$$.global.webCamSteam=null;
+			$$.global.webCamSteam = null;
 		}
 	},
-	toggleWebCam:function(video){
-		if($$.global.webCamSteam){
+	toggleWebCam: function(video) {
+		if($$.global.webCamSteam) {
 			$$.Device.closeWebcam();
-		}else{
+		} else {
 			$$.Device.openWebcam(video);
 		}
 	}
