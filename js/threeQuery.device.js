@@ -23,7 +23,7 @@ $$.Device = {
 			navigator.getUserMedia({
 				video: {
 					optional: [{
-						sourceId: exArray[1] //0为前置摄像头，1为后置  
+						sourceId: exArray[0] //0为前置摄像头，1为后置  
 					}]
 				},
 				audio: true
