@@ -2,6 +2,7 @@ class PadWorld extends $$.SubWorld {
 	constructor(sceneOpt,cameraOpt) {
 		super(sceneOpt,cameraOpt);
 		this.state="";
+		this.isAppWorld=false;
 		this.onClick = function(){console.log("click")};
 		this.onUp = function(){console.log("up")};
 		this.onDown = function(){console.log("down")};

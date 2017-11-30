@@ -1,6 +1,7 @@
 var pad = {
 	model: null,
 	state: "close",
+	screenDirection:"v",
 	closeBtn: null,
 	screen: null,
 	screenUpdate: null,
@@ -51,6 +52,9 @@ function createPad(obj) {
 	pad.closeBtn.onClick = function(obj,event) {
 		pad.currentWorld.onBack(obj,event);
 	}
+	pad.screen.onClick = function(obj,event) {
+		pad.currentWorld.onClick(obj,event);
+	}
 	pad.screen.onDown = function(obj,event) {
 		pad.currentWorld.onDown(obj,event);
 	}
@@ -66,4 +70,6 @@ function createPad(obj) {
 	document.addEventListener("touchmove",function(){
 		pad.screen.onMove(event);
 	});
+	
+	return pad;
 }

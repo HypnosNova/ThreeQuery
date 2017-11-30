@@ -105,7 +105,9 @@ function createLockWorld() {
 		var thres = obj.point.y - point.y;
 		if(thres > 2.5) {
 			pad.state = "menu";
-			var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+			var transition = new $$.TransitionFBO(menuWorld, lockWorld, tmpWorld, {
+				"transitionSpeed":40
+			}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
 				//$$.actionInjections.push(menuWorld.updateFBO);
 				pad.changeFBO(menuWorld);
 			});

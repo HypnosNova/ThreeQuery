@@ -2,7 +2,7 @@ var [scene, renderer, camera] = $$.init({}, {}, {
 	fov: 45
 });
 $$.animate();
-var stats, positions, group, planes, slides, len;
+var positions, group, planes, slides, len;
 var select = 0;
 var tweenTime = 800;
 var planeWidth = 300;

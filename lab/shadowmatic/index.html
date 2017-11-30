@@ -17,7 +17,7 @@
 		<script>
 			//three.js是threeQuery的依赖，必须要在threeQuery之前引入。
 			var [scene, renderer, camera] = $$.init({}, {}, {
-				fov: 45
+				fov: 30
 			});
 			renderer.shadowMap.enabled = true;
 			//			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -45,19 +45,10 @@
 				var plane = new THREE.Mesh(geometry, material);
 				plane.castShadow = true;
 				plane.receiveShadow = true;
-				plane.position.z = -5;
+				plane.position.z = -15;
 				scene.add(plane);
 
-				//				var geometry = new THREE.BoxBufferGeometry(10, 10, 10);
-				//				var material = new THREE.MeshLambertMaterial({
-				//					color: 0x00ffff
-				//				});
-				//				var cube = new THREE.Mesh(geometry, material);
-				//				cube.position.z = 30;
-				//				cube.castShadow = true;
-				//				cube.receiveShadow = true;
-				//				scene.add(cube);
-				loadObj();
+				addObj();
 
 				camera.lookAt(plane.position);
 
@@ -65,16 +56,6 @@
 
 			function initLight() {
 				scene.add(new THREE.AmbientLight(0x333333));
-				//				var spotLight = new THREE.SpotLight(0xffffff);
-				//				spotLight.position.set(100, 100, 300);
-				//				spotLight.castShadow = true;
-				//				spotLight.shadow.mapSize.width = 1024;
-				//				spotLight.shadow.mapSize.height = 1024;
-				//				spotLight.shadow.camera.near = 1;
-				//				spotLight.shadow.camera.far = 1000;
-				//				spotLight.shadow.camera.fov = 30;
-				//				scene.add(spotLight);
-				//
 				var directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
 				directionalLight.position.set(0, 0, 30);
 				directionalLight.castShadow = true;
@@ -84,41 +65,59 @@
 				directionalLight.shadow.camera.far = 500 // default
 				scene.add(directionalLight);
 
-				//				var width = 100;
-				//				var height = 100;
-				//				var rectLight = new THREE.RectAreaLight(0xffffff, undefined, width, height);
-				//				rectLight.intensity = 70.0;
-				//				rectLight.position.set(0, 0, 399);
-				//				scene.add(rectLight);
-				//				rectLight.castShadow = true;
-				//				rectLight.shadow.mapSize.width = 1024; // default
-				//				rectLight.shadow.mapSize.height = 1024; // default
-				//				rectLight.shadow.camera.near = 0.5; // default
-				//				rectLight.shadow.camera.far = 500 // default
 			}
 
-			function loadObj() {
-				var mtlLoader = new THREE.MTLLoader();
-				//				mtlLoader.setPath('ipad/');
-				mtlLoader.load('SA_LD_Reaper_SMG.mtl', function(materials) {
-					materials.preload();
-					var objLoader = new THREE.OBJLoader();
-					objLoader.setMaterials(materials);
-					objLoader.load('SA_LD_Reaper_SMG.obj', function(object) {
-						scene.add(object);
-						object.castShadow = true;
-						object.scale.set(0.1,0.1,0.1);
-						object.receiveShadow = true;
-						object.position.z = 0.1;
-						for(var i in object.children) {
-							object.children[i].castShadow = true;
-							//							object.children[i].receiveShadow = true;
-						}
-
-						var controls = new THREE.OrbitControls(object);
-						console.log(controls)
-					});
+			function addObj() {
+				var group = new THREE.Group();
+				var group2 = new THREE.Group();
+				group.add(group2);
+				group2.rotation.set(1,2,0);
+				group.position.z = 0.001;
+				var material = new THREE.MeshLambertMaterial({
+					color: 0x00ffff
 				});
+				var geometry = new THREE.BoxBufferGeometry(1.5, 0.5, 0.5);
+				var cube = new THREE.Mesh(geometry, material);
+				cube.castShadow = true;
+				cube.receiveShadow = true;
+				group2.add(cube);
+				
+				var geometry = new THREE.BoxBufferGeometry(0.5, 0.5, 1.5);
+				var cube = new THREE.Mesh(geometry, material);
+				cube.castShadow = true;
+				cube.receiveShadow = true;
+				group2.add(cube);
+				cube.position.y=2;
+				
+				var geometry = new THREE.BoxBufferGeometry(0.5, 4, 0.5);
+				var cube = new THREE.Mesh(geometry, material);
+				cube.castShadow = true;
+				cube.receiveShadow = true;
+				group2.add(cube);
+				cube.position.x=0.75;
+				cube.position.z=2;
+				cube.position.y=0.27;
+				cube.rotation.z=Math.PI/9;
+				
+				var geometry = new THREE.BoxBufferGeometry(0.5, 4, 0.5);
+				var cube = new THREE.Mesh(geometry, material);
+				cube.castShadow = true;
+				cube.receiveShadow = true;
+				group2.add(cube);
+				cube.position.x=-0.75;
+				cube.position.z=-2;
+				cube.position.y=0.27;
+				cube.rotation.z=-Math.PI/9;
+				
+//				var geometry =new 
+				
+				scene.add(group);
+				var controls = new THREE.OrbitControls(group);
+				controls.rotateSpeed=0.5;
+				controls.minPolarAngle=-Math.PI*2;
+				controls.maxPolarAngle=Math.PI*2;
+				$$.actionInjections.push(controls.update);
+				
 			}
 		</script>
 	</body>

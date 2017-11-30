@@ -1,18 +1,41 @@
 <!DOCTYPE html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>IAS</title>
+		<title>IAS Slide</title>
 	</head>
+
 	<body>
-		<script src="../../../lib/tween.js"></script>
-		<script src="../../../lib/three.min.js"></script>
-		<script src="../../../js/threeQuery.js"></script>
-		<script src="js/main.js"></script>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/StereoEffect.js"></script>
+		<script src="lib/threeQuery.min.js"></script>
+		<script src="lib/tween.js"></script>
+		<script src="lib/threeQuery.dom.js"></script>
+		<script src="lib/bas.js"></script>
+		<script src="lib/bas.min.js"></script>
+		<script src="lib/PhysicsRenderer.js"></script>
+		<script src="lib/ShaderLoader.js"></script>
+		<script src="lib/TextParticles.js"></script>
+		<script src="lib/ScrollControls.js"></script>
+		<script src="assets/font/UbuntuMono.js"></script>
+		<script src="js/book.js"></script>
+		<script src="js/exploreAnimateObj.js"></script>
+		<script src="js/delaunay.js"></script>
+		<script src="lib/PhysicsText.js" ></script>
+		<script src="lib/Link.js"></script>
+		<script src="js/page0.js"></script>
+		<script src="js/page1.js"></script>
+		<script src="js/page2.js"></script>
+		<script src="js/page3.js"></script>
+		<script src="js/page4.js"></script>
+		<script src="js/page5.js"></script>
 		<script>
 			$$.init();
 			$$.animate();
+			createWorld0().toMain();
 		</script>
 	</body>
+
 </html>

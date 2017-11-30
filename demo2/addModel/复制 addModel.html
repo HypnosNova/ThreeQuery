@@ -18,11 +18,11 @@
 			renderer.setClearColor(0x0);
 			init();
 			var controls=$$.Controls.createTrackBallControls({minDistance:1,maxDistance:1000});
-			controls.minDistance=500;
+			controls.minDistance=1;
 			controls.maxDistance=500;
 			function init() {
 
-				camera.position.z = 250;
+				camera.position.z = 30;
 
 				var ambient = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient );
@@ -31,30 +31,19 @@
 				directionalLight.position.set( 0, 0, 1 ).normalize();
 				scene.add( directionalLight );
 
-//				var mtlLoader = new THREE.MTLLoader();
+				var mtlLoader = new THREE.MTLLoader();
 //				mtlLoader.setPath( 'spacecar/' );
-//				mtlLoader.load( 'Wraith_Raider_Starship.mtl', function( materials ) {
-//					materials.preload();
-//					var objLoader = new THREE.OBJLoader();
-//					objLoader.setMaterials( materials );
-//					objLoader.setPath( 'spacecar/' );
-//					objLoader.load( 'Wraith Raider Starship.obj', function ( object ) {
-//						scene.add( object );
-//
-//					});
-//
-//				});
-var material = new THREE.MeshLambertMaterial({
-					color: 0xff0000
-				});
+				mtlLoader.load( 'Crystal.mtl', function( materials ) {
+					materials.preload();
 					var objLoader = new THREE.OBJLoader();
-//					objLoader.setMaterials( [material] );
-					objLoader.load( 'chair.obj', function ( object ) {
+					objLoader.setMaterials( materials );
+//					objLoader.setPath( 'spacecar/' );
+					objLoader.load( 'Crystal.obj', function ( object ) {
 						scene.add( object );
-						object.children[0].material=material;
-						console.log(object)
 
 					});
+
+				});
 
 			}
 			$$.animate();

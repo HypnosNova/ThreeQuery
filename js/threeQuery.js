@@ -330,7 +330,7 @@ var threeQuery = function() {
 	function updateMouseRaycaster(isTouch) {
 		that.global.raycaster.setFromCamera(that.global.mouse, that.global.camera);
 		var intersects = that.global.raycaster.intersectObjects(that.rayCasterEventReceivers, true);
-
+		
 		var intersect;
 		for(var i = 0; i < intersects.length; i++) {
 			if(intersects[i].object.isPenetrated) {

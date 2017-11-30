@@ -28,21 +28,33 @@ function createMenuWorld() {
 	world.bg = img;
 	world.scene.add(img);
 	var icoArr = [];
-	for(var i in icoData) {
-		for(var j in icoData[i]) {
-			var ico = new $$.Img(icoData[i][j].ico, {
+	for(let i in icoData) {
+		for(let j in icoData[i]) {
+			let ico = new $$.Img(icoData[i][j].ico, {
 				width: icoSize,
 				height: icoSize
+			}, function() {
+				body.add(ico.element);
+				icoArr.push(ico);
+				ico.element.position.set(i * 300 + (j % 4) * 70 - 105, 150 - Math.floor(j / 4) * 60, 2);
+				ico.element.onClick = function() {
+					appIconClick(icoData[i][j]);
+				}
 			});
-			body.add(ico);
-			icoArr.push(ico);
-			ico.position.set(i * 300 + (j % 4) * 70 - 105, 150 - Math.floor(j / 4) * 60, 2);
+
+			let text = new $$.Txt(icoData[i][j].text, {
+				width: icoSize * 1.4,
+				height: 32,
+				fontSize: 28,
+				fontFamily: "微软雅黑"
+			});
+			body.add(text);
+			text.position.set(i * 300 + (j % 4) * 70 - 105, 125 - Math.floor(j / 4) * 60, 2);
 		}
 	}
 
 	var point, screenDown;
 	world.onDown = function(obj, event) {
-		console.log("??")
 		screenDown = true;
 		point = obj.point;
 	}
@@ -67,75 +79,69 @@ function createMenuWorld() {
 				}, 500).start();
 			}
 		} else {
-			
+
 		}
 		screenDown = false;
+	}
+
+	world.onClick = function(obj, event) {
+		var raycaster = new THREE.Raycaster();
+		var point = new THREE.Vector2();
+		point.x = obj.point.x;
+		point.y = obj.point.y - 2;
+		point.x /= 7.5;
+		point.y /= 10;
+		raycaster.setFromCamera(point, world.camera);
+		var intersects = raycaster.intersectObjects(world.rayCasterEventReceivers, true);
+		var intersect;
+		if(intersects.length) {
+			intersect = intersects[0];
+		}
+		if(intersect && intersect.object.onClick) {
+			intersect.object.onClick(intersect, event);
+		}
+	}
+
+	function appIconClick(appId) {
+		if(appId) {
+			if(appId.world) {
+				pad.state = "app";
+				var transition = new $$.TransitionFBO(appId.world, menuWorld, tmpWorld, {
+					"transitionSpeed": 40
+				}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+					pad.changeFBO(appId.world);
+				});
+				$$.actionInjections.push(transition.render)
+				pad.changeFBO(tmpWorld);
+			} else {
+				var app = window[appId.app]();
+				appId.world=app;
+				pad.state = "app";
+				var transition = new $$.TransitionFBO(app, menuWorld, tmpWorld, {
+					"transitionSpeed": 40
+				}, (new THREE.TextureLoader()).load("img/transition1.png"), function() {
+					pad.changeFBO(app);
+				});
+				$$.actionInjections.push(transition.render)
+				pad.changeFBO(tmpWorld);
+			}
+		}
 	}
 	return world;
 }
 
 var icoData = [
 	[{
-		text: "app1",
-		ico: "img/ico1.png"
-	}, {
-		text: "app2",
-		ico: "img/ico2.png"
-	}, {
-		text: "app3",
-		ico: "img/ico3.png"
-	}, {
-		text: "app4",
-		ico: "img/ico1.png"
-	}, {
-		text: "app5",
-		ico: "img/ico2.png"
-	}, {
-		text: "app6",
-		ico: "img/ico3.png"
-	}, {
-		text: "app7",
-		ico: "img/ico1.png"
-	}, {
-		text: "app8",
-		ico: "img/ico2.png"
-	}, {
-		text: "app9",
-		ico: "img/ico3.png"
-	}, {
-		text: "app10",
-		ico: "img/ico1.png"
+		text: "我是谁",
+		ico: "img/me.png",
+		app: "createMeWorld",
+		world: null
 	}],
 	[{
-		text: "app1",
-		ico: "img/ico1.png"
-	}, {
-		text: "app2",
-		ico: "img/ico2.png"
-	}, {
-		text: "app3",
-		ico: "img/ico3.png"
-	}, {
-		text: "app4",
-		ico: "img/ico1.png"
-	}, {
-		text: "app5",
-		ico: "img/ico2.png"
-	}, {
-		text: "app6",
-		ico: "img/ico3.png"
-	}, {
-		text: "app7",
-		ico: "img/ico1.png"
-	}, {
-		text: "app8",
-		ico: "img/ico2.png"
-	}, {
-		text: "app9",
-		ico: "img/ico3.png"
-	}, {
-		text: "app10",
-		ico: "img/ico1.png"
+		text: "flappy bird",
+		ico: "img/flappy.png",
+		app: "createFlappyWorld",
+		world: null
 	}],
 	[{
 		text: "app1",

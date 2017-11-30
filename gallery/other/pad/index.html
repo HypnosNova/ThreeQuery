@@ -9,10 +9,12 @@
 
 	<body>
 		<script src="../../../lib/three.min.js"></script>
+		<script src="../../../lib/bas.js"></script>
 		<script src="../../../js/threeQuery.js"></script>
 		<script src="../../../js/threeQuery.dom.js"></script>
 		<script src="../../../lib/MTLLoader.js"></script>
 		<script src="../../../lib/OBJLoader.js"></script>
+		<script src="../../../lib/OrbitControls.js"></script>
 		<script src="../../../lib/trackBallControls.js"></script>
 		<script src="../../../lib/tween.js"></script>
 		<script src="js/lockScene.js"></script>
@@ -20,15 +22,18 @@
 		<script src="js/emptyScene.js"></script>
 		<script src="js/menuScene.js"></script>
 		<script src="js/pad.js"></script>
+		<script src="js/util/imageTransition.js"></script>
+		<script src="js/app/me.js"></script>
+		<script src="js/app/flappy.js"></script>
+		<script src="js/app/carousel.js"></script>
 		<script>
-			var [scene, renderer, camera] = $$.init({clearColor:0x000000}, {}, {
+			var [scene, renderer, camera] = $$.init({
+				clearColor: 0x666666
+			}, {}, {
 				fov: 45
 			});
-//			renderer.setClearColor(0xffffff);
+
 			init();
-			var controls = $$.Controls.createTrackBallControls({dom:document.body});
-			controls.minDistance = 20;
-			controls.maxDistance = 80;
 
 			function init() {
 				camera.position.z = 50;
@@ -50,15 +55,25 @@
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials(materials);
 					objLoader.setPath('ipad/');
-					objLoader.load('file.obj', function(object) {
-						createPad(object);
+					objLoader.load('file.obj', function(obj) {
+						createPad(obj);
+
+						var controls = $$.Controls.createTrackBallControls({dom:document.body});
+						controls.enabled=false;
+						controls.minDistance = 20;
+						controls.maxDistance = 80;
+						document.addEventListener("keydown", function(e) {
+							if(e.keyCode == 69) {
+								controls.enabled = !controls.enabled;
+							}
+						});
 					});
 				});
 			}
 			$$.animate();
 			$$.actionInjections.push(TWEEN.update);
-			
-//			addControls();
+
+			//			addControls();
 		</script>
 
 	</body>
